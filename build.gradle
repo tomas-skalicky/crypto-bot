@@ -29,6 +29,7 @@ allprojects {
 subprojects {
 
     apply plugin: 'java'
+    apply plugin: 'java-library'
 
     sourceCompatibility = '11'
     targetCompatibility = '11'
@@ -38,13 +39,13 @@ subprojects {
     }
 
     dependencies {
-        implementation libraries.commons_collections4
-        implementation libraries.jsr305
+        implementation libs.commons_collections4
+        implementation libs.jsr305
 
-        testImplementation libraries.assertj_core
-        testImplementation libraries.junit_jupiter_api
-        testImplementation libraries.junit_jupiter_engine
-        testImplementation libraries.mockito_core
+        testImplementation libs.assertj_core
+        testImplementation libs.junit_jupiter_api
+        testImplementation libs.junit_jupiter_engine
+        testImplementation libs.mockito_core
     }
 
     test {

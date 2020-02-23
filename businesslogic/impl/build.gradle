@@ -17,7 +17,6 @@
  */
 
 dependencies {
-    // TODO Tomas replace with "api" configuration. Currently the "api" configuration is for some reason unavailable.
-    compile project(':businesslogic:api')
-    implementation project(':exchange:kraken:facade:api')
+    api project(':businesslogic:api')
+    implementation project(':exchange:shared:facade:api')
 }

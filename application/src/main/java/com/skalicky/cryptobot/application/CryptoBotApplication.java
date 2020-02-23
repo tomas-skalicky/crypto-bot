@@ -18,13 +18,29 @@
 
 package com.skalicky.cryptobot.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicBean;
-import com.skalicky.cryptobot.exchange.shared.facade.api.logic.TradingPlatformPublicApiFacade;
+import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPublicApiConnectorBean;
+import com.skalicky.cryptobot.exchange.kraken.facade.api.logic.KrakenPublicApiFacade;
+import com.skalicky.cryptobot.exchange.kraken.facade.impl.converter.KrakenMapEntryToTickerBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.facade.impl.logic.KrakenPublicApiFacadeBean;
+import com.skalicky.cryptobot.exchange.shared.facade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.shared.facade.api.converter.NonnullConverter;
+import edu.self.kraken.api.KrakenApi;
+
+import java.util.List;
+import java.util.Map;
 
 public class CryptoBotApplication {
 
     public static void main(String[] args) {
-        //FIXME Tomas final CryptoBotLogic cryptoBotLogic = new CryptoBotLogicBean();
+        final KrakenApi krakenApi = new KrakenApi();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final KrakenPublicApiConnectorBean krakenPublicApiConnector = new KrakenPublicApiConnectorBean(krakenApi, objectMapper);
+        final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter = new KrakenMapEntryToTickerBoConverter();
+        final KrakenPublicApiFacade krakenPublicApiFacade = new KrakenPublicApiFacadeBean(krakenPublicApiConnector, krakenMapEntryToTickerBoConverter);
+        final CryptoBotLogic cryptoBotLogic = new CryptoBotLogicBean(List.of(krakenPublicApiFacade));
+        cryptoBotLogic.placeBuyOrder("kraken");
     }
 }

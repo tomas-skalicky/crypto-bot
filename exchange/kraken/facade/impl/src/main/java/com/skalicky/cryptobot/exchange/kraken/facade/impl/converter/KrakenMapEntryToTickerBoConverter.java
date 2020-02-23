@@ -47,8 +47,8 @@ public class KrakenMapEntryToTickerBoConverter implements NonnullConverter<Map.E
     @Override
     @Nonnull
     public TickerBo convert(@Nonnull final Map.Entry<String, Map<String, Object>> inputEntry) {
-        final List<String> askArray = (List<String>) inputEntry.getValue().get("a");
-        final List<String> bidArray = (List<String>) inputEntry.getValue().get("b");
+        @SuppressWarnings("unchecked") final List<String> askArray = (List<String>) inputEntry.getValue().get("a");
+        @SuppressWarnings("unchecked") final List<String> bidArray = (List<String>) inputEntry.getValue().get("b");
         return new TickerBo(
                 inputEntry.getKey(),
                 new BigDecimal(askArray.get(0)),

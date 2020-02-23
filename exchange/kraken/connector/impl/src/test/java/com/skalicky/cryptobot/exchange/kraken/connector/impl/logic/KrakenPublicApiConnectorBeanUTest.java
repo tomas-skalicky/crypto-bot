@@ -26,11 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -51,7 +53,9 @@ public class KrakenPublicApiConnectorBeanUTest {
     @Test
     public void ticker_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
 
-        final Path fileWithExpectedResponse = Path.of(getClass().getClassLoader().getResource("com/skalicky/cryptobot/exchange/kraken/connector/impl/logic/ticker_pair_XBTEUR_response.json").toURI());
+        final URL urlOfFileWithExpectedResponse = getClass().getClassLoader().getResource("com/skalicky/cryptobot/exchange/kraken/connector/impl/logic/ticker_pair_XBTEUR_response.json");
+        Objects.requireNonNull(urlOfFileWithExpectedResponse);
+        final Path fileWithExpectedResponse = Path.of(urlOfFileWithExpectedResponse.toURI());
         final List<String> expectedResponseLines = Files.readAllLines(fileWithExpectedResponse);
         final String expectedResponse = String.join(System.lineSeparator(), expectedResponseLines);
         final Map<String, String> marketName = Collections.singletonMap("pair", "XBTEUR");
@@ -63,7 +67,11 @@ public class KrakenPublicApiConnectorBeanUTest {
 
         assertThat(response.getError()).isEmpty();
         assertThat(response.getResult()).hasSize(1);
-        assertThat(((List<String>) response.getResult().get("XXBTZEUR").get("a")).get(0)).isEqualTo("8903.30000");
-        assertThat(((List<String>) response.getResult().get("XXBTZEUR").get("b")).get(0)).isEqualTo("8902.40000");
+        // Asserts to avoid warnings caused by presence of @Nullable.
+        assertThat(response.getResult()).isNotNull();
+        @SuppressWarnings("unchecked") final List<String> actualAskData = (List<String>) response.getResult().get("XXBTZEUR").get("a");
+        assertThat(actualAskData.get(0)).isEqualTo("8903.30000");
+        @SuppressWarnings("unchecked") final List<String> actualBidData = (List<String>) response.getResult().get("XXBTZEUR").get("b");
+        assertThat(actualBidData.get(0)).isEqualTo("8902.40000");
     }
 }

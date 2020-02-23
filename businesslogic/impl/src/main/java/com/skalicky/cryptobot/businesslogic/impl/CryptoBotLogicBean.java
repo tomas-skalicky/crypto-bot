@@ -40,13 +40,14 @@ public class CryptoBotLogicBean implements CryptoBotLogic {
     }
 
     @Override
-    public void execute(@Nonnull final String tradingPlatformName) {
+    public void placeBuyOrder(@Nonnull final String tradingPlatformName) {
         final TradingPlatformPublicApiFacade publicApiFacade = publicApiFacadesByPlatformNames.get(tradingPlatformName);
         if (publicApiFacade == null) {
             throw new IllegalArgumentException("No public API facade for the trading platform " + tradingPlatformName);
         }
 
         TickerBo ticket = publicApiFacade.getTicker("XBTEUR");
+        // FIXME Tomas remove
         System.out.println(ticket);
     }
 }

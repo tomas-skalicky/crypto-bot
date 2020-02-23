@@ -22,5 +22,5 @@ import javax.annotation.Nonnull;
 
 public interface CryptoBotLogic {
 
-    void execute(@Nonnull final String tradingPlatformName);
+    void placeBuyOrder(@Nonnull final String tradingPlatformName);
 }

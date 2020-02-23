@@ -18,5 +18,8 @@
 
 dependencies {
     implementation project(':businesslogic:impl')
+    implementation project(':exchange:kraken:connector:impl')
     implementation project(':exchange:kraken:facade:impl')
+
+    implementation libs.jackson_databind
 }
