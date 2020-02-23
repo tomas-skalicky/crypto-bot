@@ -1,0 +1,38 @@
+/*
+ * A program to automatically trade cryptocurrencies.
+ * Copyright (C) 2020 $user.name<$user.email>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+ext {
+    versions = [
+            assertj_core        : '3.15.0',
+            commons_collections4: '4.4',
+            jackson_databind    : '2.10.2',
+            jsr305              : '3.0.2',
+            junit_jupiter       : '5.6.0',
+            mockito_core        : '3.2.4',
+    ]
+
+    libraries = [
+            assertj_core        : "org.assertj:assertj-core:${versions.assertj_core}",
+            commons_collections4: "org.apache.commons:commons-collections4:${versions.commons_collections4}",
+            jackson_databind    : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson_databind}",
+            jsr305              : "com.google.code.findbugs:jsr305:${versions.jsr305}",
+            junit_jupiter_api   : "org.junit.jupiter:junit-jupiter-api:${versions.junit_jupiter}",
+            junit_jupiter_engine: "org.junit.jupiter:junit-jupiter-engine:${versions.junit_jupiter}",
+            mockito_core        : "org.mockito:mockito-core:${versions.mockito_core}",
+    ]
+}
