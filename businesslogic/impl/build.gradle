@@ -16,23 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
-import edu.self.kraken.api.KrakenApi;
-
-import javax.annotation.Nonnull;
-
-public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector {
-    @Nonnull
-    private final KrakenApi krakenApi;
-    @Nonnull
-    private final ObjectMapper objectMapper;
-
-    KrakenPrivateApiConnectorImpl(@Nonnull final KrakenApi krakenApi,
-                                  @Nonnull final ObjectMapper objectMapper) {
-        this.krakenApi = krakenApi;
-        this.objectMapper = objectMapper;
-    }
+dependencies {
+    // TODO Tomas replace with "api" configuration. Currently the "api" configuration is for some reason unavailable.
+    compile project(':businesslogic:api')
+    implementation project(':exchange:kraken:facade:api')
 }

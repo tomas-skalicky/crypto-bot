@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.kraken.facade.api.bo;
+package com.skalicky.cryptobot.exchange.shared.facade.api.bo;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -24,25 +24,25 @@ import java.math.BigDecimal;
 /**
  * Convenient representation of part of Kraken API ticker response. Currently only partially implemented.
  */
-public class KrakenTickerPairBo {
+public class TickerBo {
     @Nonnull
-    private final String pairName;
+    private final String marketName;
     @Nonnull
     private final BigDecimal askPrice;
     @Nonnull
     private final BigDecimal bidPrice;
 
-    public KrakenTickerPairBo(@Nonnull final String pairName,
-                              @Nonnull final BigDecimal askPrice,
-                              @Nonnull final BigDecimal bidPrice) {
-        this.pairName = pairName;
+    public TickerBo(@Nonnull final String marketName,
+                    @Nonnull final BigDecimal askPrice,
+                    @Nonnull final BigDecimal bidPrice) {
+        this.marketName = marketName;
         this.askPrice = askPrice;
         this.bidPrice = bidPrice;
     }
 
     @Nonnull
-    public String getPairName() {
-        return pairName;
+    public String getMarketName() {
+        return marketName;
     }
 
     @Nonnull
@@ -53,5 +53,14 @@ public class KrakenTickerPairBo {
     @Nonnull
     public BigDecimal getBidPrice() {
         return bidPrice;
+    }
+
+    @Override
+    public String toString() {
+        return "TickerBo{" +
+                "marketName='" + marketName + '\'' +
+                ", askPrice=" + askPrice +
+                ", bidPrice=" + bidPrice +
+                '}';
     }
 }

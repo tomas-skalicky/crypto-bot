@@ -30,13 +30,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class KrakenPublicApiConnectorImpl implements KrakenPublicApiConnector {
+public class KrakenPublicApiConnectorBean implements KrakenPublicApiConnector {
     @Nonnull
     private final KrakenApi krakenApi;
     @Nonnull
     private final ObjectMapper objectMapper;
 
-    public KrakenPublicApiConnectorImpl(@Nonnull final KrakenApi krakenApi,
+    public KrakenPublicApiConnectorBean(@Nonnull final KrakenApi krakenApi,
                                         @Nonnull final ObjectMapper objectMapper) {
         this.krakenApi = krakenApi;
         this.objectMapper = objectMapper;
@@ -44,12 +44,12 @@ public class KrakenPublicApiConnectorImpl implements KrakenPublicApiConnector {
 
     @Override
     @Nonnull
-    public KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull final List<String> pairNames) {
-        if (pairNames.isEmpty()) {
-            throw new IllegalArgumentException("pairs is a mandatory argument and cannot be empty");
+    public KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull final List<String> marketNames) {
+        if (marketNames.isEmpty()) {
+            throw new IllegalArgumentException("Market names are mandatory and at least one name needs to be provided");
         }
 
-        final Map<String, String> parameters = Collections.singletonMap("pair", String.join(",", pairNames));
+        final Map<String, String> parameters = Collections.singletonMap("pair", String.join(",", marketNames));
         try {
             final String responseString = krakenApi.queryPublic(KrakenApi.Method.TICKER, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {

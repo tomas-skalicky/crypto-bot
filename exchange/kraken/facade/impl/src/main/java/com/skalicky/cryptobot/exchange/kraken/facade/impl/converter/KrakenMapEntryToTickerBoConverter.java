@@ -18,8 +18,8 @@
 
 package com.skalicky.cryptobot.exchange.kraken.facade.impl.converter;
 
-import com.skalicky.cryptobot.exchange.kraken.facade.api.bo.KrakenTickerPairBo;
-import com.skalicky.cryptobot.exchange.kraken.facade.api.converter.NonnullConverter;
+import com.skalicky.cryptobot.exchange.shared.facade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.shared.facade.api.converter.NonnullConverter;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -42,14 +42,14 @@ import java.util.Map;
  *     o = today's opening price
  * </pre>
  */
-public class MapEntryToKrakenTickerPairBoConverter implements NonnullConverter<Map.Entry<String, Map<String, Object>>, KrakenTickerPairBo> {
+public class KrakenMapEntryToTickerBoConverter implements NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> {
 
     @Override
     @Nonnull
-    public KrakenTickerPairBo convert(@Nonnull final Map.Entry<String, Map<String, Object>> inputEntry) {
+    public TickerBo convert(@Nonnull final Map.Entry<String, Map<String, Object>> inputEntry) {
         final List<String> askArray = (List<String>) inputEntry.getValue().get("a");
         final List<String> bidArray = (List<String>) inputEntry.getValue().get("b");
-        return new KrakenTickerPairBo(
+        return new TickerBo(
                 inputEntry.getKey(),
                 new BigDecimal(askArray.get(0)),
                 new BigDecimal(bidArray.get(0))

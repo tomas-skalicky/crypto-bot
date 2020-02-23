@@ -16,14 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.kraken.facade.api.converter;
+package com.skalicky.cryptobot.application;
 
-import javax.annotation.Nonnull;
+import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
+import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicBean;
+import com.skalicky.cryptobot.exchange.shared.facade.api.logic.TradingPlatformPublicApiFacade;
 
-@FunctionalInterface
-public interface NonnullConverter<Source, Target> {
+public class CryptoBotApplication {
 
-    @Nonnull
-    Target convert(@Nonnull Source source);
-
+    public static void main(String[] args) {
+        //FIXME Tomas final CryptoBotLogic cryptoBotLogic = new CryptoBotLogicBean();
+    }
 }

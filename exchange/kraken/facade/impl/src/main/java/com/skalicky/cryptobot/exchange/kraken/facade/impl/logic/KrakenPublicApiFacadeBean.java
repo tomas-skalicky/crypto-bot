@@ -20,9 +20,9 @@ package com.skalicky.cryptobot.exchange.kraken.facade.impl.logic;
 
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
-import com.skalicky.cryptobot.exchange.kraken.facade.api.bo.KrakenTickerPairBo;
-import com.skalicky.cryptobot.exchange.kraken.facade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.kraken.facade.api.logic.KrakenPublicApiFacade;
+import com.skalicky.cryptobot.exchange.shared.facade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.shared.facade.api.converter.NonnullConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -30,38 +30,40 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
+public class KrakenPublicApiFacadeBean implements KrakenPublicApiFacade {
     @Nonnull
     private final KrakenPublicApiConnector krakenPublicApiConnector;
     @Nonnull
-    private final NonnullConverter<Map.Entry<String, Map<String, Object>>, KrakenTickerPairBo> mapEntryToKrakenTickerPairBoConverter;
+    private final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter;
 
-    public KrakenPublicApiFacadeImpl(@Nonnull final KrakenPublicApiConnector krakenPublicApiConnector,
-                                     @Nonnull final NonnullConverter<Map.Entry<String, Map<String, Object>>, KrakenTickerPairBo> mapEntryToKrakenTickerPairBoConverter) {
+    public KrakenPublicApiFacadeBean(@Nonnull final KrakenPublicApiConnector krakenPublicApiConnector,
+                                     @Nonnull final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter) {
         this.krakenPublicApiConnector = krakenPublicApiConnector;
-        this.mapEntryToKrakenTickerPairBoConverter = mapEntryToKrakenTickerPairBoConverter;
+        this.krakenMapEntryToTickerBoConverter = krakenMapEntryToTickerBoConverter;
     }
 
     @Override
     @Nonnull
-    public List<KrakenTickerPairBo> ticker(@Nonnull final String pairName) {
-        return ticker(Collections.singletonList(pairName));
-    }
-
-    @Override
-    @Nonnull
-    public List<KrakenTickerPairBo> ticker(@Nonnull final List<String> pairNames) {
-        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnector.ticker(pairNames);
+    public TickerBo getTicker(@Nonnull final String marketName) {
+        final List<String> marketNames = Collections.singletonList(marketName);
+        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnector.ticker(marketNames);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
         }
         if (MapUtils.isEmpty(response.getResult())) {
-            return Collections.emptyList();
+            throw new IllegalArgumentException("No result for the market name " + marketName);
+        }
+        final int resultEntryCount = MapUtils.size(response.getResult());
+        if (resultEntryCount > 1) {
+            throw new IllegalStateException("More than one result entries [" + resultEntryCount + "] for the market " + marketName);
         }
 
-        return response.getResult().entrySet().stream().map(mapEntryToKrakenTickerPairBoConverter::convert).collect(Collectors.toList());
+        return response.getResult().entrySet().stream() //
+                .map(krakenMapEntryToTickerBoConverter::convert) //
+                .findAny() //
+                .orElseThrow(() -> new IllegalStateException("unexpected state"));
     }
+
 }

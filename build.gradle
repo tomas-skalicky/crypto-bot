@@ -38,13 +38,13 @@ subprojects {
     }
 
     dependencies {
-        compile libraries.commons_collections4
-        compile libraries.jsr305
+        implementation libraries.commons_collections4
+        implementation libraries.jsr305
 
-        testCompile libraries.assertj_core
-        testCompile libraries.junit_jupiter_api
-        testCompile libraries.junit_jupiter_engine
-        testCompile libraries.mockito_core
+        testImplementation libraries.assertj_core
+        testImplementation libraries.junit_jupiter_api
+        testImplementation libraries.junit_jupiter_engine
+        testImplementation libraries.mockito_core
     }
 
     test {

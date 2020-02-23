@@ -18,16 +18,8 @@
 
 package com.skalicky.cryptobot.exchange.kraken.facade.api.logic;
 
-import com.skalicky.cryptobot.exchange.kraken.facade.api.bo.KrakenTickerPairBo;
+import com.skalicky.cryptobot.exchange.shared.facade.api.logic.TradingPlatformPublicApiFacade;
 
-import javax.annotation.Nonnull;
-import java.util.List;
+public interface KrakenPublicApiFacade extends TradingPlatformPublicApiFacade, KrakenApiFacade {
 
-public interface KrakenPublicApiFacade {
-
-    @Nonnull
-    List<KrakenTickerPairBo> ticker(@Nonnull String pairName);
-
-    @Nonnull
-    List<KrakenTickerPairBo> ticker(@Nonnull List<String> pairNames);
 }

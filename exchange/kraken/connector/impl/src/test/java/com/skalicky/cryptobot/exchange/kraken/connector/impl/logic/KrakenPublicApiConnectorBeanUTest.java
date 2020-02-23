@@ -36,11 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class KrakenPublicApiConnectorImplUTest {
+public class KrakenPublicApiConnectorBeanUTest {
     @Nonnull
     private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
     @Nonnull
-    private final KrakenPublicApiConnectorImpl krakenPublicApiConnectorImpl = new KrakenPublicApiConnectorImpl(krakenApi, new ObjectMapper());
+    private final KrakenPublicApiConnectorBean krakenPublicApiConnectorBean = new KrakenPublicApiConnectorBean(krakenApi, new ObjectMapper());
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -54,12 +54,12 @@ public class KrakenPublicApiConnectorImplUTest {
         final Path fileWithExpectedResponse = Path.of(getClass().getClassLoader().getResource("com/skalicky/cryptobot/exchange/kraken/connector/impl/logic/ticker_pair_XBTEUR_response.json").toURI());
         final List<String> expectedResponseLines = Files.readAllLines(fileWithExpectedResponse);
         final String expectedResponse = String.join(System.lineSeparator(), expectedResponseLines);
-        final Map<String, String> pair = Collections.singletonMap("pair", "XBTEUR");
-        when(krakenApi.queryPublic(KrakenApi.Method.TICKER, pair)).thenReturn(expectedResponse);
+        final Map<String, String> marketName = Collections.singletonMap("pair", "XBTEUR");
+        when(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).thenReturn(expectedResponse);
 
-        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnectorImpl.ticker(Collections.singletonList("XBTEUR"));
+        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnectorBean.ticker(Collections.singletonList("XBTEUR"));
 
-        verify(krakenApi).queryPublic(KrakenApi.Method.TICKER, pair);
+        verify(krakenApi).queryPublic(KrakenApi.Method.TICKER, marketName);
 
         assertThat(response.getError()).isEmpty();
         assertThat(response.getResult()).hasSize(1);

@@ -16,13 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'crypto-bot'
+package com.skalicky.cryptobot.businesslogic.api;
 
-include ':application'
-include ':businesslogic:api'
-include ':businesslogic:impl'
-include ':exchange:kraken:connector:api'
-include ':exchange:kraken:connector:impl'
-include ':exchange:kraken:facade:api'
-include ':exchange:kraken:facade:impl'
-include ':exchange:shared:facade:api'
+import javax.annotation.Nonnull;
+
+public interface CryptoBotLogic {
+
+    void execute(@Nonnull final String tradingPlatformName);
+}

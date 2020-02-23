@@ -16,13 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'crypto-bot'
+package com.skalicky.cryptobot.exchange.kraken.facade.api.logic;
 
-include ':application'
-include ':businesslogic:api'
-include ':businesslogic:impl'
-include ':exchange:kraken:connector:api'
-include ':exchange:kraken:connector:impl'
-include ':exchange:kraken:facade:api'
-include ':exchange:kraken:facade:impl'
-include ':exchange:shared:facade:api'
+import com.skalicky.cryptobot.exchange.shared.facade.api.logic.TradingPlatformDesignated;
+
+import javax.annotation.Nonnull;
+
+public interface KrakenApiFacade extends TradingPlatformDesignated {
+
+    @Override
+    @Nonnull
+    default String getTradingPlatform() {
+        return "kraken";
+    }
+
+}

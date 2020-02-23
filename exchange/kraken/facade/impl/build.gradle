@@ -17,8 +17,9 @@
  */
 
 dependencies {
-    compile project(':exchange:kraken:connector:api')
+    implementation project(':exchange:kraken:connector:api')
+    // TODO Tomas replace with "api" configuration. Currently the "api" configuration is for some reason unavailable.
     compile project(':exchange:kraken:facade:api')
 
-    compile libraries.jackson_databind
+    implementation libraries.jackson_databind
 }

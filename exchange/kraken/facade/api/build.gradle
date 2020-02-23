@@ -17,5 +17,6 @@
  */
 
 dependencies {
-    compile project(':exchange:kraken:facade:impl')
+    // TODO Tomas replace with "api" configuration. Currently the "api" configuration is for some reason unavailable.
+    compile project(':exchange:shared:facade:api')
 }

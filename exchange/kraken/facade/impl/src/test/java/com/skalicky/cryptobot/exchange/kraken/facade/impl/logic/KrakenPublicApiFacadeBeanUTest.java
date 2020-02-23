@@ -20,8 +20,8 @@ package com.skalicky.cryptobot.exchange.kraken.facade.impl.logic;
 
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
-import com.skalicky.cryptobot.exchange.kraken.facade.api.bo.KrakenTickerPairBo;
-import com.skalicky.cryptobot.exchange.kraken.facade.impl.converter.MapEntryToKrakenTickerPairBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.facade.impl.converter.KrakenMapEntryToTickerBoConverter;
+import com.skalicky.cryptobot.exchange.shared.facade.api.bo.TickerBo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,12 +37,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class KrakenPublicApiFacadeImplUTest {
+public class KrakenPublicApiFacadeBeanUTest {
     @Nonnull
     private final KrakenPublicApiConnector krakenPublicApiConnector = mock(KrakenPublicApiConnector.class);
     @Nonnull
-    private final KrakenPublicApiFacadeImpl krakenPublicApiFacadeImpl = new KrakenPublicApiFacadeImpl(krakenPublicApiConnector,
-            new MapEntryToKrakenTickerPairBoConverter());
+    private final KrakenPublicApiFacadeBean krakenPublicApiFacadeBean = new KrakenPublicApiFacadeBean(krakenPublicApiConnector,
+            new KrakenMapEntryToTickerBoConverter());
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -51,23 +51,22 @@ public class KrakenPublicApiFacadeImplUTest {
     }
 
     @Test
-    public void ticker_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
+    public void getTicker_when_rawKrakenDataProvided_then_askPriceReturned_and_bidPriceReturned() {
 
         final Map<String, Object> pairData = Map.of("a", List.of("8903.300000"), "b", List.of("8902.400000"));
         final Map<String, Map<String, Object>> result = Map.of("XXBTZEUR", pairData);
         final KrakenResponseDto<Map<String, Map<String, Object>>> expectedResponse = new KrakenResponseDto<>();
         expectedResponse.setResult(result);
-        final String pairName = "XBTEUR";
-        final List<String> pairNames = Collections.singletonList(pairName);
-        when(krakenPublicApiConnector.ticker(pairNames)).thenReturn(expectedResponse);
+        final String marketName = "XBTEUR";
+        final List<String> marketNames = Collections.singletonList(marketName);
+        when(krakenPublicApiConnector.ticker(marketNames)).thenReturn(expectedResponse);
 
-        final List<KrakenTickerPairBo> response = krakenPublicApiFacadeImpl.ticker(pairName);
+        final TickerBo response = krakenPublicApiFacadeBean.getTicker(marketName);
 
-        verify(krakenPublicApiConnector).ticker(pairNames);
+        verify(krakenPublicApiConnector).ticker(marketNames);
 
-        assertThat(response).hasSize(1);
-        assertThat(response.get(0).getPairName()).isEqualTo("XXBTZEUR");
-        assertThat(response.get(0).getAskPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8903.3").stripTrailingZeros());
-        assertThat(response.get(0).getBidPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8902.4").stripTrailingZeros());
+        assertThat(response.getMarketName()).isEqualTo("XXBTZEUR");
+        assertThat(response.getAskPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8903.3").stripTrailingZeros());
+        assertThat(response.getBidPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8902.4").stripTrailingZeros());
     }
 }
