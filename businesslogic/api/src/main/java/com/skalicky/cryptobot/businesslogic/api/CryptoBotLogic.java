@@ -19,8 +19,17 @@
 package com.skalicky.cryptobot.businesslogic.api;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.math.BigDecimal;
 
 public interface CryptoBotLogic {
 
-    void placeBuyOrder(@Nonnull final String tradingPlatformName);
+    void reportOpenOrders(@Nonnull String tradingPlatformName);
+
+    void reportClosedOrders(@Nonnull String tradingPlatformName);
+
+    void placeBuyOrderIfEnoughAvailable(@Nonnull String tradingPlatformName,
+                                        @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                                        @Nonnull String baseCurrencyName,
+                                        @Nullable String slackWebhookUrl);
 }

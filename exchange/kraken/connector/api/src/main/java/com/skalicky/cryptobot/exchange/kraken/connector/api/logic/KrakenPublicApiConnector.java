@@ -27,5 +27,5 @@ import java.util.Map;
 public interface KrakenPublicApiConnector {
 
     @Nonnull
-    KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull final List<String> marketNames);
+    KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull List<String> marketNames);
 }

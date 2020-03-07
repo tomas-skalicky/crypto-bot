@@ -16,10 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+plugins {
+    id 'application'
+}
+
 dependencies {
     implementation project(':businesslogic:impl')
     implementation project(':exchange:kraken:connector:impl')
-    implementation project(':exchange:kraken:facade:impl')
+    implementation project(':exchange:kraken:connectorfacade:impl')
+    implementation project(':exchange:shared:connector:impl')
+    implementation project(':exchange:slack:connector:impl')
+    implementation project(':exchange:slack:connectorfacade:impl')
 
+    implementation libs.commons_lang3
     implementation libs.jackson_databind
+    implementation libs.jcommander
+}
+
+application {
+    mainClassName = 'com.skalicky.cryptobot.application.CryptoBotApplication'
 }

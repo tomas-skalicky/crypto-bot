@@ -18,6 +18,22 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connector.api.logic;
 
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
+
+import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Map;
+
 public interface KrakenPrivateApiConnector {
 
+    @Nonnull
+    KrakenResponseDto<Map<String, Map<String, Object>>> getOpenOrders(boolean includeTrades);
+
+    @Nonnull
+    KrakenResponseDto<Map<String, Map<String, Object>>> getClosedOrders(boolean includeTrades,
+                                                                        @Nonnull LocalDateTime from);
+
+    @Nonnull
+    KrakenResponseDto<Map<String, BigDecimal>> getBalance();
 }

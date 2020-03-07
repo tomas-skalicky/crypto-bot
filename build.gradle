@@ -40,7 +40,9 @@ subprojects {
 
     dependencies {
         implementation libs.commons_collections4
+        implementation libs.log4j_slf4j_impl
         implementation libs.jsr305
+        implementation libs.slf4j_api
 
         testImplementation libs.assertj_core
         testImplementation libs.junit_jupiter_api

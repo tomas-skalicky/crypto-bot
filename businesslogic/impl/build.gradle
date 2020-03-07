@@ -18,5 +18,6 @@
 
 dependencies {
     api project(':businesslogic:api')
-    implementation project(':exchange:shared:facade:api')
+    implementation project(':exchange:slack:connectorfacade:api')
+    implementation project(':exchange:tradingplatform:connectorfacade:api')
 }
