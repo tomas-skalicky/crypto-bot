@@ -38,7 +38,6 @@ public class RestConnectorSupport {
     @Nonnull
     private static final Client client = ClientBuilder.newClient(new ClientConfig());
 
-    // TODO Tomas 2 cover with test
     public <T> void postJson(@Nonnull final T requestPayload,
                              @Nonnull final String targetUrl) {
         final WebTarget webTarget = client.target(targetUrl);

@@ -26,30 +26,45 @@ import java.math.BigDecimal;
 
 public class CryptoBotArguments {
 
+    /**
+     * Initialized to avoid nullability.
+     */
     @Nonnull
     @Parameter(names = {"--baseCurrency"},
             description = "Base currency to buy for",
             required = true)
     private String baseCurrency = "";
 
+    /**
+     * Initialized to avoid nullability.
+     */
     @Nonnull
     @Parameter(names = {"--volumeInBaseCurrencyToInvestPerRun"},
             description = "How much of the base currency will be intended to be invested into the market currency per run of this bot",
             required = true)
     private BigDecimal volumeInBaseCurrencyToInvestPerRun = BigDecimal.ZERO;
 
+    /**
+     * Initialized to avoid nullability.
+     */
     @Nonnull
     @Parameter(names = {"--tradingPlatformName"},
             description = "Name of trading platform. Currently supported: kraken",
             required = true)
     private String tradingPlatformName = "";
 
+    /**
+     * Initialized to avoid nullability.
+     */
     @Nonnull
     @Parameter(names = {"--tradingPlatformApiKey"},
             description = "Key for private part of trading platform API",
             required = true)
     private String tradingPlatformKey = "";
 
+    /**
+     * Initialized to avoid nullability.
+     */
     @Nonnull
     @Parameter(names = {"--tradingPlatformApiSecret"},
             description = "Secret for private part of trading platform API",

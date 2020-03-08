@@ -21,4 +21,7 @@ dependencies {
     implementation libs.jersey_client
     implementation libs.jersey_hk2
     implementation libs.jersey_media_json_jackson
+
+    testImplementation libs.jackson_databind
+    testImplementation libs.mockwire
 }

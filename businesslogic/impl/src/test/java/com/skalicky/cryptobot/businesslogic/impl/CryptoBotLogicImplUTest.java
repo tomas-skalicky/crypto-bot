@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,9 +54,10 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
-        assertThrows(IllegalArgumentException.class, () -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                "poloniex", BigDecimal.TEN, "EUR", null),
-                "No private API facade for the trading platform \"poloniex\"");
+        assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
+                "poloniex", BigDecimal.TEN, "EUR", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No private API facade for the trading platform \"poloniex\"");
 
         verify(privateApiFacade).getTradingPlatform();
     }

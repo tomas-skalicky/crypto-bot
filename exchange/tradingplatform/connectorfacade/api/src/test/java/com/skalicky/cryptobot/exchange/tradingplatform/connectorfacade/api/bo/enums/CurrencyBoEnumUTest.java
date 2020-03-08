@@ -21,7 +21,7 @@ package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.e
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CurrencyBoEnumUTest {
 
@@ -37,7 +37,8 @@ public class CurrencyBoEnumUTest {
 
     @Test
     public void test_getByLabel_when_nonExistingCurrencyLabel_then_exception() {
-        assertThrows(IllegalArgumentException.class, () -> CurrencyBoEnum.getByLabel("LTC"),
-                "Unsupported label [LTC]");
+        assertThatThrownBy(() -> CurrencyBoEnum.getByLabel("LTC"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unsupported label [LTC]");
     }
 }
