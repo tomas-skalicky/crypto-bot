@@ -30,6 +30,7 @@ public interface CryptoBotLogic {
 
     void placeBuyOrderIfEnoughAvailable(@Nonnull String tradingPlatformName,
                                         @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
-                                        @Nonnull String baseCurrencyName,
+                                        @Nonnull String baseCurrencyLabel,
+                                        @Nonnull String quoteCurrencyLabel,
                                         @Nullable String slackWebhookUrl);
 }

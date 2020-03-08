@@ -19,15 +19,18 @@
 package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,26 +42,32 @@ import static org.mockito.Mockito.when;
 public class CryptoBotLogicImplUTest {
 
     @Nonnull
+    private final static String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
+    @Nonnull
+    private final TradingPlatformPublicApiFacade publicApiFacade = createKrakenPublicApiFacadeMock();
+    @Nonnull
     private final TradingPlatformPrivateApiFacade privateApiFacade = createKrakenPrivateApiFacadeMock();
     @Nonnull
     private final SlackFacade slackFacade = mock(SlackFacade.class);
     @Nonnull
-    private final CryptoBotLogicImpl cryptoBotLogicImpl = new CryptoBotLogicImpl(new ArrayList<>(),
+    private final CryptoBotLogicImpl cryptoBotLogicImpl = new CryptoBotLogicImpl(List.of(publicApiFacade),
             List.of(privateApiFacade), slackFacade);
 
     @AfterEach
     public void assertAndCleanMocks() {
-        Mockito.verifyNoMoreInteractions(privateApiFacade, slackFacade);
-        Mockito.reset(privateApiFacade, slackFacade);
+        Mockito.verifyNoMoreInteractions(publicApiFacade, privateApiFacade, slackFacade);
+        Mockito.reset(publicApiFacade, privateApiFacade, slackFacade);
     }
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                "poloniex", BigDecimal.TEN, "EUR", null))
+                "poloniex", BigDecimal.TEN, "BTC", "XMR",
+                null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No private API facade for the trading platform \"poloniex\"");
 
+        verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
     }
 
@@ -67,8 +76,10 @@ public class CryptoBotLogicImplUTest {
         when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                "kraken", BigDecimal.TEN, "EUR", null);
+                KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "XRP",
+                null);
 
+        verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
     }
@@ -79,8 +90,10 @@ public class CryptoBotLogicImplUTest {
         final String slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                "kraken", BigDecimal.TEN, "EUR", slackUrl);
+                KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "LTC",
+                slackUrl);
 
+        verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
         verify(slackFacade).sendMessage(
@@ -89,21 +102,39 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_enoughBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, BigDecimal.TEN));
+        when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
+        final TickerBo ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
+        when(publicApiFacade.getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR)).thenReturn(ticker);
+        final BigDecimal volumeInBaseCurrencyToInvestPerRun = new BigDecimal(20);
         final String slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                "kraken", BigDecimal.TEN, "EUR", slackUrl);
+                KRAKEN_TRADING_PLATFORM_NAME, volumeInBaseCurrencyToInvestPerRun, "EUR",
+                "BTC", slackUrl);
 
+        verify(publicApiFacade).getTradingPlatform();
+        verify(publicApiFacade).getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
+        verify(privateApiFacade).placeOrder(OrderTypeBoEnum.BUY, PriceOrderTypeBoEnum.LIMIT, CurrencyBoEnum.EUR,
+                CurrencyBoEnum.BTC, volumeInBaseCurrencyToInvestPerRun, new BigDecimal("8.91"),
+                true);
         verify(slackFacade).sendMessage(
-                "Going to place a BUY order to buy for 10 EUR on kraken", slackUrl);
+                "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.", slackUrl);
+        verify(slackFacade).sendMessage(
+                "limit order to buy BTC for 20 EUR successfully placed on kraken. Limit price of 1 BTC = 8.91 EUR",
+                slackUrl);
+    }
+
+    private TradingPlatformPublicApiFacade createKrakenPublicApiFacadeMock() {
+        final TradingPlatformPublicApiFacade facade = mock(TradingPlatformPublicApiFacade.class);
+        when(facade.getTradingPlatform()).thenReturn(KRAKEN_TRADING_PLATFORM_NAME);
+        return facade;
     }
 
     private TradingPlatformPrivateApiFacade createKrakenPrivateApiFacadeMock() {
         final TradingPlatformPrivateApiFacade facade = mock(TradingPlatformPrivateApiFacade.class);
-        when(facade.getTradingPlatform()).thenReturn("kraken");
+        when(facade.getTradingPlatform()).thenReturn(KRAKEN_TRADING_PLATFORM_NAME);
         return facade;
     }
 }

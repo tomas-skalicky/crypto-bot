@@ -16,16 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
-
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums;
 
 import javax.annotation.Nonnull;
 
-public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
+public enum PriceOrderTypeBoEnum {
+
+    // @formatter:off
+    MARKET("market"),
+    LIMIT ("limit"),
+    ;
+    // @formatter:on
 
     @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyBoEnum quoteCurrency,
-                       @Nonnull CurrencyBoEnum baseCurrency);
+    private final String label;
+
+    PriceOrderTypeBoEnum(@Nonnull final String label) {
+        this.label = label;
+    }
+
+    @Nonnull
+    public String getLabel() {
+        return label;
+    }
 }

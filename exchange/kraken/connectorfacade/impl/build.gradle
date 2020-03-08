@@ -19,4 +19,6 @@
 dependencies {
     implementation project(':exchange:kraken:connector:api')
     api project(':exchange:kraken:connectorfacade:api')
+
+    implementation libs.commons_lang3
 }

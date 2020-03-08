@@ -23,8 +23,10 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicAp
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPublicApiFacade;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -35,17 +37,24 @@ public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
     @Nonnull
     private final KrakenPublicApiConnector krakenPublicApiConnector;
     @Nonnull
+    private final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+    @Nonnull
     private final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter;
 
     public KrakenPublicApiFacadeImpl(@Nonnull final KrakenPublicApiConnector krakenPublicApiConnector,
+                                     @Nonnull final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter,
                                      @Nonnull final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter) {
         this.krakenPublicApiConnector = krakenPublicApiConnector;
+        this.pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter = pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
         this.krakenMapEntryToTickerBoConverter = krakenMapEntryToTickerBoConverter;
     }
 
     @Override
     @Nonnull
-    public TickerBo getTicker(@Nonnull final String marketName) {
+    public TickerBo getTicker(@Nonnull final CurrencyBoEnum quoteCurrency,
+                              @Nonnull final CurrencyBoEnum baseCurrency) {
+        final String marketName = pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter.convert(
+                Pair.of(quoteCurrency, baseCurrency));
         final List<String> marketNames = Collections.singletonList(marketName);
         final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnector.ticker(marketNames);
 

@@ -21,6 +21,8 @@ package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logi
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -39,4 +41,12 @@ public interface TradingPlatformPrivateApiFacade extends TradingPlatformDesignat
 
     @Nonnull
     Map<CurrencyBoEnum, BigDecimal> getAccountBalance();
+
+    void placeOrder(@Nonnull OrderTypeBoEnum orderType,
+                    @Nonnull PriceOrderTypeBoEnum priceOrderType,
+                    @Nonnull CurrencyBoEnum baseCurrency,
+                    @Nonnull CurrencyBoEnum quoteCurrency,
+                    @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                    @Nonnull BigDecimal price,
+                    boolean preferFeeInQuoteCurrency);
 }

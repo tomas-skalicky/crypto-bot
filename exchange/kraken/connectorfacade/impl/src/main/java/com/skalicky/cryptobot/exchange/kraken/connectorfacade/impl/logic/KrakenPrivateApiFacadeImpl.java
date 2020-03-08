@@ -25,6 +25,8 @@ import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.Nonn
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -78,5 +80,16 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         return response.getResult().entrySet().stream() //
                 .filter(e -> krakenCurrencyNameToCurrencyBoEnumConverter.convert(e.getKey()) != CurrencyBoEnum.OTHERS)
                 .collect(Collectors.toMap(e -> krakenCurrencyNameToCurrencyBoEnumConverter.convert(e.getKey()), Map.Entry::getValue));
+    }
+
+    @Override
+    public void placeOrder(@Nonnull final OrderTypeBoEnum orderType,
+                           @Nonnull final PriceOrderTypeBoEnum priceOrderType,
+                           @Nonnull final CurrencyBoEnum baseCurrency,
+                           @Nonnull final CurrencyBoEnum quoteCurrency,
+                           @Nonnull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                           @Nonnull final BigDecimal price,
+                           final boolean preferFeeInQuoteCurrency) {
+        // TODO Tomas 3 purchase
     }
 }

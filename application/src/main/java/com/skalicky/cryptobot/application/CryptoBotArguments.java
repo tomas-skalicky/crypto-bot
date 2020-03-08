@@ -31,9 +31,18 @@ public class CryptoBotArguments {
      */
     @Nonnull
     @Parameter(names = {"--baseCurrency"},
-            description = "Base currency to buy for",
+            description = "Currency to buy for",
             required = true)
     private String baseCurrency = "";
+
+    /**
+     * Initialized to avoid nullability.
+     */
+    @Nonnull
+    @Parameter(names = {"--quoteCurrency"},
+            description = "Currency to buy",
+            required = true)
+    private String quoteCurrency = "";
 
     /**
      * Initialized to avoid nullability.
@@ -80,6 +89,11 @@ public class CryptoBotArguments {
     @Nonnull
     public String getBaseCurrency() {
         return baseCurrency;
+    }
+
+    @Nonnull
+    public String getQuoteCurrency() {
+        return quoteCurrency;
     }
 
     @Nonnull

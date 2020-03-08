@@ -21,7 +21,9 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,7 +43,9 @@ public class KrakenPublicApiFacadeImplUTest {
     @Nonnull
     private final KrakenPublicApiConnector krakenPublicApiConnector = mock(KrakenPublicApiConnector.class);
     @Nonnull
-    private final KrakenPublicApiFacadeImpl krakenPublicApiFacadeImpl = new KrakenPublicApiFacadeImpl(krakenPublicApiConnector,
+    private final KrakenPublicApiFacadeImpl krakenPublicApiFacadeImpl = new KrakenPublicApiFacadeImpl(
+            krakenPublicApiConnector,
+            new PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter(),
             new KrakenMapEntryToTickerBoConverter());
 
     @AfterEach
@@ -61,7 +65,7 @@ public class KrakenPublicApiFacadeImplUTest {
         final List<String> marketNames = Collections.singletonList(marketName);
         when(krakenPublicApiConnector.ticker(marketNames)).thenReturn(expectedResponse);
 
-        final TickerBo response = krakenPublicApiFacadeImpl.getTicker(marketName);
+        final TickerBo response = krakenPublicApiFacadeImpl.getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         verify(krakenPublicApiConnector).ticker(marketNames);
 

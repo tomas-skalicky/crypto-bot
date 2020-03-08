@@ -20,7 +20,10 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformDesignated;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
@@ -37,6 +40,8 @@ import java.util.stream.Collectors;
 
 public class CryptoBotLogicImpl implements CryptoBotLogic {
 
+    @Nonnull
+    private static final BigDecimal NINETY_NINE_PERCENT_IN_DECIMAL = new BigDecimal("0.99");
     @Nonnull
     private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogicImpl.class);
     @Nonnull
@@ -80,24 +85,54 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     public void placeBuyOrderIfEnoughAvailable(@Nonnull final String tradingPlatformName,
                                                @Nonnull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
                                                @Nonnull final String baseCurrencyLabel,
+                                               @Nonnull final String quoteCurrencyLabel,
                                                @Nullable final String slackWebhookUrl) {
-        final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
-        if (facade == null) {
+        final TradingPlatformPrivateApiFacade privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
+        if (privateApiFacade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
+                    + tradingPlatformName + "\"");
+        }
+        final TradingPlatformPublicApiFacade publicApiFacade = publicApiFacadesByPlatformNames.get(tradingPlatformName);
+        if (publicApiFacade == null) {
+            throw new IllegalArgumentException("No public API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
 
         final CurrencyBoEnum baseCurrency = CurrencyBoEnum.getByLabel(baseCurrencyLabel);
-        final BigDecimal baseCurrencyAmount = facade.getAccountBalance().get(baseCurrency);
+        final BigDecimal baseCurrencyAmount = privateApiFacade.getAccountBalance().get(baseCurrency);
         if (baseCurrencyAmount.compareTo(volumeInBaseCurrencyToInvestPerRun) >= 0) {
-            final String message = "Going to place a BUY order to buy for " + volumeInBaseCurrencyToInvestPerRun + " "
-                    + baseCurrencyLabel + " on " + tradingPlatformName;
-            logger.info(message);
+            final String tickerMessage = "Going to retrieve a ticker for currencies quote " + quoteCurrencyLabel
+                    + " and base " + baseCurrencyLabel + " on " + tradingPlatformName + ".";
+            logger.info(tickerMessage);
             if (slackWebhookUrl != null) {
-                slackFacade.sendMessage(message, slackWebhookUrl);
+                slackFacade.sendMessage(tickerMessage, slackWebhookUrl);
             }
 
-            // TODO Tomas 3 purchase
+            final CurrencyBoEnum quoteCurrency = CurrencyBoEnum.getByLabel(quoteCurrencyLabel);
+            final TickerBo ticker = publicApiFacade.getTicker(quoteCurrency, baseCurrency);
+
+            final BigDecimal price = ticker.getBidPrice().multiply(NINETY_NINE_PERCENT_IN_DECIMAL);
+            final OrderTypeBoEnum orderType = OrderTypeBoEnum.BUY;
+            final PriceOrderTypeBoEnum priceOrderType = PriceOrderTypeBoEnum.LIMIT;
+
+            final String orderMessage = "Going to place a " + priceOrderType.getLabel() + " order to "
+                    + orderType.getLabel() + " " + quoteCurrencyLabel + " for "
+                    + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel + " on " + tradingPlatformName
+                    + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel + ".";
+            logger.info(orderMessage);
+
+            privateApiFacade.placeOrder(orderType, priceOrderType, baseCurrency, quoteCurrency,
+                    volumeInBaseCurrencyToInvestPerRun, price, true);
+
+            final String orderPlacedMessage = priceOrderType.getLabel() + " order to" + " " + orderType.getLabel()
+                    + " " + quoteCurrencyLabel
+                    + " for " + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel
+                    + " successfully placed on " + tradingPlatformName
+                    + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel;
+            logger.info(orderPlacedMessage);
+            if (slackWebhookUrl != null) {
+                slackFacade.sendMessage(orderPlacedMessage, slackWebhookUrl);
+            }
 
         } else {
             final String message = "Too little base currency [" + baseCurrencyAmount + " "
