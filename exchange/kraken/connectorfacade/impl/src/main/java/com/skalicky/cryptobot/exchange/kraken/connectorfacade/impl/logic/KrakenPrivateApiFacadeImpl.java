@@ -18,6 +18,7 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
@@ -124,8 +125,8 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
             krakenPrice = price;
         }
 
-        final KrakenResponseDto<Object> response = krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
-                krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, krakenOrderFlags,
+        final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnector.addOrder(krakenMarketName,
+                krakenOrderType, krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, krakenOrderFlags,
                 orderExpirationInSecondsFromNow);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {

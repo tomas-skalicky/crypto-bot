@@ -18,6 +18,7 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenCurrencyNameToCurrencyBoEnumConverter;
@@ -160,7 +161,7 @@ public class KrakenPrivateApiFacadeImplUTest {
         final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
         final List<String> orderFlags = Collections.emptyList();
         final long orderExpirationInSecondsFromNow = 0;
-        final KrakenResponseDto<Object> response = new KrakenResponseDto<>();
+        final KrakenResponseDto<KrakenAddOrderResultDto> response = new KrakenResponseDto<>();
         response.setError(List.of("Kraken error"));
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
