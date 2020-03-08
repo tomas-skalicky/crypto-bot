@@ -19,6 +19,8 @@
 package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDescriptionDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import edu.self.kraken.api.KrakenApi;
 import org.junit.jupiter.api.AfterEach;
@@ -80,18 +82,38 @@ public class KrakenPrivateApiConnectorImplUTest {
     public void test_addOrder_when_everythingOk_then_noError() throws Exception {
 
         // @formatter:off
-        final String expectedResponse = "{}";
+        final String expectedResponse = "{" +
+                "    \"error\": []," +
+                "    \"result\": {" +
+                "        \"descr\": {" +
+                "            \"order\": \"buy 0.00200000 XBTEUR @ limit 6000.9\"" +
+                "        }," +
+                "        \"txid\": [" +
+                "            \"OXXXXO-YYYYY-33244K\"" +
+                "        ]" +
+                "    }" +
+                "}";
         // @formatter:on
         when(krakenApi.queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap())).thenReturn(expectedResponse);
 
-        final KrakenResponseDto<Object> response = krakenPrivateApiConnectorImpl.addOrder(
-                "LTCEUR", "buy", "market", new BigDecimal(40),
-                BigDecimal.ONE, Collections.emptyList(), 1);
+        final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnectorImpl.addOrder(
+                "XBTEUR", "buy", "limit", new BigDecimal("6000.9"),
+                new BigDecimal("0.002"), Collections.singletonList("fciq"), 1);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap());
 
-        assertThat(response.getError()).isNull();
-        assertThat(response.getResult()).isNull();
+        assertThat(response.getError()).isEmpty();
+        // Asserts to avoid warnings caused by presence of @Nullable.
+        assertThat(response.getResult()).isNotNull();
+        // isNotNull() to avoid warnings caused by presence of @Nullable.
+        assertThat(response.getResult().getDescr())
+                .isNotNull()
+                .extracting(KrakenAddOrderResultDescriptionDto::getOrder)
+                .isEqualTo("buy 0.00200000 XBTEUR @ limit 6000.9");
+        // isNotNull() to avoid warnings caused by presence of @Nullable.
+        assertThat(response.getResult().getTxid()) //
+                .isNotNull() //
+                .containsExactly("OXXXXO-YYYYY-33244K");
     }
 
     @Test
@@ -104,16 +126,16 @@ public class KrakenPrivateApiConnectorImplUTest {
         // @formatter:on
         when(krakenApi.queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap())).thenReturn(expectedResponse);
 
-        final KrakenResponseDto<Object> response = krakenPrivateApiConnectorImpl.addOrder(
+        final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnectorImpl.addOrder(
                 "LTCEUR", "buy", "market", new BigDecimal(40),
                 BigDecimal.ONE, Collections.emptyList(), 1);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap());
 
-        assertThat(response.getError()).hasSize(1);
-        // Asserts to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getError()).isNotNull();
-        assertThat(response.getError().get(0)).isEqualTo("EGeneral:Permission denied");
+        // isNotNull() to avoid warnings caused by presence of @Nullable.
+        assertThat(response.getError()) //
+                .isNotNull() //
+                .containsExactly("EGeneral:Permission denied");
         assertThat(response.getResult()).isNull();
     }
 }

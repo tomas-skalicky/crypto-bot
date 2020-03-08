@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import edu.self.kraken.api.KrakenApi;
@@ -75,13 +76,13 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
 
     @Nonnull
     @Override
-    public KrakenResponseDto<Object> addOrder(@Nonnull final String krakenMarketName,
-                                              @Nonnull final String krakenOrderType,
-                                              @Nonnull final String krakenPriceOrderType,
-                                              @Nonnull final BigDecimal price,
-                                              @Nonnull final BigDecimal volumeInQuoteCurrency,
-                                              @Nonnull final List<String> orderFlags,
-                                              final long orderExpirationInSecondsFromNow) {
+    public KrakenResponseDto<KrakenAddOrderResultDto> addOrder(@Nonnull final String krakenMarketName,
+                                                               @Nonnull final String krakenOrderType,
+                                                               @Nonnull final String krakenPriceOrderType,
+                                                               @Nonnull final BigDecimal price,
+                                                               @Nonnull final BigDecimal volumeInQuoteCurrency,
+                                                               @Nonnull final List<String> orderFlags,
+                                                               final long orderExpirationInSecondsFromNow) {
         final Map<String, String> parameters = Collections.unmodifiableMap(Map.of(
                 "pair", krakenMarketName,
                 "type", krakenOrderType,
@@ -92,6 +93,10 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
                 "expiretm", "+" + orderExpirationInSecondsFromNow
         ));
         try {
+            //FIXME Tomas 1 final
+//            if (true) {
+//                return new KrakenResponseDto<>();
+//            }
             final String responseString = krakenApi.queryPrivate(KrakenApi.Method.ADD_ORDER, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
