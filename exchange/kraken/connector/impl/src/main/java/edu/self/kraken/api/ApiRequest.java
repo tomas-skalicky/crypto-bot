@@ -17,6 +17,8 @@
 package edu.self.kraken.api;
 
 import edu.self.kraken.api.KrakenApi.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -35,6 +37,8 @@ import java.util.Map.Entry;
  * @author nyg
  */
 class ApiRequest {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiRequest.class);
 
     private static final String ERROR_NULL_METHOD = "The API method can't be null.";
     private static final String ERROR_NULL_SIGNATURE = "The signature can't be null.";
@@ -87,6 +91,7 @@ class ApiRequest {
      *                     not be set up or executed
      */
     public String execute() throws IOException {
+        logger.debug("At the beginning of execution: " + this);
 
         HttpsURLConnection connection = null;
         try {
@@ -125,7 +130,9 @@ class ApiRequest {
                     response.append(line);
                 }
 
-                return response.toString();
+                final String responseString = response.toString();
+                logger.debug("At the end of execution: response=" + responseString);
+                return responseString;
             }
         } finally {
             connection.disconnect();
@@ -204,5 +211,16 @@ class ApiRequest {
         }
 
         this.signature = signature;
+    }
+
+    @Override
+    public String toString() {
+        return "ApiRequest{" +
+                "url=" + url +
+                ", signature='" + (signature == null ? "null" : "<non-null>") + '\'' +
+                ", key='" + (key == null ? "null" : "<non-null>") + '\'' +
+                ", postData=" + postData +
+                ", isPublic=" + isPublic +
+                '}';
     }
 }

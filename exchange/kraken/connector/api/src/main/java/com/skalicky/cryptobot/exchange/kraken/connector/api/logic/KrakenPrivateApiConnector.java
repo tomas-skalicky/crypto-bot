@@ -23,6 +23,7 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDt
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 public interface KrakenPrivateApiConnector {
@@ -36,4 +37,13 @@ public interface KrakenPrivateApiConnector {
 
     @Nonnull
     KrakenResponseDto<Map<String, BigDecimal>> getBalance();
+
+    @Nonnull
+    KrakenResponseDto<Object> addOrder(@Nonnull String krakenMarketName,
+                                       @Nonnull String krakenOrderType,
+                                       @Nonnull String krakenPriceOrderType,
+                                       @Nonnull BigDecimal price,
+                                       @Nonnull BigDecimal volumeInQuoteCurrency,
+                                       @Nonnull List<String> orderFlags,
+                                       long orderExpirationInSecondsFromNow);
 }

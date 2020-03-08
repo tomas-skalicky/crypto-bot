@@ -29,10 +29,13 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +45,23 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Nonnull
     private final KrakenPrivateApiConnector krakenPrivateApiConnector;
     @Nonnull
+    private final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+    @Nonnull
+    private final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter;
+    @Nonnull
+    private final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter;
+    @Nonnull
     private final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter;
 
     public KrakenPrivateApiFacadeImpl(@Nonnull final KrakenPrivateApiConnector krakenPrivateApiConnector,
+                                      @Nonnull final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter,
+                                      @Nonnull final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter,
+                                      @Nonnull final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter,
                                       @Nonnull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter) {
         this.krakenPrivateApiConnector = krakenPrivateApiConnector;
+        this.pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter = pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+        this.orderTypeBoEnumToKrakenOrderTypeConverter = orderTypeBoEnumToKrakenOrderTypeConverter;
+        this.priceOrderTypeBoEnumToKrakenOrderTypeConverter = priceOrderTypeBoEnumToKrakenOrderTypeConverter;
         this.krakenCurrencyNameToCurrencyBoEnumConverter = krakenCurrencyNameToCurrencyBoEnumConverter;
     }
 
@@ -87,9 +102,34 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
                            @Nonnull final PriceOrderTypeBoEnum priceOrderType,
                            @Nonnull final CurrencyBoEnum baseCurrency,
                            @Nonnull final CurrencyBoEnum quoteCurrency,
-                           @Nonnull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                           @Nonnull final BigDecimal volumeInQuoteCurrency,
                            @Nonnull final BigDecimal price,
-                           final boolean preferFeeInQuoteCurrency) {
-        // TODO Tomas 3 purchase
+                           final boolean preferFeeInQuoteCurrency,
+                           final long orderExpirationInSecondsFromNow) {
+
+        final String krakenMarketName = pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter.convert(
+                Pair.of(quoteCurrency, baseCurrency));
+        final String krakenOrderType = orderTypeBoEnumToKrakenOrderTypeConverter.convert(orderType);
+        final String krakenPriceOrderType = priceOrderTypeBoEnumToKrakenOrderTypeConverter.convert(priceOrderType);
+        final List<String> krakenOrderFlags = new ArrayList<>();
+        if (preferFeeInQuoteCurrency) {
+            krakenOrderFlags.add("fciq");
+        }
+        final BigDecimal krakenPrice;
+        if (quoteCurrency == CurrencyBoEnum.BTC && baseCurrency == CurrencyBoEnum.EUR) {
+            // Scale set to 1 due to Kraken constraint:
+            // "EOrder:Invalid price:XXBTZEUR price can only be specified up to 1 decimals."
+            krakenPrice = price.setScale(1, RoundingMode.HALF_UP);
+        } else {
+            krakenPrice = price;
+        }
+
+        final KrakenResponseDto<Object> response = krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
+                krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, krakenOrderFlags,
+                orderExpirationInSecondsFromNow);
+
+        if (CollectionUtils.isNotEmpty(response.getError())) {
+            throw new IllegalStateException(response.getError().toString());
+        }
     }
 }

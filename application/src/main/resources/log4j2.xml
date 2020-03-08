@@ -42,7 +42,12 @@
     </Appenders>
 
     <Loggers>
-        <Root level="DEBUG" additivity="false">
+        <Logger name="edu.self.kraken" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+
+        <Root level="INFO" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>
         </Root>

@@ -105,11 +105,10 @@ public class CryptoBotLogicImplUTest {
         when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
         final TickerBo ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
         when(publicApiFacade.getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR)).thenReturn(ticker);
-        final BigDecimal volumeInBaseCurrencyToInvestPerRun = new BigDecimal(20);
         final String slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                KRAKEN_TRADING_PLATFORM_NAME, volumeInBaseCurrencyToInvestPerRun, "EUR",
+                KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), "EUR",
                 "BTC", slackUrl);
 
         verify(publicApiFacade).getTradingPlatform();
@@ -117,12 +116,14 @@ public class CryptoBotLogicImplUTest {
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
         verify(privateApiFacade).placeOrder(OrderTypeBoEnum.BUY, PriceOrderTypeBoEnum.LIMIT, CurrencyBoEnum.EUR,
-                CurrencyBoEnum.BTC, volumeInBaseCurrencyToInvestPerRun, new BigDecimal("8.91"),
-                true);
+                CurrencyBoEnum.BTC, new BigDecimal("2.2446689113"), new BigDecimal("8.91"),
+                true, 129_600);
         verify(slackFacade).sendMessage(
                 "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.", slackUrl);
         verify(slackFacade).sendMessage(
-                "limit order to buy BTC for 20 EUR successfully placed on kraken. Limit price of 1 BTC = 8.91 EUR",
+                "limit order to buy 2.2446689113 BTC for 20 EUR successfully placed on kraken." +
+                        " Limit price of 1 BTC = 8.91 EUR." +
+                        " Order expiration is in 129600 seconds from now.",
                 slackUrl);
     }
 

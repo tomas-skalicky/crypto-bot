@@ -23,16 +23,16 @@ import java.util.List;
 
 public class KrakenResponseDto<Result> {
     @Nullable
-    private List<KrakenErrorDto> error;
+    private List<String> error;
     @Nullable
     private Result result;
 
     @Nullable
-    public List<KrakenErrorDto> getError() {
+    public List<String> getError() {
         return error;
     }
 
-    public void setError(@Nullable final List<KrakenErrorDto> error) {
+    public void setError(@Nullable final List<String> error) {
         this.error = error;
     }
 

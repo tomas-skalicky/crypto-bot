@@ -46,7 +46,8 @@ public interface TradingPlatformPrivateApiFacade extends TradingPlatformDesignat
                     @Nonnull PriceOrderTypeBoEnum priceOrderType,
                     @Nonnull CurrencyBoEnum baseCurrency,
                     @Nonnull CurrencyBoEnum quoteCurrency,
-                    @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                    @Nonnull BigDecimal volumeInQuoteCurrency,
                     @Nonnull BigDecimal price,
-                    boolean preferFeeInQuoteCurrency);
+                    boolean preferFeeInQuoteCurrency,
+                    long orderExpirationInSecondsFromNow);
 }

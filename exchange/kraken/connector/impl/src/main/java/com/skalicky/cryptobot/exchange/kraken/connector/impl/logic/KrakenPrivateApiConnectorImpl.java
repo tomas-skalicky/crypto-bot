@@ -30,6 +30,8 @@ import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector {
@@ -64,6 +66,33 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
     public KrakenResponseDto<Map<String, BigDecimal>> getBalance() {
         try {
             final String responseString = krakenApi.queryPrivate(KrakenApi.Method.BALANCE);
+            return objectMapper.readValue(responseString, new TypeReference<>() {
+            });
+        } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public KrakenResponseDto<Object> addOrder(@Nonnull final String krakenMarketName,
+                                              @Nonnull final String krakenOrderType,
+                                              @Nonnull final String krakenPriceOrderType,
+                                              @Nonnull final BigDecimal price,
+                                              @Nonnull final BigDecimal volumeInQuoteCurrency,
+                                              @Nonnull final List<String> orderFlags,
+                                              final long orderExpirationInSecondsFromNow) {
+        final Map<String, String> parameters = Collections.unmodifiableMap(Map.of(
+                "pair", krakenMarketName,
+                "type", krakenOrderType,
+                "ordertype", krakenPriceOrderType,
+                "price", price.toPlainString(),
+                "volume", volumeInQuoteCurrency.toPlainString(),
+                "oflags", String.join(",", orderFlags),
+                "expiretm", "+" + orderExpirationInSecondsFromNow
+        ));
+        try {
+            final String responseString = krakenApi.queryPrivate(KrakenApi.Method.ADD_ORDER, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
         } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {

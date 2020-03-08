@@ -30,7 +30,9 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPr
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPublicApiFacade;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenCurrencyNameToCurrencyBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.OrderTypeBoEnumToKrakenOrderTypeConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PriceOrderTypeBoEnumToKrakenOrderTypeConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic.KrakenPrivateApiFacadeImpl;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic.KrakenPublicApiFacadeImpl;
 import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnectorSupport;
@@ -41,6 +43,8 @@ import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.SlackFacadeImpl;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import edu.self.kraken.api.KrakenApi;
@@ -111,10 +115,20 @@ public class CryptoBotApplication {
                                                                            @Nonnull final ObjectMapper objectMapper) {
         final KrakenPrivateApiConnector krakenPrivateApiConnector = new KrakenPrivateApiConnectorImpl(krakenApi,
                 objectMapper);
+        final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter =
+                new PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter();
+        final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter =
+                new OrderTypeBoEnumToKrakenOrderTypeConverter();
+        final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter =
+                new PriceOrderTypeBoEnumToKrakenOrderTypeConverter();
         final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter =
                 new KrakenCurrencyNameToCurrencyBoEnumConverter();
         return new KrakenPrivateApiFacadeImpl(
-                krakenPrivateApiConnector, krakenCurrencyNameToCurrencyBoEnumConverter);
+                krakenPrivateApiConnector,
+                pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter,
+                orderTypeBoEnumToKrakenOrderTypeConverter,
+                priceOrderTypeBoEnumToKrakenOrderTypeConverter,
+                krakenCurrencyNameToCurrencyBoEnumConverter);
     }
 
     @Nonnull

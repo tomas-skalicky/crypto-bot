@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -112,23 +113,29 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             final TickerBo ticker = publicApiFacade.getTicker(quoteCurrency, baseCurrency);
 
             final BigDecimal price = ticker.getBidPrice().multiply(NINETY_NINE_PERCENT_IN_DECIMAL);
+            final BigDecimal volumeInQuoteCurrency = volumeInBaseCurrencyToInvestPerRun.divide(price, 10,
+                    RoundingMode.HALF_UP);
             final OrderTypeBoEnum orderType = OrderTypeBoEnum.BUY;
             final PriceOrderTypeBoEnum priceOrderType = PriceOrderTypeBoEnum.LIMIT;
+            // 36 hours
+            final long orderExpirationInSecondsFromNow = 60 * 60 * 36;
 
             final String orderMessage = "Going to place a " + priceOrderType.getLabel() + " order to "
-                    + orderType.getLabel() + " " + quoteCurrencyLabel + " for "
+                    + orderType.getLabel() + " " + volumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
                     + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel + " on " + tradingPlatformName
-                    + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel + ".";
+                    + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel
+                    + ". Order expiration is in " + orderExpirationInSecondsFromNow + " seconds from now.";
             logger.info(orderMessage);
 
             privateApiFacade.placeOrder(orderType, priceOrderType, baseCurrency, quoteCurrency,
-                    volumeInBaseCurrencyToInvestPerRun, price, true);
+                    volumeInQuoteCurrency, price, true, orderExpirationInSecondsFromNow);
 
-            final String orderPlacedMessage = priceOrderType.getLabel() + " order to" + " " + orderType.getLabel()
-                    + " " + quoteCurrencyLabel
-                    + " for " + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel
+            final String orderPlacedMessage = priceOrderType.getLabel() + " order to "
+                    + orderType.getLabel() + " " + volumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
+                    + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel
                     + " successfully placed on " + tradingPlatformName
-                    + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel;
+                    + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel
+                    + ". Order expiration is in " + orderExpirationInSecondsFromNow + " seconds from now.";
             logger.info(orderPlacedMessage);
             if (slackWebhookUrl != null) {
                 slackFacade.sendMessage(orderPlacedMessage, slackWebhookUrl);

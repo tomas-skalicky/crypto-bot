@@ -26,13 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -53,11 +49,24 @@ public class KrakenPublicApiConnectorImplUTest {
     @Test
     public void test_ticker_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
 
-        final URL urlOfFileWithExpectedResponse = getClass().getClassLoader().getResource("com/skalicky/cryptobot/exchange/kraken/connector/impl/logic/ticker_pair_XBTEUR_response.json");
-        Objects.requireNonNull(urlOfFileWithExpectedResponse);
-        final Path fileWithExpectedResponse = Path.of(urlOfFileWithExpectedResponse.toURI());
-        final List<String> expectedResponseLines = Files.readAllLines(fileWithExpectedResponse);
-        final String expectedResponse = String.join(System.lineSeparator(), expectedResponseLines);
+        // @formatter:off
+        final String expectedResponse = "{" +
+                "    \"error\": []," +
+                "    \"result\": {" +
+                "        \"XXBTZEUR\": {" +
+                "            \"a\": [\"8903.30000\",   \"2\",            \"2.000\"]," +
+                "            \"b\": [\"8902.40000\",   \"1\",            \"1.000\"]," +
+                "            \"c\": [\"8902.70000\",   \"0.02808553\"]," +
+                "            \"v\": [\"643.83215394\", \"1532.80579909\"]," +
+                "            \"p\": [\"8904.53198\",   \"8926.98758\"]," +
+                "            \"t\": [  6852,             14123]," +
+                "            \"l\": [\"8829.80000\",   \"8804.00000\"]," +
+                "            \"h\": [\"8959.40000\",   \"9008.90000\"]," +
+                "            \"o\": \"8945.20000\"" +
+                "        }" +
+                "    }" +
+                "}";
+        // @formatter:on
         final Map<String, String> marketName = Collections.singletonMap("pair", "XBTEUR");
         when(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).thenReturn(expectedResponse);
 

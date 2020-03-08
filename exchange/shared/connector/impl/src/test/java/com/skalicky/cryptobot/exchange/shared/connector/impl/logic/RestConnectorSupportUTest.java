@@ -126,6 +126,12 @@ public class RestConnectorSupportUTest {
         @Nonnull
         private String result = "";
 
+        /**
+         * Due to jackson deserialization.
+         */
+        public TestResponse() {
+        }
+
         public TestResponse(@Nonnull final String result) {
             this.result = result;
         }
