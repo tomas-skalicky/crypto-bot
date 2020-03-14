@@ -24,6 +24,27 @@ allprojects {
     logging.captureStandardOutput LogLevel.WARN
 
     apply from: "$rootDir/libraries.gradle"
+
+    configurations {
+        all {
+            // https://docs.gradle.org/current/userguide/dependency_management.html#component_selection_rules
+            // https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.ResolutionStrategy.html
+            resolutionStrategy {
+                // fail eagerly on version conflict (includes transitive dependencies)
+                // e.g. multiple different versions of the same dependency (group and name are equal)
+                failOnVersionConflict()
+
+                // force certain versions of dependencies (including transitive)
+                //  *append new forced modules:
+                force libs.commons_lang3
+                force libs.guava
+                force libs.jackson_annotations
+                force libs.jackson_core
+                force libs.jackson_databind
+                force libs.slf4j_api
+            }
+        }
+    }
 }
 
 subprojects {

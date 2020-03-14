@@ -41,6 +41,8 @@ ext {
             commons_collections4     : "org.apache.commons:commons-collections4:${versions.commons_collections4}",
             commons_lang3            : "org.apache.commons:commons-lang3:${versions.commons_lang3}",
             guava                    : "com.google.guava:guava:${versions.guava}",
+            jackson_annotations      : "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
+            jackson_core             : "com.fasterxml.jackson.core:jackson-core:${versions.jackson}",
             jackson_databind         : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
             jackson_jsr310           : "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
             jcommander               : "com.beust:jcommander:${versions.jcommander}",
