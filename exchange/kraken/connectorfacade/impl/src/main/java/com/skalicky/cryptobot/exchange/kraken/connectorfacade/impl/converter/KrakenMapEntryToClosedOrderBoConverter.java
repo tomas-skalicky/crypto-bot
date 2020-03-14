@@ -60,7 +60,6 @@ public class KrakenMapEntryToClosedOrderBoConverter
         this.krakenOrderStatusToOrderStateBoEnumConverter = krakenOrderStatusToOrderStateBoEnumConverter;
     }
 
-    // TODO Tomas 3 Cover with tests
     @Override
     @Nonnull
     public ClosedOrderBo convert(@Nonnull final Map.Entry<String, KrakenClosedOrderDto> inputEntry) {
