@@ -19,9 +19,14 @@
 package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDescriptionDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDescriptionDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeSerializer;
 import edu.self.kraken.api.KrakenApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +34,7 @@ import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +47,8 @@ public class KrakenPrivateApiConnectorImplUTest {
     @Nonnull
     private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
     @Nonnull
-    private final KrakenPrivateApiConnectorImpl krakenPrivateApiConnectorImpl = new KrakenPrivateApiConnectorImpl(krakenApi, new ObjectMapper());
+    private final KrakenPrivateApiConnectorImpl krakenPrivateApiConnectorImpl = new KrakenPrivateApiConnectorImpl(
+            krakenApi, new ObjectMapper(), new KrakenLocalDateTimeSerializer());
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -51,10 +57,10 @@ public class KrakenPrivateApiConnectorImplUTest {
     }
 
     @Test
-    public void test_getBalance_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
+    public void test_balance_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
 
         // @formatter:off
-        final String expectedResponse = "{" +
+        final String expectedKrakenApiResponse = "{" +
                 "    \"error\": []," +
                 "    \"result\": {" +
                 "        \"ZEUR\": \"100.7896\"," +
@@ -63,26 +69,26 @@ public class KrakenPrivateApiConnectorImplUTest {
                 "    }" +
                 "}";
         // @formatter:on
-        when(krakenApi.queryPrivate(KrakenApi.Method.BALANCE)).thenReturn(expectedResponse);
+        when(krakenApi.queryPrivate(KrakenApi.Method.BALANCE)).thenReturn(expectedKrakenApiResponse);
 
-        final KrakenResponseDto<Map<String, BigDecimal>> response = krakenPrivateApiConnectorImpl.getBalance();
+        final KrakenResponseDto<Map<String, BigDecimal>> connectorResponse = krakenPrivateApiConnectorImpl.balance();
 
         verify(krakenApi).queryPrivate(KrakenApi.Method.BALANCE);
 
-        assertThat(response.getError()).isEmpty();
-        assertThat(response.getResult()).hasSize(3);
+        assertThat(connectorResponse.getError()).isEmpty();
+        assertThat(connectorResponse.getResult()).hasSize(3);
         // Asserts to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getResult()).isNotNull();
-        assertThat(response.getResult().get("ZEUR")).isEqualTo(new BigDecimal("100.7896"));
-        assertThat(response.getResult().get("XXBT")).isEqualTo(new BigDecimal("0.0000000030"));
-        assertThat(response.getResult().get("BCH")).isEqualTo(new BigDecimal("0.0000000000"));
+        assertThat(connectorResponse.getResult()).isNotNull();
+        assertThat(connectorResponse.getResult().get("ZEUR")).isEqualTo(new BigDecimal("100.7896"));
+        assertThat(connectorResponse.getResult().get("XXBT")).isEqualTo(new BigDecimal("0.0000000030"));
+        assertThat(connectorResponse.getResult().get("BCH")).isEqualTo(new BigDecimal("0.0000000000"));
     }
 
     @Test
     public void test_addOrder_when_everythingOk_then_noError() throws Exception {
 
         // @formatter:off
-        final String expectedResponse = "{" +
+        final String expectedKrakenApiResponse = "{" +
                 "    \"error\": []," +
                 "    \"result\": {" +
                 "        \"descr\": {" +
@@ -94,24 +100,24 @@ public class KrakenPrivateApiConnectorImplUTest {
                 "    }" +
                 "}";
         // @formatter:on
-        when(krakenApi.queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap())).thenReturn(expectedResponse);
+        when(krakenApi.queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap())).thenReturn(expectedKrakenApiResponse);
 
-        final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnectorImpl.addOrder(
+        final KrakenResponseDto<KrakenAddOrderResultDto> connectorResponse = krakenPrivateApiConnectorImpl.addOrder(
                 "XBTEUR", "buy", "limit", new BigDecimal("6000.9"),
-                new BigDecimal("0.002"), Collections.singletonList("fciq"), 1);
+                new BigDecimal("0.002"), ImmutableList.of("fciq"), 1);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap());
 
-        assertThat(response.getError()).isEmpty();
+        assertThat(connectorResponse.getError()).isEmpty();
         // Asserts to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getResult()).isNotNull();
+        assertThat(connectorResponse.getResult()).isNotNull();
         // isNotNull() to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getResult().getDescr())
+        assertThat(connectorResponse.getResult().getDescr())
                 .isNotNull()
                 .extracting(KrakenAddOrderResultDescriptionDto::getOrder)
                 .isEqualTo("buy 0.00200000 XBTEUR @ limit 6000.9");
         // isNotNull() to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getResult().getTxid()) //
+        assertThat(connectorResponse.getResult().getTxid()) //
                 .isNotNull() //
                 .containsExactly("OXXXXO-YYYYY-33244K");
     }
@@ -120,22 +126,195 @@ public class KrakenPrivateApiConnectorImplUTest {
     public void test_addOrder_when_insufficientPermissions_then_correspondingError() throws Exception {
 
         // @formatter:off
-        final String expectedResponse = "{" +
+        final String expectedKrakenApiResponse = "{" +
                 "    \"error\": [\"EGeneral:Permission denied\"]" +
                 "}";
         // @formatter:on
-        when(krakenApi.queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap())).thenReturn(expectedResponse);
+        when(krakenApi.queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap())).thenReturn(expectedKrakenApiResponse);
 
-        final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnectorImpl.addOrder(
+        final KrakenResponseDto<KrakenAddOrderResultDto> connectorResponse = krakenPrivateApiConnectorImpl.addOrder(
                 "LTCEUR", "buy", "market", new BigDecimal(40),
-                BigDecimal.ONE, Collections.emptyList(), 1);
+                BigDecimal.ONE, ImmutableList.<String>builder().build(), 1);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.ADD_ORDER), anyMap());
 
         // isNotNull() to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getError()) //
+        assertThat(connectorResponse.getError()) //
                 .isNotNull() //
                 .containsExactly("EGeneral:Permission denied");
-        assertThat(response.getResult()).isNull();
+        assertThat(connectorResponse.getResult()).isNull();
+    }
+
+    @Test
+    public void test_closedOrders_when_includeTradeIsFalse_then_noTradesRetrieved() throws Exception {
+
+        // @formatter:off
+        final String expectedKrakenApiResponse = "{" +
+                "    \"error\": []," +
+                "    \"result\": {" +
+                "        \"closed\": {" +
+                "            \"XXXXXX-YYYY5-ZZZZZZ\": {" +
+                "                \"refid\": null," +
+                "                \"userref\": 0," +
+                "                \"status\": \"closed\"," +
+                "                \"reason\": null," +
+                "                \"opentm\": 1583703494.1067," +
+                "                \"closetm\": 1583704373.4438," +
+                "                \"starttm\": 0," +
+                "                \"expiretm\": 1583833094," +
+                "                \"descr\": {" +
+                "                    \"pair\": \"XBTEUR\"," +
+                "                    \"type\": \"buy\"," +
+                "                    \"ordertype\": \"limit\"," +
+                "                    \"price\": \"7230.4\"," +
+                "                    \"price2\": \"0\"," +
+                "                    \"leverage\": \"none\"," +
+                "                    \"order\": \"buy 0.012345 XBTEUR @ limit 7230.4\"," +
+                "                    \"close\": \"\"" +
+                "                }," +
+                "                \"vol\": \"0.012345\"," +
+                "                \"vol_exec\": \"0.012345\"," +
+                "                \"cost\": \"49.9\"," +
+                "                \"fee\": \"0\"," +
+                "                \"price\": \"7230.3\"," +
+                "                \"stopprice\": \"0.00000\"," +
+                "                \"limitprice\": \"0.00000\"," +
+                "                \"misc\": \"\"," +
+                "                \"oflags\": \"fciq\"" +
+                "            }" +
+                "        }," +
+                "        \"count\": 1" +
+                "    }" +
+                "}";
+        // @formatter:on
+        when(krakenApi.queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap())).thenReturn(expectedKrakenApiResponse);
+        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+
+        final KrakenResponseDto<KrakenClosedOrderResultDto> connectorResponse =
+                krakenPrivateApiConnectorImpl.closedOrders(false, fromDateTime);
+
+        verify(krakenApi).queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap());
+
+        assertThat(connectorResponse.getError()).isEmpty();
+        // Asserts to avoid warnings caused by presence of @Nullable.
+        assertThat(connectorResponse.getResult()).isNotNull();
+        assertThat(connectorResponse.getResult().getCount()).isEqualTo(1);
+        assertThat(connectorResponse.getResult().getClosed()) //
+                // Asserts to avoid warnings caused by presence of @Nullable.
+                .isNotNull()
+                .containsOnlyKeys("XXXXXX-YYYY5-ZZZZZZ");
+        final KrakenClosedOrderDto closedOrder = connectorResponse.getResult().getClosed().get("XXXXXX-YYYY5-ZZZZZZ");
+        assertThat(closedOrder.getStatus()).isEqualTo("closed");
+        assertThat(closedOrder.getOpentm()).isEqualTo(new BigDecimal("1583703494.1067"));
+        assertThat(closedOrder.getClosetm()).isEqualTo(new BigDecimal("1583704373.4438"));
+        assertThat(closedOrder.getExpiretm()).isEqualTo(new BigDecimal("1583833094"));
+        assertThat(closedOrder.getVol()).isEqualTo(new BigDecimal("0.012345"));
+        assertThat(closedOrder.getVol_exec()).isEqualTo(new BigDecimal("0.012345"));
+        assertThat(closedOrder.getPrice()).isEqualTo(new BigDecimal("7230.3"));
+        assertThat(closedOrder.getOflags()).isEqualTo("fciq");
+        assertThat(closedOrder.getTrades()).isNull();
+        final KrakenClosedOrderDescriptionDto closedOrderDescription = closedOrder.getDescr();
+        assertThat(closedOrderDescription).isNotNull();
+        assertThat(closedOrderDescription.getPair()).isEqualTo("XBTEUR");
+        assertThat(closedOrderDescription.getType()).isEqualTo("buy");
+        assertThat(closedOrderDescription.getOrdertype()).isEqualTo("limit");
+        assertThat(closedOrderDescription.getPrice()).isEqualTo(new BigDecimal("7230.4"));
+    }
+
+    @Test
+    public void test_closedOrders_when_includeTradeIsTrue_then_tradesRetrieved() throws Exception {
+
+        // @formatter:off
+        final String expectedKrakenApiResponse = "{" +
+                "    \"error\": []," +
+                "    \"result\": {" +
+                "        \"closed\": {" +
+                "            \"XXXXXX-YYYY5-121Z44\": {" +
+                "                \"refid\": null," +
+                "                \"userref\": 0," +
+                "                \"status\": \"closed\"," +
+                "                \"reason\": null," +
+                "                \"opentm\": 1583703494.1067," +
+                "                \"closetm\": 1583704373.4438," +
+                "                \"starttm\": 0," +
+                "                \"expiretm\": 1583833094," +
+                "                \"descr\": {" +
+                "                    \"pair\": \"XBTEUR\"," +
+                "                    \"type\": \"buy\"," +
+                "                    \"ordertype\": \"limit\"," +
+                "                    \"price\": \"7230.4\"," +
+                "                    \"price2\": \"0\"," +
+                "                    \"leverage\": \"none\"," +
+                "                    \"order\": \"buy 0.012345 XBTEUR @ limit 7230.4\"," +
+                "                    \"close\": \"\"" +
+                "                }," +
+                "                \"vol\": \"0.012345\"," +
+                "                \"vol_exec\": \"0.012345\"," +
+                "                \"cost\": \"49.9\"," +
+                "                \"fee\": \"0\"," +
+                "                \"price\": \"7230.3\"," +
+                "                \"stopprice\": \"0.00000\"," +
+                "                \"limitprice\": \"0.00000\"," +
+                "                \"misc\": \"\"," +
+                "                \"oflags\": \"fciq\"," +
+                "                \"trades\": [" +
+                "                    \"AAAAAA-YY7YY-4ZZZZZ\"" +
+                "                ]" +
+                "            }" +
+                "        }," +
+                "        \"count\": 1" +
+                "    }" +
+                "}";
+        // @formatter:on
+        when(krakenApi.queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap())).thenReturn(expectedKrakenApiResponse);
+        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+
+        final KrakenResponseDto<KrakenClosedOrderResultDto> connectorResponse =
+                krakenPrivateApiConnectorImpl.closedOrders(false, fromDateTime);
+
+        verify(krakenApi).queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap());
+
+        // Asserts to avoid warnings caused by presence of @Nullable.
+        assertThat(connectorResponse.getResult()).isNotNull();
+        // Asserts to avoid warnings caused by presence of @Nullable.
+        assertThat(connectorResponse.getResult().getClosed()).isNotNull();
+        final KrakenClosedOrderDto closedOrder = connectorResponse.getResult().getClosed().get("XXXXXX-YYYY5-121Z44");
+        assertThat(closedOrder.getTrades()).containsExactly("AAAAAA-YY7YY-4ZZZZZ");
+    }
+
+    @Test
+    public void test_closedOrders_when_twoRequests_then_bothRequestsDeserialized() throws Exception {
+
+        // @formatter:off
+        final String expectedKrakenApiResponse = "{" +
+                "    \"error\": []," +
+                "    \"result\": {" +
+                "        \"closed\": {" +
+                "            \"AAAAAA-YY7YY-4ZZZZZ\": {" +
+                "                \"status\": \"closed\"" +
+                "            }," +
+                "            \"BBBBBB-YY7YY-4ZZZZZ\": {" +
+                "                \"status\": \"canceled\"" +
+                "            }" +
+                "        }," +
+                "        \"count\": 2" +
+                "    }" +
+                "}";
+        // @formatter:on
+        when(krakenApi.queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap())).thenReturn(expectedKrakenApiResponse);
+        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+
+        final KrakenResponseDto<KrakenClosedOrderResultDto> connectorResponse =
+                krakenPrivateApiConnectorImpl.closedOrders(false, fromDateTime);
+
+        verify(krakenApi).queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap());
+
+        // Asserts to avoid warnings caused by presence of @Nullable.
+        assertThat(connectorResponse.getResult()).isNotNull();
+        assertThat(connectorResponse.getResult().getClosed()) //
+                // Asserts to avoid warnings caused by presence of @Nullable.
+                .isNotNull() //
+                .containsOnlyKeys("AAAAAA-YY7YY-4ZZZZZ", "BBBBBB-YY7YY-4ZZZZZ");
+        assertThat(connectorResponse.getResult().getCount()).isEqualTo(2);
     }
 }

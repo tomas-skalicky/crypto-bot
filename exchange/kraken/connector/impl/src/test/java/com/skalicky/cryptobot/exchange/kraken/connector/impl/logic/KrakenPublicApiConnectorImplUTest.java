@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import edu.self.kraken.api.KrakenApi;
 import org.junit.jupiter.api.AfterEach;
@@ -70,7 +71,8 @@ public class KrakenPublicApiConnectorImplUTest {
         final Map<String, String> marketName = Collections.singletonMap("pair", "XBTEUR");
         when(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).thenReturn(expectedResponse);
 
-        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnectorImpl.ticker(Collections.singletonList("XBTEUR"));
+        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnectorImpl.ticker(
+                ImmutableList.of("XBTEUR"));
 
         verify(krakenApi).queryPublic(KrakenApi.Method.TICKER, marketName);
 
@@ -78,9 +80,10 @@ public class KrakenPublicApiConnectorImplUTest {
         assertThat(response.getResult()).hasSize(1);
         // Asserts to avoid warnings caused by presence of @Nullable.
         assertThat(response.getResult()).isNotNull();
-        @SuppressWarnings("unchecked") final List<String> actualAskData = (List<String>) response.getResult().get("XXBTZEUR").get("a");
+        final String tickerName = "XXBTZEUR";
+        @SuppressWarnings("unchecked") final List<String> actualAskData = (List<String>) response.getResult().get(tickerName).get("a");
         assertThat(actualAskData.get(0)).isEqualTo("8903.30000");
-        @SuppressWarnings("unchecked") final List<String> actualBidData = (List<String>) response.getResult().get("XXBTZEUR").get("b");
+        @SuppressWarnings("unchecked") final List<String> actualBidData = (List<String>) response.getResult().get(tickerName).get("b");
         assertThat(actualBidData.get(0)).isEqualTo("8902.40000");
     }
 }

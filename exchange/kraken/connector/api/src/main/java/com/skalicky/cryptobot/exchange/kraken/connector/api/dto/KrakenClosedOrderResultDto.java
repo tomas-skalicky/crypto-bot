@@ -16,15 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
+package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+import javax.annotation.Nullable;
+import java.util.Map;
 
-import javax.annotation.Nonnull;
+public class KrakenClosedOrderResultDto {
+    @Nullable
+    private Map<String, KrakenClosedOrderDto> closed;
+    @Nullable
+    private Long count;
 
-public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
+    @Nullable
+    public Map<String, KrakenClosedOrderDto> getClosed() {
+        return closed;
+    }
 
-    @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyPairBo currencyPair);
+    public void setClosed(@Nullable final Map<String, KrakenClosedOrderDto> closed) {
+        this.closed = closed;
+    }
+
+    @Nullable
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(@Nullable final Long count) {
+        this.count = count;
+    }
 }

@@ -20,18 +20,27 @@ package com.skalicky.cryptobot.application;
 
 import com.beust.jcommander.JCommander;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicImpl;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeDeserializer;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeSerializer;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPrivateApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPublicApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPublicApiFacade;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenCurrencyNameToCurrencyBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToClosedOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderStatusToOrderStateBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToOrderTypeBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToPriceOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.OrderTypeBoEnumToKrakenOrderTypeConverter;
-import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PriceOrderTypeBoEnumToKrakenOrderTypeConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic.KrakenPrivateApiFacadeImpl;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic.KrakenPublicApiFacadeImpl;
@@ -41,15 +50,17 @@ import com.skalicky.cryptobot.exchange.slack.connector.api.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connector.impl.SlackConnectorImpl;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.SlackFacadeImpl;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import edu.self.kraken.api.KrakenApi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -68,25 +79,29 @@ public class CryptoBotApplication {
                 .build()
                 .parse(args);
 
+        final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter =
+                new CurrencyPairBoToKrakenMarketNameConverter();
         final List<TradingPlatformPublicApiFacade> publicApiFacades = new ArrayList<>();
         final List<TradingPlatformPrivateApiFacade> privateApiFacades = new ArrayList<>();
         if (KRAKEN_TRADING_PLATFORM_NAME.equals(arguments.getTradingPlatformName())) {
             final KrakenApi krakenApi = initializeKrakenApi(arguments);
             final ObjectMapper objectMapper = new ObjectMapper();
-            publicApiFacades.add(initializeKrakenPublicApiFacade(krakenApi, objectMapper));
-            privateApiFacades.add(initializeKrakenPrivateApiFacade(krakenApi, objectMapper));
+            publicApiFacades.add(initializeKrakenPublicApiFacade(krakenApi, objectMapper, currencyPairBoEnumToKrakenMarketNameConverter));
+            privateApiFacades.add(initializeKrakenPrivateApiFacade(krakenApi, objectMapper, currencyPairBoEnumToKrakenMarketNameConverter));
         }
         final SlackFacade slackFacade = initializeSlackFacade();
-        final CryptoBotLogic cryptoBotLogic = new CryptoBotLogicImpl(publicApiFacades, privateApiFacades, slackFacade);
+        final CryptoBotLogic cryptoBotLogic = new CryptoBotLogicImpl(ImmutableList.copyOf(publicApiFacades),
+                ImmutableList.copyOf(privateApiFacades), slackFacade);
 
         try {
-            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName());
-            cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName());
-            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
-                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
-                    arguments.getBaseCurrency(),
-                    arguments.getQuoteCurrency(),
-                    arguments.getSlackWebhookUrl());
+            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
+            cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
+            // FIXME Tomas 1 reenable
+//            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
+//                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
+//                    arguments.getBaseCurrency(),
+//                    arguments.getQuoteCurrency(),
+//                    arguments.getSlackWebhookUrl());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -112,37 +127,53 @@ public class CryptoBotApplication {
 
     @Nonnull
     private static KrakenPrivateApiFacade initializeKrakenPrivateApiFacade(@Nonnull final KrakenApi krakenApi,
-                                                                           @Nonnull final ObjectMapper objectMapper) {
+                                                                           @Nonnull final ObjectMapper objectMapper,
+                                                                           @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
         final KrakenPrivateApiConnector krakenPrivateApiConnector = new KrakenPrivateApiConnectorImpl(krakenApi,
-                objectMapper);
-        final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter =
-                new PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter();
+                objectMapper, new KrakenLocalDateTimeSerializer());
         final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter =
                 new OrderTypeBoEnumToKrakenOrderTypeConverter();
         final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter =
                 new PriceOrderTypeBoEnumToKrakenOrderTypeConverter();
         final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter =
                 new KrakenCurrencyNameToCurrencyBoEnumConverter();
+        final NonnullConverter<String, OrderTypeBoEnum> krakenOrderTypeToOrderTypeBoEnumConverter =
+                new KrakenOrderTypeToOrderTypeBoEnumConverter();
+        final NonnullConverter<String, PriceOrderTypeBoEnum> krakenOrderTypeToPriceOrderTypeBoEnumConverter =
+                new KrakenOrderTypeToPriceOrderTypeBoEnumConverter();
+        final NonnullConverter<String, CurrencyPairBo> krakenMarketNameToCurrencyPairBoEnumConverter =
+                new KrakenMarketNameToCurrencyPairBoEnumConverter();
+        final KrakenLocalDateTimeDeserializer krakenLocalDateTimeDeserializer =
+                new KrakenLocalDateTimeDeserializer();
+        final NonnullConverter<String, OrderStateBoEnum> krakenOrderStatusToOrderStateBoEnumConverter =
+                new KrakenOrderStatusToOrderStateBoEnumConverter();
+        final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter =
+                new KrakenMapEntryToClosedOrderBoConverter(
+                        krakenOrderTypeToOrderTypeBoEnumConverter,
+                        krakenOrderTypeToPriceOrderTypeBoEnumConverter,
+                        krakenMarketNameToCurrencyPairBoEnumConverter,
+                        krakenLocalDateTimeDeserializer,
+                        krakenOrderStatusToOrderStateBoEnumConverter
+                );
         return new KrakenPrivateApiFacadeImpl(
                 krakenPrivateApiConnector,
-                pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter,
+                currencyPairBoEnumToKrakenMarketNameConverter,
                 orderTypeBoEnumToKrakenOrderTypeConverter,
                 priceOrderTypeBoEnumToKrakenOrderTypeConverter,
-                krakenCurrencyNameToCurrencyBoEnumConverter);
+                krakenCurrencyNameToCurrencyBoEnumConverter,
+                krakenMapEntryToClosedOrderBoConverter);
     }
 
     @Nonnull
     private static KrakenPublicApiFacade initializeKrakenPublicApiFacade(@Nonnull final KrakenApi krakenApi,
-                                                                         @Nonnull final ObjectMapper objectMapper) {
+                                                                         @Nonnull final ObjectMapper objectMapper,
+                                                                         @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
         final KrakenPublicApiConnector krakenPublicApiConnector = new KrakenPublicApiConnectorImpl(krakenApi,
                 objectMapper);
-        final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String>
-                pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter =
-                new PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter();
         final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter =
                 new KrakenMapEntryToTickerBoConverter();
         return new KrakenPublicApiFacadeImpl(krakenPublicApiConnector,
-                pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter,
+                currencyPairBoEnumToKrakenMarketNameConverter,
                 krakenMapEntryToTickerBoConverter);
     }
 

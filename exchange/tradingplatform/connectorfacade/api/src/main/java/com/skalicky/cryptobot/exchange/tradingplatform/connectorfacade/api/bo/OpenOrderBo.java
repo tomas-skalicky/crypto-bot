@@ -18,6 +18,6 @@
 
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo;
 
-public class OpenOrderBo {
+public final class OpenOrderBo {
     // TODO Tomas not implemented yet. I am waiting for the first open order in Kraken.
 }

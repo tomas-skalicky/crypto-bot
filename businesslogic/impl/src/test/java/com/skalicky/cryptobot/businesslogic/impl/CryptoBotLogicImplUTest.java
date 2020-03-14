@@ -18,7 +18,10 @@
 
 package com.skalicky.cryptobot.businesslogic.impl;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
@@ -32,7 +35,6 @@ import org.mockito.Mockito;
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -50,8 +52,8 @@ public class CryptoBotLogicImplUTest {
     @Nonnull
     private final SlackFacade slackFacade = mock(SlackFacade.class);
     @Nonnull
-    private final CryptoBotLogicImpl cryptoBotLogicImpl = new CryptoBotLogicImpl(List.of(publicApiFacade),
-            List.of(privateApiFacade), slackFacade);
+    private final CryptoBotLogicImpl cryptoBotLogicImpl = new CryptoBotLogicImpl(ImmutableList.of(publicApiFacade),
+            ImmutableList.of(privateApiFacade), slackFacade);
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -73,7 +75,7 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_and_noSlackUrl_then_noPurchase_and_noSlackMessage() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
+        when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "XRP",
@@ -86,7 +88,7 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
+        when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
         final String slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
@@ -102,9 +104,10 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_enoughBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(Map.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
+        when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
         final TickerBo ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
-        when(publicApiFacade.getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR)).thenReturn(ticker);
+        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        when(publicApiFacade.getTicker(currencyPair)).thenReturn(ticker);
         final String slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
@@ -112,17 +115,17 @@ public class CryptoBotLogicImplUTest {
                 "BTC", slackUrl);
 
         verify(publicApiFacade).getTradingPlatform();
-        verify(publicApiFacade).getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        verify(publicApiFacade).getTicker(currencyPair);
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
-        verify(privateApiFacade).placeOrder(OrderTypeBoEnum.BUY, PriceOrderTypeBoEnum.LIMIT, CurrencyBoEnum.EUR,
-                CurrencyBoEnum.BTC, new BigDecimal("2.2446689113"), new BigDecimal("8.91"),
+        verify(privateApiFacade).placeOrder(OrderTypeBoEnum.BUY, PriceOrderTypeBoEnum.LIMIT, currencyPair,
+                new BigDecimal("2.2244466689"), new BigDecimal("8.991"),
                 true, 129_600);
         verify(slackFacade).sendMessage(
                 "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.", slackUrl);
         verify(slackFacade).sendMessage(
-                "limit order to buy 2.2446689113 BTC for 20 EUR successfully placed on kraken." +
-                        " Limit price of 1 BTC = 8.91 EUR." +
+                "limit order to buy 2.2244466689 BTC for 20 EUR successfully placed on kraken." +
+                        " Limit price of 1 BTC = 8.991 EUR." +
                         " Order expiration is in 129600 seconds from now.",
                 slackUrl);
     }

@@ -18,7 +18,10 @@
 
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
@@ -27,25 +30,22 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 public interface TradingPlatformPrivateApiFacade extends TradingPlatformDesignated {
 
     @Nonnull
-    List<OpenOrderBo> getOpenOrders(boolean includeTrades);
+    ImmutableList<OpenOrderBo> getOpenOrders(boolean includeTrades);
 
     @Nonnull
-    List<ClosedOrderBo> getClosedOrders(boolean includeTrades,
-                                        @Nonnull LocalDateTime from);
+    ImmutableList<ClosedOrderBo> getClosedOrders(boolean includeTrades,
+                                                 @Nonnull LocalDateTime from);
 
     @Nonnull
-    Map<CurrencyBoEnum, BigDecimal> getAccountBalance();
+    ImmutableMap<CurrencyBoEnum, BigDecimal> getAccountBalance();
 
     void placeOrder(@Nonnull OrderTypeBoEnum orderType,
                     @Nonnull PriceOrderTypeBoEnum priceOrderType,
-                    @Nonnull CurrencyBoEnum baseCurrency,
-                    @Nonnull CurrencyBoEnum quoteCurrency,
+                    @Nonnull CurrencyPairBo currencyPair,
                     @Nonnull BigDecimal volumeInQuoteCurrency,
                     @Nonnull BigDecimal price,
                     boolean preferFeeInQuoteCurrency,

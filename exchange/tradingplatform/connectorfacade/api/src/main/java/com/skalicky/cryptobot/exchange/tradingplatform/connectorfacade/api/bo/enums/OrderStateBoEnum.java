@@ -16,15 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
-
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums;
 
 import javax.annotation.Nonnull;
 
-public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
+public enum OrderStateBoEnum {
+
+    // @formatter:off
+    NEW                               ("newx -> no trades yet"),
+    PARTIALLY_EXECUTED                ("partially executed -> trades exist"),
+    FULLY_EXECUTED                    ("fully executed -> trades exist"),
+    PARTIALLY_EXECUTED_THEN_CANCELED  ("partially executed, then canceled -> trades exist"),
+    FULLY_CANCELED                    ("fully canceled -> no trades"),
+    ;
+    // @formatter:on
 
     @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyPairBo currencyPair);
+    private final String label;
+
+    OrderStateBoEnum(@Nonnull final String label) {
+        this.label = label;
+    }
+
+    @Nonnull
+    public String getLabel() {
+        return label;
+    }
 }

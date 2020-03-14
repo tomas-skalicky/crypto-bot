@@ -19,19 +19,20 @@
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 
-public class PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter
-        implements NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> {
+public class CurrencyPairBoToKrakenMarketNameConverter
+        implements NonnullConverter<CurrencyPairBo, String> {
 
     @Override
     @Nonnull
-    public String convert(@Nonnull final Pair<CurrencyBoEnum, CurrencyBoEnum> quoteAndBaseCurrencies) {
-        final CurrencyBoEnum quoteCurrency = quoteAndBaseCurrencies.getLeft();
-        final CurrencyBoEnum baseCurrency = quoteAndBaseCurrencies.getRight();
+    public String convert(@Nonnull final CurrencyPairBo currencyPair) {
+        final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
+        final CurrencyBoEnum baseCurrency = currencyPair.getBaseCurrency();
         if (quoteCurrency == CurrencyBoEnum.BTC && baseCurrency == CurrencyBoEnum.EUR) {
             return "XBTEUR";
         } else {

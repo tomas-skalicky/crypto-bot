@@ -18,26 +18,27 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connector.api.logic;
 
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 public interface KrakenPrivateApiConnector {
 
     @Nonnull
-    KrakenResponseDto<Map<String, Map<String, Object>>> getOpenOrders(boolean includeTrades);
+    KrakenResponseDto<Map<String, Map<String, Object>>> openOrders(boolean includeTrades);
 
     @Nonnull
-    KrakenResponseDto<Map<String, Map<String, Object>>> getClosedOrders(boolean includeTrades,
-                                                                        @Nonnull LocalDateTime from);
+    KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(boolean includeTrades,
+                                                               @Nonnull LocalDateTime from);
 
     @Nonnull
-    KrakenResponseDto<Map<String, BigDecimal>> getBalance();
+    KrakenResponseDto<Map<String, BigDecimal>> balance();
 
     @Nonnull
     KrakenResponseDto<KrakenAddOrderResultDto> addOrder(@Nonnull String krakenMarketName,
@@ -45,6 +46,6 @@ public interface KrakenPrivateApiConnector {
                                                         @Nonnull String krakenPriceOrderType,
                                                         @Nonnull BigDecimal price,
                                                         @Nonnull BigDecimal volumeInQuoteCurrency,
-                                                        @Nonnull List<String> orderFlags,
+                                                        @Nonnull ImmutableList<String> orderFlags,
                                                         long orderExpirationInSecondsFromNow);
 }

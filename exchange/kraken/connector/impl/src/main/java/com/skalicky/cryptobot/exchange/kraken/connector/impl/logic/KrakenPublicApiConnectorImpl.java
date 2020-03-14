@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
 import edu.self.kraken.api.KrakenApi;
@@ -27,7 +28,6 @@ import edu.self.kraken.api.KrakenApi;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public class KrakenPublicApiConnectorImpl implements KrakenPublicApiConnector {
@@ -44,7 +44,7 @@ public class KrakenPublicApiConnectorImpl implements KrakenPublicApiConnector {
 
     @Override
     @Nonnull
-    public KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull final List<String> marketNames) {
+    public KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull final ImmutableList<String> marketNames) {
         if (marketNames.isEmpty()) {
             throw new IllegalArgumentException("Market names are mandatory and at least one name needs to be provided");
         }

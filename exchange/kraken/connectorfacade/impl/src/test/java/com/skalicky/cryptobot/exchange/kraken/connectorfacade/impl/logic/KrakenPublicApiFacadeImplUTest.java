@@ -18,10 +18,12 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
-import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +47,7 @@ public class KrakenPublicApiFacadeImplUTest {
     @Nonnull
     private final KrakenPublicApiFacadeImpl krakenPublicApiFacadeImpl = new KrakenPublicApiFacadeImpl(
             krakenPublicApiConnector,
-            new PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter(),
+            new CurrencyPairBoToKrakenMarketNameConverter(),
             new KrakenMapEntryToTickerBoConverter());
 
     @AfterEach
@@ -58,18 +60,20 @@ public class KrakenPublicApiFacadeImplUTest {
     public void test_getTicker_when_rawKrakenDataProvided_then_askPriceReturned_and_bidPriceReturned() {
 
         final Map<String, Object> pairData = Map.of("a", List.of("8903.300000"), "b", List.of("8902.400000"));
-        final Map<String, Map<String, Object>> result = Map.of("XXBTZEUR", pairData);
+        final String tickerName = "XXBTZEUR";
+        final Map<String, Map<String, Object>> result = Map.of(tickerName, pairData);
         final KrakenResponseDto<Map<String, Map<String, Object>>> expectedResponse = new KrakenResponseDto<>();
         expectedResponse.setResult(result);
         final String marketName = "XBTEUR";
-        final List<String> marketNames = Collections.singletonList(marketName);
+        final ImmutableList<String> marketNames = ImmutableList.of(marketName);
         when(krakenPublicApiConnector.ticker(marketNames)).thenReturn(expectedResponse);
+        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
-        final TickerBo response = krakenPublicApiFacadeImpl.getTicker(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final TickerBo response = krakenPublicApiFacadeImpl.getTicker(currencyPair);
 
         verify(krakenPublicApiConnector).ticker(marketNames);
 
-        assertThat(response.getMarketName()).isEqualTo("XXBTZEUR");
+        assertThat(response.getTickerName()).isEqualTo(tickerName);
         assertThat(response.getAskPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8903.3").stripTrailingZeros());
         assertThat(response.getBidPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8902.4").stripTrailingZeros());
     }

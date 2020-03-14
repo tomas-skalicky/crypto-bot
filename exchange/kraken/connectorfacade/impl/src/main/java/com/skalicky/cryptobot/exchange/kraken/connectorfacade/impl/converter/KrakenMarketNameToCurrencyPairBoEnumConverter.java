@@ -16,15 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
+package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
+import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 
 import javax.annotation.Nonnull;
 
-public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
+public class KrakenMarketNameToCurrencyPairBoEnumConverter
+        implements NonnullConverter<String, CurrencyPairBo> {
 
+    @Override
     @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyPairBo currencyPair);
+    public CurrencyPairBo convert(@Nonnull final String krakenMarketName) {
+        if ("XBTEUR".equals(krakenMarketName)) {
+            return new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        } else {
+            throw new IllegalArgumentException("Unsupported Kraken market name [" + krakenMarketName + "]");
+        }
+    }
 }

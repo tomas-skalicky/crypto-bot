@@ -24,9 +24,11 @@ import java.math.BigDecimal;
 
 public interface CryptoBotLogic {
 
-    void reportOpenOrders(@Nonnull String tradingPlatformName);
+    void reportOpenOrders(@Nonnull String tradingPlatformName,
+                          @Nullable final String slackWebhookUrl);
 
-    void reportClosedOrders(@Nonnull String tradingPlatformName);
+    void reportClosedOrders(@Nonnull String tradingPlatformName,
+                            @Nullable final String slackWebhookUrl);
 
     void placeBuyOrderIfEnoughAvailable(@Nonnull String tradingPlatformName,
                                         @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,

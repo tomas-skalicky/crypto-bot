@@ -16,15 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
+package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 
 import javax.annotation.Nonnull;
 
-public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
+public class KrakenOrderTypeToOrderTypeBoEnumConverter implements NonnullConverter<String, OrderTypeBoEnum> {
 
+    @Override
     @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyPairBo currencyPair);
+    public OrderTypeBoEnum convert(@Nonnull final String orderType) {
+        switch (orderType) {
+            case "buy":
+                return OrderTypeBoEnum.BUY;
+            case "sell":
+                return OrderTypeBoEnum.SELL;
+            default:
+                throw new IllegalArgumentException("Unsupported order type [" + orderType + "]");
+        }
+    }
 }

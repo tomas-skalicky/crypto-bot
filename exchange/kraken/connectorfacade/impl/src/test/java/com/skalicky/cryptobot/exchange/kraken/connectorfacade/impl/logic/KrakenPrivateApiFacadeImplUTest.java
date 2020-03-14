@@ -18,13 +18,21 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
+import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeDeserializer;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenCurrencyNameToCurrencyBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToClosedOrderBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderStatusToOrderStateBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToOrderTypeBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToPriceOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.OrderTypeBoEnumToKrakenOrderTypeConverter;
-import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PriceOrderTypeBoEnumToKrakenOrderTypeConverter;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
@@ -34,7 +42,6 @@ import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,10 +57,17 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Nonnull
     private final KrakenPrivateApiFacadeImpl krakenPrivateApiFacadeImpl = new KrakenPrivateApiFacadeImpl(
             krakenPrivateApiConnector,
-            new PairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter(),
+            new CurrencyPairBoToKrakenMarketNameConverter(),
             new OrderTypeBoEnumToKrakenOrderTypeConverter(),
             new PriceOrderTypeBoEnumToKrakenOrderTypeConverter(),
-            new KrakenCurrencyNameToCurrencyBoEnumConverter());
+            new KrakenCurrencyNameToCurrencyBoEnumConverter(),
+            new KrakenMapEntryToClosedOrderBoConverter(
+                    new KrakenOrderTypeToOrderTypeBoEnumConverter(),
+                    new KrakenOrderTypeToPriceOrderTypeBoEnumConverter(),
+                    new KrakenMarketNameToCurrencyPairBoEnumConverter(),
+                    new KrakenLocalDateTimeDeserializer(),
+                    new KrakenOrderStatusToOrderStateBoEnumConverter()
+            ));
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -68,11 +82,11 @@ public class KrakenPrivateApiFacadeImplUTest {
                 "ZEUR", new BigDecimal("34"), "XXRP", new BigDecimal("32"));
         final KrakenResponseDto<Map<String, BigDecimal>> expectedResponse = new KrakenResponseDto<>();
         expectedResponse.setResult(balancesByCurrencies);
-        when(krakenPrivateApiConnector.getBalance()).thenReturn(expectedResponse);
+        when(krakenPrivateApiConnector.balance()).thenReturn(expectedResponse);
 
         final Map<CurrencyBoEnum, BigDecimal> response = krakenPrivateApiFacadeImpl.getAccountBalance();
 
-        verify(krakenPrivateApiConnector).getBalance();
+        verify(krakenPrivateApiConnector).balance();
 
         assertThat(response.get(CurrencyBoEnum.EUR)).isEqualTo(new BigDecimal(34));
         assertThat(response.containsKey(CurrencyBoEnum.BTC)).isFalse();
@@ -87,14 +101,15 @@ public class KrakenPrivateApiFacadeImplUTest {
         final String krakenPriceOrderType = "market";
         final BigDecimal price = new BigDecimal("7000.3");
         final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final List<String> orderFlags = Collections.emptyList();
+        final ImmutableList<String> orderFlags = ImmutableList.<String>builder().build();
         final long orderExpirationInSecondsFromNow = 0;
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
+        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
-                PriceOrderTypeBoEnum.MARKET, CurrencyBoEnum.EUR, CurrencyBoEnum.BTC, volumeInQuoteCurrency,
+                PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 price, false,
                 orderExpirationInSecondsFromNow);
 
@@ -111,14 +126,15 @@ public class KrakenPrivateApiFacadeImplUTest {
         final String krakenPriceOrderType = "market";
         final BigDecimal price = new BigDecimal("7000.3");
         final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final List<String> orderFlags = List.of("fciq");
+        final ImmutableList<String> orderFlags = ImmutableList.of("fciq");
         final long orderExpirationInSecondsFromNow = 0;
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
+        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
-                PriceOrderTypeBoEnum.MARKET, CurrencyBoEnum.EUR, CurrencyBoEnum.BTC, volumeInQuoteCurrency,
+                PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 price, true,
                 orderExpirationInSecondsFromNow);
 
@@ -135,14 +151,15 @@ public class KrakenPrivateApiFacadeImplUTest {
         final String krakenPriceOrderType = "market";
         final BigDecimal krakenPrice = new BigDecimal("7000.4");
         final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final List<String> orderFlags = Collections.emptyList();
+        final ImmutableList<String> orderFlags = ImmutableList.<String>builder().build();
         final long orderExpirationInSecondsFromNow = 0;
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
+        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
-                PriceOrderTypeBoEnum.MARKET, CurrencyBoEnum.EUR, CurrencyBoEnum.BTC, volumeInQuoteCurrency,
+                PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 new BigDecimal("7000.351"), false,
                 orderExpirationInSecondsFromNow);
 
@@ -159,16 +176,17 @@ public class KrakenPrivateApiFacadeImplUTest {
         final String krakenPriceOrderType = "market";
         final BigDecimal price = new BigDecimal("7000.3");
         final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final List<String> orderFlags = Collections.emptyList();
+        final ImmutableList<String> orderFlags = ImmutableList.<String>builder().build();
         final long orderExpirationInSecondsFromNow = 0;
         final KrakenResponseDto<KrakenAddOrderResultDto> response = new KrakenResponseDto<>();
         response.setError(List.of("Kraken error"));
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(response);
+        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
-                PriceOrderTypeBoEnum.MARKET, CurrencyBoEnum.EUR, CurrencyBoEnum.BTC, volumeInQuoteCurrency,
+                PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 price, false,
                 orderExpirationInSecondsFromNow))
                 .isInstanceOf(IllegalStateException.class)

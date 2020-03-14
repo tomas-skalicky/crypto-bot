@@ -20,4 +20,5 @@ dependencies {
     api project(':exchange:kraken:connector:api')
 
     implementation libs.jackson_databind
+    implementation libs.jackson_jsr310
 }

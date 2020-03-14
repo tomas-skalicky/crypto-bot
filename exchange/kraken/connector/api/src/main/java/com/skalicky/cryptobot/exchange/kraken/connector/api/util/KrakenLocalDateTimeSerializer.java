@@ -16,15 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
-
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+package com.skalicky.cryptobot.exchange.kraken.connector.api.util;
 
 import javax.annotation.Nonnull;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
+public final class KrakenLocalDateTimeSerializer {
+    @Nonnull
+    private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
     @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyPairBo currencyPair);
+    public Long serialize(@Nonnull final LocalDateTime localDateTime) {
+        return ZonedDateTime.of(localDateTime, ZONE_ID).toEpochSecond();
+    }
 }

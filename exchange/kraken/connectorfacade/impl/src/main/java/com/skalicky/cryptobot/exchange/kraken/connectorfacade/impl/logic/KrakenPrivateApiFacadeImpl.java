@@ -18,26 +18,29 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,70 +49,86 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Nonnull
     private final KrakenPrivateApiConnector krakenPrivateApiConnector;
     @Nonnull
-    private final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+    private final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter;
     @Nonnull
     private final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter;
     @Nonnull
     private final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter;
     @Nonnull
     private final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter;
+    @Nonnull
+    private final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter;
 
     public KrakenPrivateApiFacadeImpl(@Nonnull final KrakenPrivateApiConnector krakenPrivateApiConnector,
-                                      @Nonnull final NonnullConverter<Pair<CurrencyBoEnum, CurrencyBoEnum>, String> pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter,
+                                      @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter,
                                       @Nonnull final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter,
                                       @Nonnull final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter,
-                                      @Nonnull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter) {
+                                      @Nonnull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter,
+                                      @Nonnull final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter) {
         this.krakenPrivateApiConnector = krakenPrivateApiConnector;
-        this.pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter = pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter;
+        this.currencyPairBoEnumToKrakenMarketNameConverter = currencyPairBoEnumToKrakenMarketNameConverter;
         this.orderTypeBoEnumToKrakenOrderTypeConverter = orderTypeBoEnumToKrakenOrderTypeConverter;
         this.priceOrderTypeBoEnumToKrakenOrderTypeConverter = priceOrderTypeBoEnumToKrakenOrderTypeConverter;
         this.krakenCurrencyNameToCurrencyBoEnumConverter = krakenCurrencyNameToCurrencyBoEnumConverter;
+        this.krakenMapEntryToClosedOrderBoConverter = krakenMapEntryToClosedOrderBoConverter;
     }
 
     @Nonnull
     @Override
-    public List<OpenOrderBo> getOpenOrders(final boolean includeTrades) {
+    public ImmutableList<OpenOrderBo> getOpenOrders(final boolean includeTrades) {
         // TODO Tomas not implemented yet. I am waiting for the first open order in Kraken.
         return null;
     }
 
+    // TODO Tomas 3 cover with tests: with error, with result=null, with empty result, with canceled order, with closed order
     @Nonnull
     @Override
-    public List<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
-                                               @Nonnull final LocalDateTime from) {
-        // TODO Tomas not implemented yet. I am waiting for the first closed order in Kraken.
-        return null;
+    public ImmutableList<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
+                                                        @Nonnull final LocalDateTime from) {
+        final KrakenResponseDto<KrakenClosedOrderResultDto> response = krakenPrivateApiConnector.closedOrders(
+                includeTrades, from);
+
+        if (CollectionUtils.isNotEmpty(response.getError())) {
+            throw new IllegalStateException(response.getError().toString());
+        }
+        if (response.getResult() == null || MapUtils.isEmpty(response.getResult().getClosed())) {
+            return ImmutableList.<ClosedOrderBo>builder().build();
+        }
+
+        return ImmutableList.copyOf(response.getResult().getClosed().entrySet().stream() //
+                .filter(e -> !"canceled".equals(e.getValue().getStatus())) //
+                .map(krakenMapEntryToClosedOrderBoConverter::convert) //
+                .collect(Collectors.toList()));
     }
 
     @Nonnull
     @Override
-    public Map<CurrencyBoEnum, BigDecimal> getAccountBalance() {
-        final KrakenResponseDto<Map<String, BigDecimal>> response = krakenPrivateApiConnector.getBalance();
+    public ImmutableMap<CurrencyBoEnum, BigDecimal> getAccountBalance() {
+        final KrakenResponseDto<Map<String, BigDecimal>> response = krakenPrivateApiConnector.balance();
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
         }
         if (MapUtils.isEmpty(response.getResult())) {
-            return new HashMap<>();
+            return ImmutableMap.<CurrencyBoEnum, BigDecimal>builder().build();
         }
 
-        return response.getResult().entrySet().stream() //
-                .filter(e -> krakenCurrencyNameToCurrencyBoEnumConverter.convert(e.getKey()) != CurrencyBoEnum.OTHERS)
-                .collect(Collectors.toMap(e -> krakenCurrencyNameToCurrencyBoEnumConverter.convert(e.getKey()), Map.Entry::getValue));
+        return ImmutableMap.copyOf(response.getResult().entrySet().stream() //
+                .filter(e -> krakenCurrencyNameToCurrencyBoEnumConverter.convert(e.getKey()) != CurrencyBoEnum.OTHERS) //
+                .collect(Collectors.toUnmodifiableMap(
+                        e -> krakenCurrencyNameToCurrencyBoEnumConverter.convert(e.getKey()), Map.Entry::getValue)));
     }
 
     @Override
     public void placeOrder(@Nonnull final OrderTypeBoEnum orderType,
                            @Nonnull final PriceOrderTypeBoEnum priceOrderType,
-                           @Nonnull final CurrencyBoEnum baseCurrency,
-                           @Nonnull final CurrencyBoEnum quoteCurrency,
+                           @Nonnull final CurrencyPairBo currencyPair,
                            @Nonnull final BigDecimal volumeInQuoteCurrency,
                            @Nonnull final BigDecimal price,
                            final boolean preferFeeInQuoteCurrency,
                            final long orderExpirationInSecondsFromNow) {
 
-        final String krakenMarketName = pairOfQuoteAndBaseCurrencyBoEnumToKrakenInputMarketNameConverter.convert(
-                Pair.of(quoteCurrency, baseCurrency));
+        final String krakenMarketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
         final String krakenOrderType = orderTypeBoEnumToKrakenOrderTypeConverter.convert(orderType);
         final String krakenPriceOrderType = priceOrderTypeBoEnumToKrakenOrderTypeConverter.convert(priceOrderType);
         final List<String> krakenOrderFlags = new ArrayList<>();
@@ -117,7 +136,8 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
             krakenOrderFlags.add("fciq");
         }
         final BigDecimal krakenPrice;
-        if (quoteCurrency == CurrencyBoEnum.BTC && baseCurrency == CurrencyBoEnum.EUR) {
+        if (currencyPair.getQuoteCurrency() == CurrencyBoEnum.BTC
+                && currencyPair.getBaseCurrency() == CurrencyBoEnum.EUR) {
             // Scale set to 1 due to Kraken constraint:
             // "EOrder:Invalid price:XXBTZEUR price can only be specified up to 1 decimals."
             krakenPrice = price.setScale(1, RoundingMode.HALF_UP);
@@ -126,8 +146,8 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         }
 
         final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnector.addOrder(krakenMarketName,
-                krakenOrderType, krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, krakenOrderFlags,
-                orderExpirationInSecondsFromNow);
+                krakenOrderType, krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency,
+                ImmutableList.copyOf(krakenOrderFlags), orderExpirationInSecondsFromNow);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
