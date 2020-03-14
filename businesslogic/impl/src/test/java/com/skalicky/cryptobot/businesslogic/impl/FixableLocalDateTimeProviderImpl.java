@@ -16,11 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api project(':businesslogic:api')
-    implementation project(':exchange:slack:connectorfacade:api')
-    implementation project(':exchange:tradingplatform:connectorfacade:api')
-    testImplementation project(':exchange:tradingplatform:connectorfacade:api').sourceSets.test.output
-}
+package com.skalicky.cryptobot.businesslogic.impl;
 
-compileTestJava.dependsOn tasks.getByPath(':exchange:tradingplatform:connectorfacade:api:compileTestJava')
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.time.LocalDateTime;
+
+public class FixableLocalDateTimeProviderImpl implements FixableLocalDateTimeProvider {
+
+    @Nullable
+    private LocalDateTime fixedDateTime;
+
+    @Override
+    @Nonnull
+    public LocalDateTime now() {
+        return fixedDateTime == null ? LocalDateTime.now() : fixedDateTime;
+    }
+
+    @Override
+    @Nonnull
+    public LocalDateTime fix() {
+        fixedDateTime = LocalDateTime.now();
+        return fixedDateTime;
+    }
+
+    @Override
+    public void fix(@Nonnull final LocalDateTime dateTime) {
+        fixedDateTime = dateTime;
+    }
+}

@@ -40,6 +40,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,10 +58,13 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     private final ImmutableMap<String, TradingPlatformPrivateApiFacade> privateApiFacadesByPlatformNames;
     @Nonnull
     private final SlackFacade slackFacade;
+    @Nonnull
+    private final LocalDateTimeProvider localDateTimeProvider;
 
     public CryptoBotLogicImpl(@Nonnull final ImmutableList<TradingPlatformPublicApiFacade> publicApiFacades,
                               @Nonnull final ImmutableList<TradingPlatformPrivateApiFacade> privateApiFacades,
-                              @Nonnull final SlackFacade slackFacade) {
+                              @Nonnull final SlackFacade slackFacade,
+                              @Nonnull final LocalDateTimeProvider localDateTimeProvider) {
         this.publicApiFacadesByPlatformNames = ImmutableMap.copyOf(publicApiFacades.stream()
                 .collect(Collectors.toUnmodifiableMap(
                         TradingPlatformDesignated::getTradingPlatform, Function.identity())));
@@ -68,6 +72,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 .collect(Collectors.toUnmodifiableMap(
                         TradingPlatformDesignated::getTradingPlatform, Function.identity())));
         this.slackFacade = slackFacade;
+        this.localDateTimeProvider = localDateTimeProvider;
     }
 
     @Override
@@ -75,30 +80,33 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                                  @Nullable final String slackWebhookUrl) {
         final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
-            throw new IllegalArgumentException("No private API facade for the trading platform " + tradingPlatformName);
+            throw new IllegalArgumentException("No private API facade for the trading platform \""
+                    + tradingPlatformName + "\"");
         }
 
         // TODO Tomas not implemented yet. I am waiting for the first open order in Kraken.
     }
 
-    // TODO Tomas 3 cover with tests: unknown trading platform, no slackurl, no order, two orders
     @Override
     public void reportClosedOrders(@Nonnull final String tradingPlatformName,
                                    @Nullable final String slackWebhookUrl) {
         final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
-            throw new IllegalArgumentException("No private API facade for the trading platform " + tradingPlatformName);
+            throw new IllegalArgumentException("No private API facade for the trading platform \""
+                    + tradingPlatformName + "\"");
         }
 
-        final LocalDateTime from = LocalDateTime.now().minusDays(3);
-        final ImmutableList<ClosedOrderBo> closedOrders = facade.getClosedOrders(true, from);
+        final LocalDateTime from = localDateTimeProvider.now().minusDays(3);
+        final List<ClosedOrderBo> closedOrdersWithTrades = facade.getClosedOrders(true, from).stream() //
+                .filter(o -> !o.getTradeIds().isEmpty()) //
+                .collect(Collectors.toList());
         final StringBuilder messageBuilder = new StringBuilder("Closed orders since ")
                 .append(from.format(CLOSED_ORDER_DATE_TIME_FORMATTER)).append(" on ")
                 .append(tradingPlatformName).append(": ");
-        if (closedOrders.isEmpty()) {
+        if (closedOrdersWithTrades.isEmpty()) {
             messageBuilder.append("none");
         } else {
-            closedOrders.forEach(o -> messageBuilder.append(System.lineSeparator())
+            closedOrdersWithTrades.forEach(o -> messageBuilder.append(System.lineSeparator())
                     .append(toStringForNotificationPurposes(o)));
         }
         final String message = messageBuilder.toString();
@@ -111,13 +119,15 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     private String toStringForNotificationPurposes(@Nonnull final ClosedOrderBo order) {
         final CurrencyPairBo currencyPair = order.getCurrencyPair();
         final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
+        final BigDecimal desiredPrice = order.getDesiredPrice();
         final String tradesString = order.getTradeIds().size() > 1 ? "trades" : "trade";
+        final String desiredPriceString = desiredPrice != null ? desiredPrice + " " : "";
         return order.getOrderType().getLabel() + " "
                 + order.getDesiredVolumeInQuoteCurrency() + " "
                 + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
                 + order.getTotalExecutedVolumeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
                 + order.getPriceOrderType().getLabel() + " "
-                + order.getDesiredPrice() + " exec. avg. "
+                + desiredPriceString + "exec. avg. "
                 + order.getAverageActualPrice() + " fee "
                 + order.getActualFeeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
                 + order.getStatus().getLabel() + " @ open "

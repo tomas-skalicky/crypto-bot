@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 public enum OrderStateBoEnum {
 
     // @formatter:off
-    NEW                               ("newx -> no trades yet"),
+    NEW                               ("new -> no trades yet"),
     PARTIALLY_EXECUTED                ("partially executed -> trades exist"),
     FULLY_EXECUTED                    ("fully executed -> trades exist"),
     PARTIALLY_EXECUTED_THEN_CANCELED  ("partially executed, then canceled -> trades exist"),

@@ -71,7 +71,6 @@ public class KrakenMapEntryToClosedOrderBoConverter
         final CurrencyPairBo currencyPair =
                 krakenMarketNameToCurrencyPairBoEnumConverter.convert(inputOrderDescription.getPair());
         Objects.requireNonNull(inputOrder.getVol());
-        Objects.requireNonNull(inputOrderDescription.getPrice());
         Objects.requireNonNull(inputOrder.getOpentm());
         Objects.requireNonNull(inputOrder.getClosetm());
         Objects.requireNonNull(inputOrder.getStatus());

@@ -21,9 +21,12 @@ package com.skalicky.cryptobot.businesslogic.impl;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBoBuilder;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
@@ -34,7 +37,7 @@ import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -46,14 +49,18 @@ public class CryptoBotLogicImplUTest {
     @Nonnull
     private final static String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
     @Nonnull
+    private final static String POLONIEX_TRADING_PLATFORM_NAME = "poloniex";
+    @Nonnull
     private final TradingPlatformPublicApiFacade publicApiFacade = createKrakenPublicApiFacadeMock();
     @Nonnull
     private final TradingPlatformPrivateApiFacade privateApiFacade = createKrakenPrivateApiFacadeMock();
     @Nonnull
     private final SlackFacade slackFacade = mock(SlackFacade.class);
     @Nonnull
+    private final FixableLocalDateTimeProvider fixableLocalDateTimeProvider = new FixableLocalDateTimeProviderImpl();
+    @Nonnull
     private final CryptoBotLogicImpl cryptoBotLogicImpl = new CryptoBotLogicImpl(ImmutableList.of(publicApiFacade),
-            ImmutableList.of(privateApiFacade), slackFacade);
+            ImmutableList.of(privateApiFacade), slackFacade, fixableLocalDateTimeProvider);
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -62,9 +69,126 @@ public class CryptoBotLogicImplUTest {
     }
 
     @Test
+    public void test_reportOpenOrders_when_unsupportedTradingPlatform_then_exception() {
+        assertThatThrownBy(() -> cryptoBotLogicImpl.reportOpenOrders(
+                POLONIEX_TRADING_PLATFORM_NAME, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+    }
+
+    @Test
+    public void test_reportClosedOrders_when_unsupportedTradingPlatform_then_exception() {
+        assertThatThrownBy(() -> cryptoBotLogicImpl.reportClosedOrders(
+                POLONIEX_TRADING_PLATFORM_NAME, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+    }
+
+    @Test
+    public void test_reportClosedOrders_when_noSlackUrl_then_noSlackMessage() {
+        final LocalDateTime now = fixableLocalDateTimeProvider.fix();
+        final LocalDateTime fromDateTime = now.minusDays(3);
+        final boolean includeTrades = true;
+        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
+                .thenReturn(ImmutableList.<ClosedOrderBo>builder().build());
+
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, null);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
+    }
+
+    @Test
+    public void test_reportClosedOrders_when_noOrder_and_providedSlackUrl_then_noneInSlackMessage() {
+        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+        fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
+        final boolean includeTrades = true;
+        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
+                .thenReturn(ImmutableList.<ClosedOrderBo>builder().build());
+        final String slackUrl = "http://slack_url";
+
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
+        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: none", slackUrl);
+    }
+
+    @Test
+    public void test_reportClosedOrders_when_twoOrders_then_twoInSlackMessage() {
+        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+        fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
+        final boolean includeTrades = true;
+        final ClosedOrderBo closedOrder1 = ClosedOrderBoBuilder.aClosedOrderBo()
+                .withOrderType(OrderTypeBoEnum.SELL)
+                .withDesiredVolumeInQuoteCurrency(new BigDecimal("0.65"))
+                .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR))
+                .withTotalExecutedVolumeInQuoteCurrency(new BigDecimal("0.65"))
+                .withPriceOrderType(PriceOrderTypeBoEnum.MARKET)
+                .withDesiredPrice(null)
+                .withAverageActualPrice(BigDecimal.valueOf(5650))
+                .withActualFeeInQuoteCurrency(BigDecimal.ZERO)
+                .withStatus(OrderStateBoEnum.FULLY_EXECUTED)
+                .withOpenDateTime(LocalDateTime.of(2020, 3, 7, 8, 15))
+                .withCloseDateTime(LocalDateTime.of(2020, 3, 7, 8, 17))
+                .withTradeIds(ImmutableList.of("tradeId1")).build();
+        final ClosedOrderBo closedOrder2 = ClosedOrderBoBuilder.aClosedOrderBo()
+                .withOrderType(OrderTypeBoEnum.BUY)
+                .withDesiredVolumeInQuoteCurrency(new BigDecimal("150.56"))
+                .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.EUR, CurrencyBoEnum.BTC))
+                .withTotalExecutedVolumeInQuoteCurrency(BigDecimal.valueOf(100))
+                .withPriceOrderType(PriceOrderTypeBoEnum.LIMIT)
+                .withDesiredPrice(new BigDecimal("0.000176"))
+                .withAverageActualPrice(new BigDecimal("0.000175"))
+                .withActualFeeInQuoteCurrency(new BigDecimal("0.5"))
+                .withStatus(OrderStateBoEnum.PARTIALLY_EXECUTED)
+                .withOpenDateTime(LocalDateTime.of(2020, 3, 6, 18, 15))
+                .withCloseDateTime(LocalDateTime.of(2020, 3, 7, 8, 5))
+                .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
+        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
+                .thenReturn(ImmutableList.of(closedOrder1, closedOrder2));
+        final String slackUrl = "http://slack_url";
+
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
+        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: \n" +
+                "sell 0.65 BTC-EUR exec. 0.65 BTC @ market exec. avg. 5650 fee 0 BTC @ fully executed -> trades exist @ open 07.03. 08:15 close 07.03. 08:17 @ 1 trade\n" +
+                "buy 150.56 EUR-BTC exec. 100 EUR @ limit 0.000176 exec. avg. 0.000175 fee 0.5 EUR @ partially executed -> trades exist @ open 06.03. 18:15 close 07.03. 08:05 @ 2 trades", slackUrl);
+    }
+
+    @Test
+    public void test_reportClosedOrders_when_orderHasNoTrades_then_orderIsSkipped() {
+        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+        fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
+        final boolean includeTrades = true;
+        final ClosedOrderBo closedOrder = ClosedOrderBoBuilder.aClosedOrderBo()
+                .withTradeIds(ImmutableList.<String>builder().build()).build();
+        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime)).thenReturn(ImmutableList.of(closedOrder));
+        final String slackUrl = "http://slack_url";
+
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
+        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: none", slackUrl);
+    }
+
+    @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                "poloniex", BigDecimal.TEN, "BTC", "XMR",
+                POLONIEX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
                 null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No private API facade for the trading platform \"poloniex\"");

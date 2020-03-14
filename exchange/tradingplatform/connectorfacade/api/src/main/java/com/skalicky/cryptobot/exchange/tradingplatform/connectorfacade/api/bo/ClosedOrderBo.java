@@ -24,6 +24,7 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -38,7 +39,10 @@ public final class ClosedOrderBo {
     private final CurrencyPairBo currencyPair;
     @Nonnull
     private final BigDecimal desiredVolumeInQuoteCurrency;
-    @Nonnull
+    /**
+     * Null in case of "market" price order type.
+     */
+    @Nullable
     private final BigDecimal desiredPrice;
     @Nonnull
     private final LocalDateTime openDateTime;
@@ -60,7 +64,7 @@ public final class ClosedOrderBo {
                          @Nonnull final PriceOrderTypeBoEnum priceOrderType,
                          @Nonnull final CurrencyPairBo currencyPair,
                          @Nonnull final BigDecimal desiredVolumeInQuoteCurrency,
-                         @Nonnull final BigDecimal desiredPrice,
+                         @Nullable final BigDecimal desiredPrice,
                          @Nonnull final LocalDateTime openDateTime,
                          @Nonnull final LocalDateTime closeDateTime,
                          @Nonnull final OrderStateBoEnum status,
@@ -108,7 +112,7 @@ public final class ClosedOrderBo {
         return desiredVolumeInQuoteCurrency;
     }
 
-    @Nonnull
+    @Nullable
     public BigDecimal getDesiredPrice() {
         return desiredPrice;
     }

@@ -80,7 +80,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         return null;
     }
 
-    // TODO Tomas 3 cover with tests: with error, with result=null, with empty result, with canceled order, with closed order
+    // TODO Tomas 3 cover with tests: with error, with result=null, with empty result, with closed order
     @Nonnull
     @Override
     public ImmutableList<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
@@ -96,7 +96,6 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         }
 
         return ImmutableList.copyOf(response.getResult().getClosed().entrySet().stream() //
-                .filter(e -> !"canceled".equals(e.getValue().getStatus())) //
                 .map(krakenMapEntryToClosedOrderBoConverter::convert) //
                 .collect(Collectors.toList()));
     }

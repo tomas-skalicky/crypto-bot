@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicImpl;
+import com.skalicky.cryptobot.businesslogic.impl.LocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
@@ -91,17 +92,17 @@ public class CryptoBotApplication {
         }
         final SlackFacade slackFacade = initializeSlackFacade();
         final CryptoBotLogic cryptoBotLogic = new CryptoBotLogicImpl(ImmutableList.copyOf(publicApiFacades),
-                ImmutableList.copyOf(privateApiFacades), slackFacade);
+                ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
 
         try {
             cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
             cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
-            // FIXME Tomas 1 reenable
-//            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
-//                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
-//                    arguments.getBaseCurrency(),
-//                    arguments.getQuoteCurrency(),
-//                    arguments.getSlackWebhookUrl());
+            // FIXME Tomas 1 re-enable
+            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
+                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
+                    arguments.getBaseCurrency(),
+                    arguments.getQuoteCurrency(),
+                    arguments.getSlackWebhookUrl());
 
         } catch (Exception ex) {
             ex.printStackTrace();
