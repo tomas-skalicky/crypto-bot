@@ -98,7 +98,8 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         if (closedOrders.isEmpty()) {
             messageBuilder.append("none");
         } else {
-            closedOrders.forEach(o -> messageBuilder.append("\n").append(toString(o)));
+            closedOrders.forEach(o -> messageBuilder.append(System.lineSeparator())
+                    .append(toStringForNotificationPurposes(o)));
         }
         final String message = messageBuilder.toString();
         logger.info(message);
@@ -107,7 +108,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         }
     }
 
-    private String toString(@Nonnull final ClosedOrderBo order) {
+    private String toStringForNotificationPurposes(@Nonnull final ClosedOrderBo order) {
         final CurrencyPairBo currencyPair = order.getCurrencyPair();
         final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
         final String tradesString = order.getTradeIds().size() > 1 ? "trades" : "trade";
