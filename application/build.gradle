@@ -25,6 +25,7 @@ dependencies {
     implementation project(':exchange:kraken:connector:impl')
     implementation project(':exchange:kraken:connectorfacade:impl')
     implementation project(':exchange:shared:connector:impl')
+    implementation project(':exchange:shared:connectorfacade:impl')
     implementation project(':exchange:slack:connector:impl')
     implementation project(':exchange:slack:connectorfacade:impl')
 

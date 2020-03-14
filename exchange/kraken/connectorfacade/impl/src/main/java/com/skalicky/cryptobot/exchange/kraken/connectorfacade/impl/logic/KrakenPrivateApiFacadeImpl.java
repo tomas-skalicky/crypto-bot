@@ -58,19 +58,23 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     private final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter;
     @Nonnull
     private final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter;
+    @Nonnull
+    private final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter;
 
     public KrakenPrivateApiFacadeImpl(@Nonnull final KrakenPrivateApiConnector krakenPrivateApiConnector,
                                       @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter,
                                       @Nonnull final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter,
                                       @Nonnull final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter,
                                       @Nonnull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter,
-                                      @Nonnull final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter) {
+                                      @Nonnull final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter,
+                                      @Nonnull final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter) {
         this.krakenPrivateApiConnector = krakenPrivateApiConnector;
         this.currencyPairBoEnumToKrakenMarketNameConverter = currencyPairBoEnumToKrakenMarketNameConverter;
         this.orderTypeBoEnumToKrakenOrderTypeConverter = orderTypeBoEnumToKrakenOrderTypeConverter;
         this.priceOrderTypeBoEnumToKrakenOrderTypeConverter = priceOrderTypeBoEnumToKrakenOrderTypeConverter;
         this.krakenCurrencyNameToCurrencyBoEnumConverter = krakenCurrencyNameToCurrencyBoEnumConverter;
         this.krakenMapEntryToClosedOrderBoConverter = krakenMapEntryToClosedOrderBoConverter;
+        this.localDateTimeToEpochSecondLongConverter = localDateTimeToEpochSecondLongConverter;
     }
 
     @Nonnull
@@ -80,13 +84,13 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         return null;
     }
 
-    // TODO Tomas 3 cover with tests: with error, with result=null, with empty result, with closed order
     @Nonnull
     @Override
     public ImmutableList<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
                                                         @Nonnull final LocalDateTime from) {
+        final Long fromInEpochSeconds = localDateTimeToEpochSecondLongConverter.convert(from);
         final KrakenResponseDto<KrakenClosedOrderResultDto> response = krakenPrivateApiConnector.closedOrders(
-                includeTrades, from);
+                includeTrades, fromInEpochSeconds);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());

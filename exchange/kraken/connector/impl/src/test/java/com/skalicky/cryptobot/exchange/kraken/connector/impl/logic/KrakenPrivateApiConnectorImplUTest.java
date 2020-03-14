@@ -26,7 +26,6 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrde
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeSerializer;
 import edu.self.kraken.api.KrakenApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +46,7 @@ public class KrakenPrivateApiConnectorImplUTest {
     private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
     @Nonnull
     private final KrakenPrivateApiConnectorImpl krakenPrivateApiConnectorImpl = new KrakenPrivateApiConnectorImpl(
-            krakenApi, new ObjectMapper(), new KrakenLocalDateTimeSerializer());
+            krakenApi, new ObjectMapper());
 
     @AfterEach
     public void assertAndCleanMocks() {
@@ -188,10 +186,9 @@ public class KrakenPrivateApiConnectorImplUTest {
                 "}";
         // @formatter:on
         when(krakenApi.queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap())).thenReturn(expectedKrakenApiResponse);
-        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
 
         final KrakenResponseDto<KrakenClosedOrderResultDto> connectorResponse =
-                krakenPrivateApiConnectorImpl.closedOrders(false, fromDateTime);
+                krakenPrivateApiConnectorImpl.closedOrders(false, 1583703494L);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap());
 
@@ -267,10 +264,9 @@ public class KrakenPrivateApiConnectorImplUTest {
                 "}";
         // @formatter:on
         when(krakenApi.queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap())).thenReturn(expectedKrakenApiResponse);
-        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
 
         final KrakenResponseDto<KrakenClosedOrderResultDto> connectorResponse =
-                krakenPrivateApiConnectorImpl.closedOrders(false, fromDateTime);
+                krakenPrivateApiConnectorImpl.closedOrders(false, 1583703494L);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap());
 
@@ -302,10 +298,9 @@ public class KrakenPrivateApiConnectorImplUTest {
                 "}";
         // @formatter:on
         when(krakenApi.queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap())).thenReturn(expectedKrakenApiResponse);
-        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
 
         final KrakenResponseDto<KrakenClosedOrderResultDto> connectorResponse =
-                krakenPrivateApiConnectorImpl.closedOrders(false, fromDateTime);
+                krakenPrivateApiConnectorImpl.closedOrders(false, 1583703494L);
 
         verify(krakenApi).queryPrivate(eq(KrakenApi.Method.CLOSED_ORDERS), anyMap());
 

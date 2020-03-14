@@ -25,7 +25,6 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderRe
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeSerializer;
 import edu.self.kraken.api.KrakenApi;
 
 import javax.annotation.Nonnull;
@@ -33,7 +32,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 
@@ -42,15 +40,11 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
     private final KrakenApi krakenApi;
     @Nonnull
     private final ObjectMapper objectMapper;
-    @Nonnull
-    private final KrakenLocalDateTimeSerializer krakenLocalDateTimeSerializer;
 
     public KrakenPrivateApiConnectorImpl(@Nonnull final KrakenApi krakenApi,
-                                         @Nonnull final ObjectMapper objectMapper,
-                                         @Nonnull final KrakenLocalDateTimeSerializer krakenLocalDateTimeSerializer) {
+                                         @Nonnull final ObjectMapper objectMapper) {
         this.krakenApi = krakenApi;
         this.objectMapper = objectMapper;
-        this.krakenLocalDateTimeSerializer = krakenLocalDateTimeSerializer;
     }
 
     @Nonnull
@@ -63,11 +57,10 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
     @Nonnull
     @Override
     public KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(final boolean includeTrades,
-                                                                      @Nonnull final LocalDateTime from) {
+                                                                      @Nonnull final Long fromInEpochSeconds) {
         final Map<String, String> parameters = Collections.unmodifiableMap(Map.of(
                 "trades", String.valueOf(includeTrades),
-                "start", String.valueOf(krakenLocalDateTimeSerializer.serialize(from))
-        ));
+                "start", String.valueOf(fromInEpochSeconds)));
         try {
             final String responseString = krakenApi.queryPrivate(KrakenApi.Method.CLOSED_ORDERS, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
@@ -108,10 +101,6 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
                 "expiretm", "+" + orderExpirationInSecondsFromNow
         ));
         try {
-            //FIXME Tomas 4 final
-//            if (true) {
-//                return new KrakenResponseDto<>();
-//            }
             final String responseString = krakenApi.queryPrivate(KrakenApi.Method.ADD_ORDER, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });

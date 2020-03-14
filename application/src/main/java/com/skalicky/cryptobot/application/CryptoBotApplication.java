@@ -27,8 +27,6 @@ import com.skalicky.cryptobot.businesslogic.impl.LocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeDeserializer;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeSerializer;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPrivateApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPublicApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
@@ -47,6 +45,8 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic.KrakenP
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic.KrakenPublicApiFacadeImpl;
 import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnectorSupport;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
+import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.EpochSecondBigDecimalToLocalDateTimeConverter;
+import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.LocalDateTimeToEpochSecondLongConverter;
 import com.skalicky.cryptobot.exchange.slack.connector.api.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connector.impl.SlackConnectorImpl;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
@@ -64,6 +64,8 @@ import edu.self.kraken.api.KrakenApi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,14 +97,13 @@ public class CryptoBotApplication {
                 ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
 
         try {
-            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
-            cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
-            // FIXME Tomas 1 re-enable
             cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
                     arguments.getVolumeInBaseCurrencyToInvestPerRun(),
                     arguments.getBaseCurrency(),
                     arguments.getQuoteCurrency(),
                     arguments.getSlackWebhookUrl());
+            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
+            cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -131,7 +132,7 @@ public class CryptoBotApplication {
                                                                            @Nonnull final ObjectMapper objectMapper,
                                                                            @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
         final KrakenPrivateApiConnector krakenPrivateApiConnector = new KrakenPrivateApiConnectorImpl(krakenApi,
-                objectMapper, new KrakenLocalDateTimeSerializer());
+                objectMapper);
         final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter =
                 new OrderTypeBoEnumToKrakenOrderTypeConverter();
         final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter =
@@ -144,8 +145,8 @@ public class CryptoBotApplication {
                 new KrakenOrderTypeToPriceOrderTypeBoEnumConverter();
         final NonnullConverter<String, CurrencyPairBo> krakenMarketNameToCurrencyPairBoEnumConverter =
                 new KrakenMarketNameToCurrencyPairBoEnumConverter();
-        final KrakenLocalDateTimeDeserializer krakenLocalDateTimeDeserializer =
-                new KrakenLocalDateTimeDeserializer();
+        final NonnullConverter<BigDecimal, LocalDateTime> epochSecondBigDecimalToLocalDateTimeConverter =
+                new EpochSecondBigDecimalToLocalDateTimeConverter();
         final NonnullConverter<String, OrderStateBoEnum> krakenOrderStatusToOrderStateBoEnumConverter =
                 new KrakenOrderStatusToOrderStateBoEnumConverter();
         final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter =
@@ -153,7 +154,7 @@ public class CryptoBotApplication {
                         krakenOrderTypeToOrderTypeBoEnumConverter,
                         krakenOrderTypeToPriceOrderTypeBoEnumConverter,
                         krakenMarketNameToCurrencyPairBoEnumConverter,
-                        krakenLocalDateTimeDeserializer,
+                        epochSecondBigDecimalToLocalDateTimeConverter,
                         krakenOrderStatusToOrderStateBoEnumConverter
                 );
         return new KrakenPrivateApiFacadeImpl(
@@ -162,7 +163,8 @@ public class CryptoBotApplication {
                 orderTypeBoEnumToKrakenOrderTypeConverter,
                 priceOrderTypeBoEnumToKrakenOrderTypeConverter,
                 krakenCurrencyNameToCurrencyBoEnumConverter,
-                krakenMapEntryToClosedOrderBoConverter);
+                krakenMapEntryToClosedOrderBoConverter,
+                new LocalDateTimeToEpochSecondLongConverter());
     }
 
     @Nonnull

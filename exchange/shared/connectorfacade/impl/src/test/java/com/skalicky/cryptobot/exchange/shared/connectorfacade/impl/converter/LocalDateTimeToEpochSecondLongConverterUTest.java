@@ -16,33 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.kraken.connector.api.util;
+package com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter;
 
-import com.skalicky.cryptobot.exchange.kraken.connector.api.util.KrakenLocalDateTimeSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class KrakenLocalDateTimeSerializerUTest {
+public class LocalDateTimeToEpochSecondLongConverterUTest {
 
     @Test
-    public void test_serialize_when_timeZoneIsNonZero_then_timeZoneIsConsidered() {
+    public void test_convert_when_timeZoneIsNonZero_then_timeZoneIsConsidered() {
         final LocalDateTime dateTime = LocalDateTime.of(
                 2020, 3, 8, 10, 30, 1);
 
-        final Long epochSeconds = new KrakenLocalDateTimeSerializer().serialize(dateTime);
+        final Long epochSeconds = new LocalDateTimeToEpochSecondLongConverter().convert(dateTime);
 
         assertThat(epochSeconds).isEqualTo(1583659801);
     }
 
     @Test
-    public void test_serialize_when_nanoSecondsAreNonZero_then_nanoSecondsIsIgnored() {
+    public void test_convert_when_nanoSecondsAreNonZero_then_nanoSecondsIsIgnored() {
         final LocalDateTime dateTime = LocalDateTime.of(
                 2020, 3, 8, 10, 30, 1, 999_999_999);
 
-        final Long epochSeconds = new KrakenLocalDateTimeSerializer().serialize(dateTime);
+        final Long epochSeconds = new LocalDateTimeToEpochSecondLongConverter().convert(dateTime);
 
         assertThat(epochSeconds).isEqualTo(1583659801);
     }

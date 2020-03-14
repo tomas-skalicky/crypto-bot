@@ -16,20 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'crypto-bot'
-
-include ':application'
-include ':businesslogic:api'
-include ':businesslogic:impl'
-include ':exchange:kraken:connector:api'
-include ':exchange:kraken:connector:impl'
-include ':exchange:kraken:connectorfacade:api'
-include ':exchange:kraken:connectorfacade:impl'
-include ':exchange:shared:connector:impl'
-include ':exchange:shared:connectorfacade:api'
-include ':exchange:shared:connectorfacade:impl'
-include ':exchange:slack:connector:api'
-include ':exchange:slack:connector:impl'
-include ':exchange:slack:connectorfacade:api'
-include ':exchange:slack:connectorfacade:impl'
-include ':exchange:tradingplatform:connectorfacade:api'
+dependencies {
+    api project(':exchange:shared:connectorfacade:api')
+}

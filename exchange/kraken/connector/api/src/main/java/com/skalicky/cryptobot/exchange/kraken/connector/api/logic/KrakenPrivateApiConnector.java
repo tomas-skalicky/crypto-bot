@@ -25,7 +25,6 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDt
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 public interface KrakenPrivateApiConnector {
@@ -35,7 +34,7 @@ public interface KrakenPrivateApiConnector {
 
     @Nonnull
     KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(boolean includeTrades,
-                                                               @Nonnull LocalDateTime from);
+                                                               @Nonnull Long fromInEpochSeconds);
 
     @Nonnull
     KrakenResponseDto<Map<String, BigDecimal>> balance();

@@ -16,19 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.kraken.connector.api.util;
+package com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter;
+
+import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
-public final class KrakenLocalDateTimeSerializer {
+public final class EpochSecondBigDecimalToLocalDateTimeConverter implements NonnullConverter<BigDecimal, LocalDateTime> {
     @Nonnull
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
+    @Override
     @Nonnull
-    public Long serialize(@Nonnull final LocalDateTime localDateTime) {
-        return ZonedDateTime.of(localDateTime, ZONE_ID).toEpochSecond();
+    public LocalDateTime convert(@Nonnull final BigDecimal epochSecond) {
+        final long epochInNanos = epochSecond.multiply(BigDecimal.valueOf(1_000_000_000)).longValue();
+        final Instant instant = Instant.ofEpochSecond(0, epochInNanos);
+        return LocalDateTime.ofInstant(instant, ZONE_ID);
     }
 }
