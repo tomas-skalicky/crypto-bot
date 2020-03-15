@@ -101,9 +101,10 @@ public class CryptoBotApplication {
                     arguments.getVolumeInBaseCurrencyToInvestPerRun(),
                     arguments.getBaseCurrency(),
                     arguments.getQuoteCurrency(),
+                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
                     arguments.getSlackWebhookUrl());
-            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
             cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
+            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
 
         } catch (Exception ex) {
             ex.printStackTrace();

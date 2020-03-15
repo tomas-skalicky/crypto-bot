@@ -34,5 +34,6 @@ public interface CryptoBotLogic {
                                         @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
                                         @Nonnull String baseCurrencyLabel,
                                         @Nonnull String quoteCurrencyLabel,
+                                        @Nonnull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
                                         @Nullable String slackWebhookUrl);
 }

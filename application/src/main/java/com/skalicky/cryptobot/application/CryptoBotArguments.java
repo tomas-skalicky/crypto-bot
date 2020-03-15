@@ -80,6 +80,16 @@ public class CryptoBotArguments {
             required = true)
     private String tradingPlatformSecret = "";
 
+    /**
+     * Initialized to avoid nullability.
+     */
+    @Nonnull
+    @Parameter(names = {"--offsetRatioOfLimitPriceToBidPriceInDecimal"},
+            description = "Offset ratio of limit price to the bid price. In Decimal. Sample value: 0.01 (= limit" +
+                    " price 1% below the bid price)",
+            required = true)
+    private BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = BigDecimal.ZERO;
+
     @Nullable
     @Parameter(names = {"--slackWebhookUrl"},
             description = "Slack Webhook to report purchases and incidents to.",
@@ -114,6 +124,11 @@ public class CryptoBotArguments {
     @Nonnull
     public String getTradingPlatformSecret() {
         return tradingPlatformSecret;
+    }
+
+    @Nonnull
+    public BigDecimal getOffsetRatioOfLimitPriceToBidPriceInDecimal() {
+        return offsetRatioOfLimitPriceToBidPriceInDecimal;
     }
 
     @Nullable

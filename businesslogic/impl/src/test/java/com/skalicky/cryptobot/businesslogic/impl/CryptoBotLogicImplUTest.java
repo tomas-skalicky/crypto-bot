@@ -189,7 +189,7 @@ public class CryptoBotLogicImplUTest {
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 POLONIEX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
-                null))
+                new BigDecimal("0.01"), null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No private API facade for the trading platform \"poloniex\"");
 
@@ -203,7 +203,7 @@ public class CryptoBotLogicImplUTest {
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "XRP",
-                null);
+                new BigDecimal("0.01"), null);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
@@ -217,7 +217,7 @@ public class CryptoBotLogicImplUTest {
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "LTC",
-                slackUrl);
+                new BigDecimal("0.01"), slackUrl);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
@@ -236,7 +236,7 @@ public class CryptoBotLogicImplUTest {
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), "EUR",
-                "BTC", slackUrl);
+                "BTC", new BigDecimal("0.001"), slackUrl);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(publicApiFacade).getTicker(currencyPair);

@@ -49,8 +49,6 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     @Nonnull
     private static final DateTimeFormatter CLOSED_ORDER_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM. HH:mm");
     @Nonnull
-    private static final BigDecimal NINETY_NINE_COMMA_NINE_PERCENT_IN_DECIMAL = new BigDecimal("0.999");
-    @Nonnull
     private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogicImpl.class);
     @Nonnull
     private final ImmutableMap<String, TradingPlatformPublicApiFacade> publicApiFacadesByPlatformNames;
@@ -141,6 +139,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                                                @Nonnull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
                                                @Nonnull final String baseCurrencyLabel,
                                                @Nonnull final String quoteCurrencyLabel,
+                                               @Nonnull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
                                                @Nullable final String slackWebhookUrl) {
         final TradingPlatformPrivateApiFacade privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (privateApiFacade == null) {
@@ -167,7 +166,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             final CurrencyPairBo currencyPair = new CurrencyPairBo(quoteCurrency, baseCurrency);
             final TickerBo ticker = publicApiFacade.getTicker(currencyPair);
 
-            final BigDecimal price = ticker.getBidPrice().multiply(NINETY_NINE_COMMA_NINE_PERCENT_IN_DECIMAL);
+            final BigDecimal price = ticker.getBidPrice().multiply(BigDecimal.ONE.subtract(offsetRatioOfLimitPriceToBidPriceInDecimal));
             final BigDecimal volumeInQuoteCurrency = volumeInBaseCurrencyToInvestPerRun.divide(price, 10,
                     RoundingMode.HALF_UP);
             final OrderTypeBoEnum orderType = OrderTypeBoEnum.BUY;
