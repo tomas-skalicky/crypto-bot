@@ -24,6 +24,8 @@ import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBoBuilder;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBoBuilder;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
@@ -77,6 +79,78 @@ public class CryptoBotLogicImplUTest {
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
+    }
+
+    @Test
+    public void test_reportOpenOrders_when_noSlackUrl_then_noSlackMessage() {
+        final boolean includeTrades = true;
+        when(privateApiFacade.getOpenOrders(includeTrades))
+                .thenReturn(ImmutableList.<OpenOrderBo>builder().build());
+
+        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, null);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getOpenOrders(includeTrades);
+    }
+
+    @Test
+    public void test_reportOpenOrders_when_noOrder_and_providedSlackUrl_then_noneInSlackMessage() {
+        final boolean includeTrades = true;
+        when(privateApiFacade.getOpenOrders(includeTrades))
+                .thenReturn(ImmutableList.<OpenOrderBo>builder().build());
+        final String slackUrl = "http://slack_url";
+
+        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getOpenOrders(includeTrades);
+        verify(slackFacade).sendMessage("Open orders on kraken: none", slackUrl);
+    }
+
+    @Test
+    public void test_reportOpenOrders_when_twoOrders_then_twoInSlackMessage() {
+        final boolean includeTrades = true;
+        final OpenOrderBo openOrder1 = OpenOrderBoBuilder.aOpenOrderBo()
+                .withOrderType(OrderTypeBoEnum.SELL)
+                .withDesiredVolumeInQuoteCurrency(new BigDecimal("0.65"))
+                .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR))
+                .withAlreadyExecutedVolumeInQuoteCurrency(BigDecimal.ZERO)
+                .withPriceOrderType(PriceOrderTypeBoEnum.MARKET)
+                .withDesiredPrice(null)
+                .withAverageActualPrice(null)
+                .withActualFeeInQuoteCurrency(BigDecimal.ZERO)
+                .withStatus(OrderStateBoEnum.NEW)
+                .withOpenDateTime(LocalDateTime.of(2020, 3, 7, 8, 15))
+                .withExpirationDateTime(LocalDateTime.of(2020, 3, 9, 10, 45))
+                .withTradeIds(ImmutableList.<String>builder().build()).build();
+        final OpenOrderBo openOrder2 = OpenOrderBoBuilder.aOpenOrderBo()
+                .withOrderType(OrderTypeBoEnum.BUY)
+                .withDesiredVolumeInQuoteCurrency(new BigDecimal("150.56"))
+                .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.EUR, CurrencyBoEnum.BTC))
+                .withAlreadyExecutedVolumeInQuoteCurrency(BigDecimal.valueOf(100))
+                .withPriceOrderType(PriceOrderTypeBoEnum.LIMIT)
+                .withDesiredPrice(new BigDecimal("0.000176"))
+                .withAverageActualPrice(new BigDecimal("0.000175"))
+                .withActualFeeInQuoteCurrency(new BigDecimal("0.5"))
+                .withStatus(OrderStateBoEnum.PARTIALLY_EXECUTED)
+                .withOpenDateTime(LocalDateTime.of(2020, 3, 6, 18, 15))
+                .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
+        when(privateApiFacade.getOpenOrders(includeTrades))
+                .thenReturn(ImmutableList.of(openOrder1, openOrder2));
+        final String slackUrl = "http://slack_url";
+
+        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+
+        verify(publicApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getOpenOrders(includeTrades);
+        verify(slackFacade).sendMessage("Open orders on kraken: \n" +
+                "sell 0.65 BTC-EUR exec. 0 BTC @ market @ new -> no trades yet @ open 07.03. 08:15" +
+                " expires on 09.03. 10:45 @ 0 trades\n" +
+                "buy 150.56 EUR-BTC exec. 100 EUR @ limit 0.000176 exec. avg. 0.000175 fee 0.5 EUR @" +
+                " partially executed -> trades exist @ open 06.03. 18:15 @ 2 trades", slackUrl);
     }
 
     @Test
@@ -163,8 +237,10 @@ public class CryptoBotLogicImplUTest {
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
         verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: \n" +
-                "sell 0.65 BTC-EUR exec. 0.65 BTC @ market exec. avg. 5650 fee 0 BTC @ fully executed -> trades exist @ open 07.03. 08:15 close 07.03. 08:17 @ 1 trade\n" +
-                "buy 150.56 EUR-BTC exec. 100 EUR @ limit 0.000176 exec. avg. 0.000175 fee 0.5 EUR @ partially executed -> trades exist @ open 06.03. 18:15 close 07.03. 08:05 @ 2 trades", slackUrl);
+                "sell 0.65 BTC-EUR exec. 0.65 BTC @ market exec. avg. 5650 fee 0 BTC @" +
+                " fully executed -> trades exist @ open 07.03. 08:15 close 07.03. 08:17 @ 1 trade\n" +
+                "buy 150.56 EUR-BTC exec. 100 EUR @ limit 0.000176 exec. avg. 0.000175 fee 0.5 EUR @" +
+                " partially executed -> trades exist @ open 06.03. 18:15 close 07.03. 08:05 @ 2 trades", slackUrl);
     }
 
     @Test

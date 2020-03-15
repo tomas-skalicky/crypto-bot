@@ -24,8 +24,10 @@ import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformDesignated;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 public class CryptoBotLogicImpl implements CryptoBotLogic {
 
     @Nonnull
-    private static final DateTimeFormatter CLOSED_ORDER_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM. HH:mm");
+    private static final DateTimeFormatter ORDER_NOTIFICATION_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM. HH:mm");
     @Nonnull
     private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogicImpl.class);
     @Nonnull
@@ -82,7 +84,50 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                     + tradingPlatformName + "\"");
         }
 
-        // TODO Tomas not implemented yet. I am waiting for the first open order in Kraken.
+        final List<OpenOrderBo> openOrders = facade.getOpenOrders(true);
+        final StringBuilder messageBuilder = new StringBuilder("Open orders on ")
+                .append(tradingPlatformName).append(": ");
+        if (openOrders.isEmpty()) {
+            messageBuilder.append("none");
+        } else {
+            openOrders.forEach(o -> messageBuilder.append(System.lineSeparator())
+                    .append(toStringForNotificationPurposes(o)));
+        }
+        final String message = messageBuilder.toString();
+        logger.info(message);
+        if (slackWebhookUrl != null) {
+            slackFacade.sendMessage(message, slackWebhookUrl);
+        }
+    }
+
+    private String toStringForNotificationPurposes(@Nonnull final OpenOrderBo order) {
+        final CurrencyPairBo currencyPair = order.getCurrencyPair();
+        final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
+        final BigDecimal desiredPrice = order.getDesiredPrice();
+        final String tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
+        final String desiredPriceString = desiredPrice == null ? "" : desiredPrice + " ";
+        final OrderStateBoEnum orderState = order.getState();
+        final BigDecimal averageActualPrice = order.getAverageActualPrice();
+        final String averageActualPriceString = orderState == OrderStateBoEnum.NEW ? ""
+                : "exec. avg. " + averageActualPrice + " ";
+        final BigDecimal actualFeeInQuoteCurrency = order.getActualFeeInQuoteCurrency();
+        final String actualFeeInQuoteCurrencyString = orderState == OrderStateBoEnum.NEW ? ""
+                : "fee " + actualFeeInQuoteCurrency + " " + quoteCurrency.getLabel() + " ";
+        final LocalDateTime expirationDateTime = order.getExpirationDateTime();
+        final String expirationDateTimeString = expirationDateTime == null ? ""
+                : "expires on " + expirationDateTime.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " ";
+        return order.getOrderType().getLabel() + " "
+                + order.getDesiredVolumeInQuoteCurrency() + " "
+                + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
+                + order.getAlreadyExecutedVolumeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
+                + order.getPriceOrderType().getLabel() + " "
+                + desiredPriceString
+                + averageActualPriceString
+                + actualFeeInQuoteCurrencyString + "@ "
+                + orderState.getLabel() + " @ open "
+                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " "
+                + expirationDateTimeString + "@ "
+                + order.getTradeIds().size() + " " + tradesString;
     }
 
     @Override
@@ -99,7 +144,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 .filter(o -> !o.getTradeIds().isEmpty()) //
                 .collect(Collectors.toList());
         final StringBuilder messageBuilder = new StringBuilder("Closed orders since ")
-                .append(from.format(CLOSED_ORDER_DATE_TIME_FORMATTER)).append(" on ")
+                .append(from.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER)).append(" on ")
                 .append(tradingPlatformName).append(": ");
         if (closedOrdersWithTrades.isEmpty()) {
             messageBuilder.append("none");
@@ -118,7 +163,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         final CurrencyPairBo currencyPair = order.getCurrencyPair();
         final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
         final BigDecimal desiredPrice = order.getDesiredPrice();
-        final String tradesString = order.getTradeIds().size() > 1 ? "trades" : "trade";
+        final String tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
         final String desiredPriceString = desiredPrice != null ? desiredPrice + " " : "";
         return order.getOrderType().getLabel() + " "
                 + order.getDesiredVolumeInQuoteCurrency() + " "
@@ -129,8 +174,8 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 + order.getAverageActualPrice() + " fee "
                 + order.getActualFeeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
                 + order.getStatus().getLabel() + " @ open "
-                + order.getOpenDateTime().format(CLOSED_ORDER_DATE_TIME_FORMATTER) + " close "
-                + order.getCloseDateTime().format(CLOSED_ORDER_DATE_TIME_FORMATTER) + " @ "
+                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " close "
+                + order.getCloseDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " @ "
                 + order.getTradeIds().size() + " " + tradesString;
     }
 

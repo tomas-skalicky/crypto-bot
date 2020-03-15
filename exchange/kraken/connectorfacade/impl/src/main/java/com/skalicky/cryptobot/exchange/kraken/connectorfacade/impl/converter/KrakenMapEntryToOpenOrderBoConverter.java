@@ -80,6 +80,9 @@ public class KrakenMapEntryToOpenOrderBoConverter
                 ? ImmutableList.<String>builder().build() : ImmutableList.copyOf(inputOrder.getTrades());
         final OrderStateBoEnum outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
                 Pair.of(inputOrder.getStatus(), outputTrades.size()));
+        final BigDecimal inputOrderExpiration = inputOrder.getExpiretm();
+        final LocalDateTime outputExpiration = inputOrderExpiration == null ? null
+                : epochSecondBigDecimalToLocalDateTimeConverter.convert(inputOrderExpiration);
 
         return new OpenOrderBo(
                 inputEntry.getKey(),
@@ -89,6 +92,7 @@ public class KrakenMapEntryToOpenOrderBoConverter
                 inputOrder.getVol(),
                 inputOrderDescription.getPrice(),
                 epochSecondBigDecimalToLocalDateTimeConverter.convert(inputOrder.getOpentm()),
+                outputExpiration,
                 outputState,
                 inputOrder.getVol_exec(),
                 inputOrder.getPrice(),

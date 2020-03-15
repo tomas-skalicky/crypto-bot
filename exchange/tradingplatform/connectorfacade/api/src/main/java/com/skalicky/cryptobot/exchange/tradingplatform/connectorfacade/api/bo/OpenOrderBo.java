@@ -46,8 +46,10 @@ public final class OpenOrderBo {
     private final BigDecimal desiredPrice;
     @Nonnull
     private final LocalDateTime openDateTime;
+    @Nullable
+    private final LocalDateTime expirationDateTime;
     @Nonnull
-    private final OrderStateBoEnum status;
+    private final OrderStateBoEnum state;
     @Nonnull
     private final BigDecimal alreadyExecutedVolumeInQuoteCurrency;
     /**
@@ -70,7 +72,8 @@ public final class OpenOrderBo {
                        @Nonnull final BigDecimal desiredVolumeInQuoteCurrency,
                        @Nullable final BigDecimal desiredPrice,
                        @Nonnull final LocalDateTime openDateTime,
-                       @Nonnull final OrderStateBoEnum status,
+                       @Nullable final LocalDateTime expirationDateTime,
+                       @Nonnull final OrderStateBoEnum state,
                        @Nonnull final BigDecimal alreadyExecutedVolumeInQuoteCurrency,
                        @Nullable final BigDecimal averageActualPrice,
                        @Nullable final BigDecimal actualFeeInQuoteCurrency,
@@ -82,7 +85,8 @@ public final class OpenOrderBo {
         this.desiredVolumeInQuoteCurrency = desiredVolumeInQuoteCurrency;
         this.desiredPrice = desiredPrice;
         this.openDateTime = openDateTime;
-        this.status = status;
+        this.expirationDateTime = expirationDateTime;
+        this.state = state;
         this.alreadyExecutedVolumeInQuoteCurrency = alreadyExecutedVolumeInQuoteCurrency;
         this.averageActualPrice = averageActualPrice;
         this.actualFeeInQuoteCurrency = actualFeeInQuoteCurrency;
@@ -124,9 +128,14 @@ public final class OpenOrderBo {
         return openDateTime;
     }
 
+    @Nullable
+    public LocalDateTime getExpirationDateTime() {
+        return expirationDateTime;
+    }
+
     @Nonnull
-    public OrderStateBoEnum getStatus() {
-        return status;
+    public OrderStateBoEnum getState() {
+        return state;
     }
 
     @Nonnull

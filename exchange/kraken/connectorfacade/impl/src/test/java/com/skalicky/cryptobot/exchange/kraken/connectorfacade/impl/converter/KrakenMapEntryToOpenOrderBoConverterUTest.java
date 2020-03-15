@@ -89,7 +89,7 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
         assertThat(orderBo.getDesiredVolumeInQuoteCurrency()).isEqualTo(desiredVolumeInQuoteCurrency);
         assertThat(orderBo.getDesiredPrice()).isEqualTo(desiredPrice);
         assertThat(orderBo.getOpenDateTime()).isEqualTo(LocalDateTime.of(2020, 3, 10, 10, 5));
-        assertThat(orderBo.getStatus()).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED);
+        assertThat(orderBo.getState()).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED);
         assertThat(orderBo.getAlreadyExecutedVolumeInQuoteCurrency()).isEqualTo(alreadyExecutedVolumeInQuoteCurrency);
         assertThat(orderBo.getAverageActualPrice()).isEqualTo(averageActualPrice);
         assertThat(orderBo.getActualFeeInQuoteCurrency()).isEqualTo(actualFeeInQuoteCurrency);
@@ -129,7 +129,7 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
         assertThat(orderBo.getDesiredVolumeInQuoteCurrency()).isEqualTo(desiredVolumeInQuoteCurrency);
         assertThat(orderBo.getDesiredPrice()).isEqualTo(desiredPrice);
         assertThat(orderBo.getOpenDateTime()).isEqualTo(LocalDateTime.of(2020, 3, 10, 10, 5));
-        assertThat(orderBo.getStatus()).isEqualTo(OrderStateBoEnum.NEW);
+        assertThat(orderBo.getState()).isEqualTo(OrderStateBoEnum.NEW);
         assertThat(orderBo.getAlreadyExecutedVolumeInQuoteCurrency()).isEqualTo(alreadyExecutedVolumeInQuoteCurrency);
         assertThat(orderBo.getAverageActualPrice()).isNull();
         assertThat(orderBo.getActualFeeInQuoteCurrency()).isNull();
