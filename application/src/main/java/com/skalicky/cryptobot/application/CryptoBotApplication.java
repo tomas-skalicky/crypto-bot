@@ -38,7 +38,7 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.Kra
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToOpenOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
-import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderStatusToOrderStateBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToPriceOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.OrderTypeBoEnumToKrakenOrderTypeConverter;
@@ -65,6 +65,7 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import edu.self.kraken.api.KrakenApi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -151,15 +152,15 @@ public class CryptoBotApplication {
                 new KrakenMarketNameToCurrencyPairBoEnumConverter();
         final NonnullConverter<BigDecimal, LocalDateTime> epochSecondBigDecimalToLocalDateTimeConverter =
                 new EpochSecondBigDecimalToLocalDateTimeConverter();
-        final NonnullConverter<String, OrderStateBoEnum> krakenOrderStatusToOrderStateBoEnumConverter =
-                new KrakenOrderStatusToOrderStateBoEnumConverter();
+        final NonnullConverter<Pair<String, Integer>, OrderStateBoEnum> pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter =
+                new PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter();
         final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter =
                 new KrakenMapEntryToOpenOrderBoConverter(
                         krakenOrderTypeToOrderTypeBoEnumConverter,
                         krakenOrderTypeToPriceOrderTypeBoEnumConverter,
                         krakenMarketNameToCurrencyPairBoEnumConverter,
                         epochSecondBigDecimalToLocalDateTimeConverter,
-                        krakenOrderStatusToOrderStateBoEnumConverter
+                        pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter
                 );
         final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter =
                 new KrakenMapEntryToClosedOrderBoConverter(
@@ -167,7 +168,7 @@ public class CryptoBotApplication {
                         krakenOrderTypeToPriceOrderTypeBoEnumConverter,
                         krakenMarketNameToCurrencyPairBoEnumConverter,
                         epochSecondBigDecimalToLocalDateTimeConverter,
-                        krakenOrderStatusToOrderStateBoEnumConverter
+                        pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter
                 );
         return new KrakenPrivateApiFacadeImpl(
                 krakenPrivateApiConnector,

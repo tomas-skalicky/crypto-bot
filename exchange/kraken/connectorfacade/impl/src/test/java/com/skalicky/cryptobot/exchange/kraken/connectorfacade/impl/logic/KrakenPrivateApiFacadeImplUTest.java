@@ -33,7 +33,7 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.Kra
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToClosedOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToOpenOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
-import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderStatusToOrderStateBoEnumConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToPriceOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.OrderTypeBoEnumToKrakenOrderTypeConverter;
@@ -77,14 +77,14 @@ public class KrakenPrivateApiFacadeImplUTest {
                     new KrakenOrderTypeToPriceOrderTypeBoEnumConverter(),
                     new KrakenMarketNameToCurrencyPairBoEnumConverter(),
                     new EpochSecondBigDecimalToLocalDateTimeConverter(),
-                    new KrakenOrderStatusToOrderStateBoEnumConverter()
+                    new PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter()
             ),
             new KrakenMapEntryToClosedOrderBoConverter(
                     new KrakenOrderTypeToOrderTypeBoEnumConverter(),
                     new KrakenOrderTypeToPriceOrderTypeBoEnumConverter(),
                     new KrakenMarketNameToCurrencyPairBoEnumConverter(),
                     new EpochSecondBigDecimalToLocalDateTimeConverter(),
-                    new KrakenOrderStatusToOrderStateBoEnumConverter()
+                    new PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter()
             ),
             new LocalDateTimeToEpochSecondLongConverter());
 

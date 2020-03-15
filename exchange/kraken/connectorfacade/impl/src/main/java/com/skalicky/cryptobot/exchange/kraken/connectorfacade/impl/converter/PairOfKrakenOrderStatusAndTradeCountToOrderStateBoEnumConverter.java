@@ -20,24 +20,26 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 
-// TODO Tomas 3 consider trades in the converter
-public class KrakenOrderStatusToOrderStateBoEnumConverter implements NonnullConverter<String, OrderStateBoEnum> {
+public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter implements NonnullConverter<Pair<String, Integer>, OrderStateBoEnum> {
 
     @Override
     @Nonnull
-    public OrderStateBoEnum convert(@Nonnull final String priceOrderType) {
-        switch (priceOrderType) {
+    public OrderStateBoEnum convert(@Nonnull final Pair<String, Integer> krakenOrderStatusAndTradeCount) {
+        final String krakenOrderStatus = krakenOrderStatusAndTradeCount.getLeft();
+        final Integer tradeCount = krakenOrderStatusAndTradeCount.getRight();
+        switch (krakenOrderStatus) {
             case "open":
-                return OrderStateBoEnum.NEW;
+                return (tradeCount == 0) ? OrderStateBoEnum.NEW : OrderStateBoEnum.PARTIALLY_EXECUTED;
             case "closed":
                 return OrderStateBoEnum.FULLY_EXECUTED;
             case "canceled":
-                return OrderStateBoEnum.FULLY_CANCELED;
+                return (tradeCount == 0) ? OrderStateBoEnum.FULLY_CANCELED : OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_CANCELED;
             default:
-                throw new IllegalArgumentException("Unsupported order type [" + priceOrderType + "]");
+                throw new IllegalArgumentException("Unsupported Kraken order status [" + krakenOrderStatus + "]");
         }
     }
 }

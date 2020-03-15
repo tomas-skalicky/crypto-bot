@@ -48,7 +48,7 @@ public class KrakenMapEntryToClosedOrderBoConverterUTest {
                     new KrakenOrderTypeToPriceOrderTypeBoEnumConverter(),
                     new KrakenMarketNameToCurrencyPairBoEnumConverter(),
                     new EpochSecondBigDecimalToLocalDateTimeConverter(),
-                    new KrakenOrderStatusToOrderStateBoEnumConverter()
+                    new PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter()
             );
 
     @Test

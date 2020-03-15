@@ -19,14 +19,15 @@
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.google.common.collect.ImmutableList;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOrderDescriptionDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOrderDescriptionDto;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -46,18 +47,18 @@ public class KrakenMapEntryToClosedOrderBoConverter
     @Nonnull
     private final NonnullConverter<BigDecimal, LocalDateTime> epochSecondBigDecimalToLocalDateTimeConverter;
     @Nonnull
-    private final NonnullConverter<String, OrderStateBoEnum> krakenOrderStatusToOrderStateBoEnumConverter;
+    private final NonnullConverter<Pair<String, Integer>, OrderStateBoEnum> pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter;
 
     public KrakenMapEntryToClosedOrderBoConverter(@Nonnull final NonnullConverter<String, OrderTypeBoEnum> krakenOrderTypeToOrderTypeBoEnumConverter,
                                                   @Nonnull final NonnullConverter<String, PriceOrderTypeBoEnum> krakenOrderTypeToPriceOrderTypeBoEnumConverter,
                                                   @Nonnull final NonnullConverter<String, CurrencyPairBo> krakenMarketNameToCurrencyPairBoEnumConverter,
                                                   @Nonnull final NonnullConverter<BigDecimal, LocalDateTime> epochSecondBigDecimalToLocalDateTimeConverter,
-                                                  @Nonnull final NonnullConverter<String, OrderStateBoEnum> krakenOrderStatusToOrderStateBoEnumConverter) {
+                                                  @Nonnull final NonnullConverter<Pair<String, Integer>, OrderStateBoEnum> pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter) {
         this.krakenOrderTypeToOrderTypeBoEnumConverter = krakenOrderTypeToOrderTypeBoEnumConverter;
         this.krakenOrderTypeToPriceOrderTypeBoEnumConverter = krakenOrderTypeToPriceOrderTypeBoEnumConverter;
         this.krakenMarketNameToCurrencyPairBoEnumConverter = krakenMarketNameToCurrencyPairBoEnumConverter;
         this.epochSecondBigDecimalToLocalDateTimeConverter = epochSecondBigDecimalToLocalDateTimeConverter;
-        this.krakenOrderStatusToOrderStateBoEnumConverter = krakenOrderStatusToOrderStateBoEnumConverter;
+        this.pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter;
     }
 
     @Override
@@ -80,6 +81,8 @@ public class KrakenMapEntryToClosedOrderBoConverter
         Objects.requireNonNull(inputOrder.getCost());
         final ImmutableList<String> outputTrades = inputOrder.getTrades() == null
                 ? ImmutableList.<String>builder().build() : ImmutableList.copyOf(inputOrder.getTrades());
+        final OrderStateBoEnum outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
+                Pair.of(inputOrder.getStatus(), outputTrades.size()));
 
         return new ClosedOrderBo(
                 inputEntry.getKey(),
@@ -90,7 +93,7 @@ public class KrakenMapEntryToClosedOrderBoConverter
                 inputOrderDescription.getPrice(),
                 epochSecondBigDecimalToLocalDateTimeConverter.convert(inputOrder.getOpentm()),
                 epochSecondBigDecimalToLocalDateTimeConverter.convert(inputOrder.getClosetm()),
-                krakenOrderStatusToOrderStateBoEnumConverter.convert(inputOrder.getStatus()),
+                outputState,
                 inputOrder.getVol_exec(),
                 inputOrder.getPrice(),
                 inputOrder.getCost(),
