@@ -25,6 +25,7 @@ import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicImpl;
 import com.skalicky.cryptobot.businesslogic.impl.LocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPrivateApiConnectorImpl;
@@ -34,6 +35,7 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPu
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenCurrencyNameToCurrencyBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToClosedOrderBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToOpenOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderStatusToOrderStateBoEnumConverter;
@@ -53,6 +55,7 @@ import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.SlackFacadeImpl;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
@@ -150,6 +153,14 @@ public class CryptoBotApplication {
                 new EpochSecondBigDecimalToLocalDateTimeConverter();
         final NonnullConverter<String, OrderStateBoEnum> krakenOrderStatusToOrderStateBoEnumConverter =
                 new KrakenOrderStatusToOrderStateBoEnumConverter();
+        final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter =
+                new KrakenMapEntryToOpenOrderBoConverter(
+                        krakenOrderTypeToOrderTypeBoEnumConverter,
+                        krakenOrderTypeToPriceOrderTypeBoEnumConverter,
+                        krakenMarketNameToCurrencyPairBoEnumConverter,
+                        epochSecondBigDecimalToLocalDateTimeConverter,
+                        krakenOrderStatusToOrderStateBoEnumConverter
+                );
         final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter =
                 new KrakenMapEntryToClosedOrderBoConverter(
                         krakenOrderTypeToOrderTypeBoEnumConverter,
@@ -164,6 +175,7 @@ public class CryptoBotApplication {
                 orderTypeBoEnumToKrakenOrderTypeConverter,
                 priceOrderTypeBoEnumToKrakenOrderTypeConverter,
                 krakenCurrencyNameToCurrencyBoEnumConverter,
+                krakenMapEntryToOpenOrderBoConverter,
                 krakenMapEntryToClosedOrderBoConverter,
                 new LocalDateTimeToEpochSecondLongConverter());
     }

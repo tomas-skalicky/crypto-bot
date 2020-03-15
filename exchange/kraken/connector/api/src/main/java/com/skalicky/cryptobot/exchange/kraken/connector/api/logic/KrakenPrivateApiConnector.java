@@ -21,6 +21,7 @@ package com.skalicky.cryptobot.exchange.kraken.connector.api.logic;
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ import java.util.Map;
 public interface KrakenPrivateApiConnector {
 
     @Nonnull
-    KrakenResponseDto<Map<String, Map<String, Object>>> openOrders(boolean includeTrades);
+    KrakenResponseDto<KrakenOpenOrderResultDto> openOrders(boolean includeTrades);
 
     @Nonnull
     KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(boolean includeTrades,

@@ -23,12 +23,15 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 
 import javax.annotation.Nonnull;
 
+// TODO Tomas 3 consider trades in the converter
 public class KrakenOrderStatusToOrderStateBoEnumConverter implements NonnullConverter<String, OrderStateBoEnum> {
 
     @Override
     @Nonnull
     public OrderStateBoEnum convert(@Nonnull final String priceOrderType) {
         switch (priceOrderType) {
+            case "open":
+                return OrderStateBoEnum.NEW;
             case "closed":
                 return OrderStateBoEnum.FULLY_EXECUTED;
             case "canceled":

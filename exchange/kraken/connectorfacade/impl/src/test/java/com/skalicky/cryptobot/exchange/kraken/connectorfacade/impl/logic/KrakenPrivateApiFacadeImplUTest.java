@@ -23,11 +23,15 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderRe
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDtoBuilder;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDtoBuilder;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenCurrencyNameToCurrencyBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToClosedOrderBoConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToOpenOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderStatusToOrderStateBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToOrderTypeBoEnumConverter;
@@ -38,6 +42,7 @@ import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.Epo
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.LocalDateTimeToEpochSecondLongConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
@@ -67,6 +72,13 @@ public class KrakenPrivateApiFacadeImplUTest {
             new OrderTypeBoEnumToKrakenOrderTypeConverter(),
             new PriceOrderTypeBoEnumToKrakenOrderTypeConverter(),
             new KrakenCurrencyNameToCurrencyBoEnumConverter(),
+            new KrakenMapEntryToOpenOrderBoConverter(
+                    new KrakenOrderTypeToOrderTypeBoEnumConverter(),
+                    new KrakenOrderTypeToPriceOrderTypeBoEnumConverter(),
+                    new KrakenMarketNameToCurrencyPairBoEnumConverter(),
+                    new EpochSecondBigDecimalToLocalDateTimeConverter(),
+                    new KrakenOrderStatusToOrderStateBoEnumConverter()
+            ),
             new KrakenMapEntryToClosedOrderBoConverter(
                     new KrakenOrderTypeToOrderTypeBoEnumConverter(),
                     new KrakenOrderTypeToPriceOrderTypeBoEnumConverter(),
@@ -80,6 +92,73 @@ public class KrakenPrivateApiFacadeImplUTest {
     public void assertAndCleanMocks() {
         Mockito.verifyNoMoreInteractions(krakenPrivateApiConnector);
         Mockito.reset(krakenPrivateApiConnector);
+    }
+
+    @Test
+    public void test_getOpenOrders_when_krakenResponseWithError_then_exception() {
+
+        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        krakenResponseDto.setError(List.of("Error 12343"));
+        final boolean includeTrades = true;
+        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+
+        assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("[Error 12343]");
+
+        verify(krakenPrivateApiConnector).openOrders(includeTrades);
+    }
+
+    @Test
+    public void test_getOpenOrders_when_krakenResponseWithNullResult_then_emptyListIsReturned() {
+
+        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        krakenResponseDto.setResult(null);
+        final boolean includeTrades = true;
+        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+
+        final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
+
+        verify(krakenPrivateApiConnector).openOrders(includeTrades);
+
+        assertThat(openOrders).isEmpty();
+    }
+
+    @Test
+    public void test_getOpenOrders_when_krakenResponseWithEmptyOpen_then_emptyListIsReturned() {
+
+        final KrakenOpenOrderResultDto result = new KrakenOpenOrderResultDto();
+        result.setOpen(null);
+        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        krakenResponseDto.setResult(result);
+        final boolean includeTrades = true;
+        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+
+        final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
+
+        verify(krakenPrivateApiConnector).openOrders(includeTrades);
+
+        assertThat(openOrders).isEmpty();
+    }
+
+    @Test
+    public void test_getOpenOrders_when_krakenResponseWithOneOpenOrder_then_oneOrderReturned() {
+
+        final KrakenOpenOrderDto order = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto().build();
+        final KrakenOpenOrderResultDto result = new KrakenOpenOrderResultDto();
+        final String orderId = "orderId1";
+        result.setOpen(Map.of(orderId, order));
+        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        krakenResponseDto.setResult(result);
+        final boolean includeTrades = true;
+        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+
+        final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
+
+        verify(krakenPrivateApiConnector).openOrders(includeTrades);
+
+        assertThat(openOrders).hasSize(1);
+        assertThat(openOrders.get(0).getOrderId()).isEqualTo(orderId);
     }
 
     @Test

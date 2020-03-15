@@ -23,6 +23,8 @@ import com.google.common.collect.ImmutableMap;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
@@ -57,6 +59,8 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Nonnull
     private final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter;
     @Nonnull
+    private final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter;
+    @Nonnull
     private final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter;
     @Nonnull
     private final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter;
@@ -66,6 +70,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
                                       @Nonnull final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter,
                                       @Nonnull final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter,
                                       @Nonnull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter,
+                                      @Nonnull final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter,
                                       @Nonnull final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter,
                                       @Nonnull final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter) {
         this.krakenPrivateApiConnector = krakenPrivateApiConnector;
@@ -73,6 +78,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         this.orderTypeBoEnumToKrakenOrderTypeConverter = orderTypeBoEnumToKrakenOrderTypeConverter;
         this.priceOrderTypeBoEnumToKrakenOrderTypeConverter = priceOrderTypeBoEnumToKrakenOrderTypeConverter;
         this.krakenCurrencyNameToCurrencyBoEnumConverter = krakenCurrencyNameToCurrencyBoEnumConverter;
+        this.krakenMapEntryToOpenOrderBoConverter = krakenMapEntryToOpenOrderBoConverter;
         this.krakenMapEntryToClosedOrderBoConverter = krakenMapEntryToClosedOrderBoConverter;
         this.localDateTimeToEpochSecondLongConverter = localDateTimeToEpochSecondLongConverter;
     }
@@ -80,8 +86,19 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Nonnull
     @Override
     public ImmutableList<OpenOrderBo> getOpenOrders(final boolean includeTrades) {
-        // TODO Tomas not implemented yet. I am waiting for the first open order in Kraken.
-        return null;
+        final KrakenResponseDto<KrakenOpenOrderResultDto> response = krakenPrivateApiConnector.openOrders(
+                includeTrades);
+
+        if (CollectionUtils.isNotEmpty(response.getError())) {
+            throw new IllegalStateException(response.getError().toString());
+        }
+        if (response.getResult() == null || MapUtils.isEmpty(response.getResult().getOpen())) {
+            return ImmutableList.<OpenOrderBo>builder().build();
+        }
+
+        return ImmutableList.copyOf(response.getResult().getOpen().entrySet().stream() //
+                .map(krakenMapEntryToOpenOrderBoConverter::convert) //
+                .collect(Collectors.toList()));
     }
 
     @Nonnull

@@ -41,7 +41,7 @@ public final class KrakenClosedOrderDtoBuilder {
     @Nullable
     private BigDecimal expiretm;
     @Nullable
-    private KrakenClosedOrderDescriptionDto descr = KrakenClosedOrderDescriptionDtoBuilder.aKrakenClosedOrderDescriptionDto().build();
+    private KrakenOrderDescriptionDto descr = KrakenOrderDescriptionDtoBuilder.aKrakenOrderDescriptionDto().build();
     @Nullable
     private BigDecimal vol = new BigDecimal("0.56");
     @Nullable
@@ -120,7 +120,7 @@ public final class KrakenClosedOrderDtoBuilder {
     }
 
     @Nonnull
-    public KrakenClosedOrderDtoBuilder withDescr(@Nullable final KrakenClosedOrderDescriptionDto descr) {
+    public KrakenClosedOrderDtoBuilder withDescr(@Nullable final KrakenOrderDescriptionDto descr) {
         this.descr = descr;
         return this;
     }

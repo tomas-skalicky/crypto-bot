@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
-public final class KrakenClosedOrderDescriptionDtoBuilder {
+public final class KrakenOrderDescriptionDtoBuilder {
     @Nullable
     private String pair = "XBTEUR";
     @Nullable
@@ -40,73 +40,73 @@ public final class KrakenClosedOrderDescriptionDtoBuilder {
     @Nullable
     private String close;
 
-    private KrakenClosedOrderDescriptionDtoBuilder() {
+    private KrakenOrderDescriptionDtoBuilder() {
     }
 
     @Nonnull
-    public static KrakenClosedOrderDescriptionDtoBuilder aKrakenClosedOrderDescriptionDto() {
-        return new KrakenClosedOrderDescriptionDtoBuilder();
+    public static KrakenOrderDescriptionDtoBuilder aKrakenOrderDescriptionDto() {
+        return new KrakenOrderDescriptionDtoBuilder();
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withPair(@Nonnull final String pair) {
+    public KrakenOrderDescriptionDtoBuilder withPair(@Nonnull final String pair) {
         this.pair = pair;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withType(@Nonnull final String type) {
+    public KrakenOrderDescriptionDtoBuilder withType(@Nonnull final String type) {
         this.type = type;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withOrdertype(@Nonnull final String ordertype) {
+    public KrakenOrderDescriptionDtoBuilder withOrdertype(@Nonnull final String ordertype) {
         this.ordertype = ordertype;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withPrice(@Nonnull final BigDecimal price) {
+    public KrakenOrderDescriptionDtoBuilder withPrice(@Nonnull final BigDecimal price) {
         this.price = price;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withPrice2(@Nonnull final BigDecimal price2) {
+    public KrakenOrderDescriptionDtoBuilder withPrice2(@Nonnull final BigDecimal price2) {
         this.price2 = price2;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withLeverage(@Nonnull final String leverage) {
+    public KrakenOrderDescriptionDtoBuilder withLeverage(@Nonnull final String leverage) {
         this.leverage = leverage;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withOrder(@Nonnull final String order) {
+    public KrakenOrderDescriptionDtoBuilder withOrder(@Nonnull final String order) {
         this.order = order;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDtoBuilder withClose(@Nonnull final String close) {
+    public KrakenOrderDescriptionDtoBuilder withClose(@Nonnull final String close) {
         this.close = close;
         return this;
     }
 
     @Nonnull
-    public KrakenClosedOrderDescriptionDto build() {
-        final KrakenClosedOrderDescriptionDto krakenClosedOrderDescriptionDto = new KrakenClosedOrderDescriptionDto();
-        krakenClosedOrderDescriptionDto.setPair(pair);
-        krakenClosedOrderDescriptionDto.setType(type);
-        krakenClosedOrderDescriptionDto.setOrdertype(ordertype);
-        krakenClosedOrderDescriptionDto.setPrice(price);
-        krakenClosedOrderDescriptionDto.setPrice2(price2);
-        krakenClosedOrderDescriptionDto.setLeverage(leverage);
-        krakenClosedOrderDescriptionDto.setOrder(order);
-        krakenClosedOrderDescriptionDto.setClose(close);
-        return krakenClosedOrderDescriptionDto;
+    public KrakenOrderDescriptionDto build() {
+        final KrakenOrderDescriptionDto krakenOrderDescriptionDto = new KrakenOrderDescriptionDto();
+        krakenOrderDescriptionDto.setPair(pair);
+        krakenOrderDescriptionDto.setType(type);
+        krakenOrderDescriptionDto.setOrdertype(ordertype);
+        krakenOrderDescriptionDto.setPrice(price);
+        krakenOrderDescriptionDto.setPrice2(price2);
+        krakenOrderDescriptionDto.setLeverage(leverage);
+        krakenOrderDescriptionDto.setOrder(order);
+        krakenOrderDescriptionDto.setClose(close);
+        return krakenOrderDescriptionDto;
     }
 }

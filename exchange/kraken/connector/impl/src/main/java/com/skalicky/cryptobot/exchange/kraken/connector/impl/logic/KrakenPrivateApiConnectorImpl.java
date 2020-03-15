@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import edu.self.kraken.api.KrakenApi;
@@ -49,9 +50,16 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
 
     @Nonnull
     @Override
-    public KrakenResponseDto<Map<String, Map<String, Object>>> openOrders(final boolean includeTrades) {
-        // TODO Tomas not implemented yet. I am waiting for the first open order in Kraken. OPEN_ORDERS is very likely what I want.
-        return null;
+    public KrakenResponseDto<KrakenOpenOrderResultDto> openOrders(final boolean includeTrades) {
+        final Map<String, String> parameters = Collections.singletonMap(
+                "trades", String.valueOf(includeTrades));
+        try {
+            final String responseString = krakenApi.queryPrivate(KrakenApi.Method.OPEN_ORDERS, parameters);
+            return objectMapper.readValue(responseString, new TypeReference<>() {
+            });
+        } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     @Nonnull

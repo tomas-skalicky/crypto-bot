@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class KrakenClosedOrderDto {
+public class KrakenOpenOrderDto {
     @Nullable
     private String refid;
     @Nullable
@@ -30,11 +30,7 @@ public class KrakenClosedOrderDto {
     @Nullable
     private String status;
     @Nullable
-    private String reason;
-    @Nullable
     private BigDecimal opentm;
-    @Nullable
-    private BigDecimal closetm;
     @Nullable
     private BigDecimal starttm;
     @Nullable
@@ -90,30 +86,12 @@ public class KrakenClosedOrderDto {
     }
 
     @Nullable
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(@Nullable final String reason) {
-        this.reason = reason;
-    }
-
-    @Nullable
     public BigDecimal getOpentm() {
         return opentm;
     }
 
     public void setOpentm(@Nullable final BigDecimal opentm) {
         this.opentm = opentm;
-    }
-
-    @Nullable
-    public BigDecimal getClosetm() {
-        return closetm;
-    }
-
-    public void setClosetm(@Nullable final BigDecimal closetm) {
-        this.closetm = closetm;
     }
 
     @Nullable
