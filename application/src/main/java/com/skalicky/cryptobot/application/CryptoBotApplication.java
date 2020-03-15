@@ -101,12 +101,12 @@ public class CryptoBotApplication {
                 ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
 
         try {
-//            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
-//                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
-//                    arguments.getBaseCurrency(),
-//                    arguments.getQuoteCurrency(),
-//                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
-//                    arguments.getSlackWebhookUrl());
+            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
+                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
+                    arguments.getBaseCurrency(),
+                    arguments.getQuoteCurrency(),
+                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
+                    arguments.getSlackWebhookUrl());
             cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
             cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
 

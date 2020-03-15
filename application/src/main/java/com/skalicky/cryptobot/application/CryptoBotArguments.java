@@ -92,8 +92,7 @@ public class CryptoBotArguments {
 
     @Nullable
     @Parameter(names = {"--slackWebhookUrl"},
-            description = "Slack Webhook to report purchases and incidents to.",
-            required = false)
+            description = "Slack Webhook to notify the user about placing of orders, open and closed orders, etc.")
     private String slackWebhookUrl;
 
     @Nonnull
