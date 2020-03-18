@@ -187,7 +187,7 @@ public final class KrakenClosedOrderDtoBuilder {
 
     @Nonnull
     public KrakenClosedOrderDto build() {
-        final KrakenClosedOrderDto krakenClosedOrderDto = new KrakenClosedOrderDto();
+        final var krakenClosedOrderDto = new KrakenClosedOrderDto();
         krakenClosedOrderDto.setRefid(refid);
         krakenClosedOrderDto.setUserref(userref);
         krakenClosedOrderDto.setStatus(status);

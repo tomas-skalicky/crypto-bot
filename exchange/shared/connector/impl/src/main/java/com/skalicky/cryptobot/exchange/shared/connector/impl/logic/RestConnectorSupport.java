@@ -40,18 +40,18 @@ public class RestConnectorSupport {
 
     public <T> void postJson(@Nonnull final T requestPayload,
                              @Nonnull final String targetUrl) {
-        final WebTarget webTarget = client.target(targetUrl);
+        final var webTarget = client.target(targetUrl);
 
-        final Invocation.Builder invocationBuilder = webTarget.request();
-        final Entity<T> requestEntity = Entity.entity(requestPayload, MediaType.APPLICATION_JSON);
+        final var invocationBuilder = webTarget.request();
+        final var requestEntity = Entity.entity(requestPayload, MediaType.APPLICATION_JSON);
 
         logger.debug("URI {} - Request: {}", targetUrl, requestEntity);
 
-        final Response response = invocationBuilder.post(requestEntity);
+        final var response = invocationBuilder.post(requestEntity);
 
-        final String responseString = response.readEntity(String.class);
-        final int maxLength = 512;
-        final boolean showDots = responseString.length() > maxLength;
+        final var responseString = response.readEntity(String.class);
+        final var maxLength = 512;
+        final var showDots = responseString.length() > maxLength;
         logger.debug("URI {} - Raw Response: {}{}", targetUrl,
                 responseString.substring(0, Math.min(maxLength, responseString.length())), showDots ? "..." : "");
 

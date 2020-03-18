@@ -57,11 +57,11 @@ public class RestConnectorSupportUTest {
 
     @Test
     public void test_postJson_when_successHttpStatus_then_noException() throws Exception {
-        final TestRequest testRequest = new TestRequest("Tomas Skalicky");
-        final String serializedRequest = objectMapper.writeValueAsString(testRequest);
-        final TestResponse testResponse = new TestResponse("no problem");
-        final String serializedResponse = objectMapper.writeValueAsString(testResponse);
-        final String endpoint = "/context-path/servlet-mapping/endpoint";
+        final var testRequest = new TestRequest("Tomas Skalicky");
+        final var serializedRequest = objectMapper.writeValueAsString(testRequest);
+        final var testResponse = new TestResponse("no problem");
+        final var serializedResponse = objectMapper.writeValueAsString(testResponse);
+        final var endpoint = "/context-path/servlet-mapping/endpoint";
         wireMockServer.stubFor(
                 post(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
@@ -69,7 +69,7 @@ public class RestConnectorSupportUTest {
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withBody(serializedResponse)));
-        final int port = wireMockServer.port();
+        final var port = wireMockServer.port();
 
         restConnectorSupport.postJson(testRequest, "http://localhost:" + port + endpoint);
 
@@ -81,11 +81,11 @@ public class RestConnectorSupportUTest {
 
     @Test
     public void test_postJson_when_nonSuccessHttpStatus_then_exception() throws Exception {
-        final TestRequest testRequest = new TestRequest("Tomas Skalicky");
-        final String serializedRequest = objectMapper.writeValueAsString(testRequest);
-        final TestResponse testResponse = new TestResponse("redirection to a new URL");
-        final String serializedResponse = objectMapper.writeValueAsString(testResponse);
-        final String endpoint = "/context-path/servlet-mapping/endpoint";
+        final var testRequest = new TestRequest("Tomas Skalicky");
+        final var serializedRequest = objectMapper.writeValueAsString(testRequest);
+        final var testResponse = new TestResponse("redirection to a new URL");
+        final var serializedResponse = objectMapper.writeValueAsString(testResponse);
+        final var endpoint = "/context-path/servlet-mapping/endpoint";
         wireMockServer.stubFor(
                 post(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
@@ -93,7 +93,7 @@ public class RestConnectorSupportUTest {
                         .willReturn(aResponse()
                                 .withStatus(300)
                                 .withBody(serializedResponse)));
-        final int port = wireMockServer.port();
+        final var port = wireMockServer.port();
 
         assertThatThrownBy(() -> restConnectorSupport.postJson(testRequest, "http://localhost:" + port + endpoint))
                 .isInstanceOf(IllegalStateException.class)

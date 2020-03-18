@@ -54,21 +54,21 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
 
     @Test
     public void test_convert_when_allDataProvidedAndValid_then_successfulConversion() {
-        final BigDecimal desiredPrice = new BigDecimal("5762.3");
-        final KrakenOrderDescriptionDto descriptionDto = KrakenOrderDescriptionDtoBuilder
+        final var desiredPrice = new BigDecimal("5762.3");
+        final var descriptionDto = KrakenOrderDescriptionDtoBuilder
                 .aKrakenOrderDescriptionDto()
                 .withType("buy")
                 .withOrdertype("limit")
                 .withPair("XBTEUR")
                 .withPrice(desiredPrice)
                 .build();
-        final BigDecimal desiredVolumeInQuoteCurrency = new BigDecimal("1.56");
-        final BigDecimal alreadyExecutedVolumeInQuoteCurrency = new BigDecimal("0.75");
-        final BigDecimal averageActualPrice = new BigDecimal("5762.1");
-        final BigDecimal actualFeeInQuoteCurrency = new BigDecimal("0.005");
-        final String tradeId1 = "tradeId1";
-        final String tradeId2 = "tradeId2";
-        final KrakenOpenOrderDto orderDto = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto()
+        final var desiredVolumeInQuoteCurrency = new BigDecimal("1.56");
+        final var alreadyExecutedVolumeInQuoteCurrency = new BigDecimal("0.75");
+        final var averageActualPrice = new BigDecimal("5762.1");
+        final var actualFeeInQuoteCurrency = new BigDecimal("0.005");
+        final var tradeId1 = "tradeId1";
+        final var tradeId2 = "tradeId2";
+        final var orderDto = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto()
                 .withDescr(descriptionDto)
                 .withVol(desiredVolumeInQuoteCurrency)
                 .withOpentm(BigDecimal.valueOf(1583831100))
@@ -78,9 +78,9 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
                 .withCost(actualFeeInQuoteCurrency)
                 .withTrades(List.of(tradeId1, tradeId2))
                 .build();
-        final String orderId = "orderId123";
+        final var orderId = "orderId123";
 
-        final OpenOrderBo orderBo = converter.convert(Pair.of(orderId, orderDto));
+        final var orderBo = converter.convert(Pair.of(orderId, orderDto));
 
         assertThat(orderBo.getOrderId()).isEqualTo(orderId);
         assertThat(orderBo.getOrderType()).isEqualTo(OrderTypeBoEnum.BUY);
@@ -98,17 +98,17 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
 
     @Test
     public void test_convert_when_noTradesYet_then_averageActualPriceNotSet_and_actualFeeInQuoteCurrencyNotSet() {
-        final BigDecimal desiredPrice = new BigDecimal("5762.3");
-        final KrakenOrderDescriptionDto descriptionDto = KrakenOrderDescriptionDtoBuilder
+        final var desiredPrice = new BigDecimal("5762.3");
+        final var descriptionDto = KrakenOrderDescriptionDtoBuilder
                 .aKrakenOrderDescriptionDto()
                 .withType("buy")
                 .withOrdertype("limit")
                 .withPair("XBTEUR")
                 .withPrice(desiredPrice)
                 .build();
-        final BigDecimal desiredVolumeInQuoteCurrency = new BigDecimal("1.56");
-        final BigDecimal alreadyExecutedVolumeInQuoteCurrency = BigDecimal.ZERO;
-        final KrakenOpenOrderDto orderDto = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto()
+        final var desiredVolumeInQuoteCurrency = new BigDecimal("1.56");
+        final var alreadyExecutedVolumeInQuoteCurrency = BigDecimal.ZERO;
+        final var orderDto = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto()
                 .withDescr(descriptionDto)
                 .withVol(desiredVolumeInQuoteCurrency)
                 .withOpentm(BigDecimal.valueOf(1583831100))
@@ -118,9 +118,9 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
                 .withCost(null)
                 .withTrades(Collections.emptyList())
                 .build();
-        final String orderId = "orderId123";
+        final var orderId = "orderId123";
 
-        final OpenOrderBo orderBo = converter.convert(Pair.of(orderId, orderDto));
+        final var orderBo = converter.convert(Pair.of(orderId, orderDto));
 
         assertThat(orderBo.getOrderId()).isEqualTo(orderId);
         assertThat(orderBo.getOrderType()).isEqualTo(OrderTypeBoEnum.BUY);

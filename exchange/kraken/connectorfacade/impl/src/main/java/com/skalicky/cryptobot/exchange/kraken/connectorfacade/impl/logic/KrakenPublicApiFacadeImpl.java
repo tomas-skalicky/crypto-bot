@@ -50,9 +50,9 @@ public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
     @Override
     @Nonnull
     public TickerBo getTicker(@Nonnull final CurrencyPairBo currencyPair) {
-        final String marketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
-        final ImmutableList<String> marketNames = ImmutableList.of(marketName);
-        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnector.ticker(marketNames);
+        final var marketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
+        final var marketNames = ImmutableList.of(marketName);
+        final var response = krakenPublicApiConnector.ticker(marketNames);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
@@ -60,7 +60,7 @@ public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
         if (MapUtils.isEmpty(response.getResult())) {
             throw new IllegalArgumentException("No result for the market name " + marketName);
         }
-        final int resultEntryCount = MapUtils.size(response.getResult());
+        final var resultEntryCount = MapUtils.size(response.getResult());
         if (resultEntryCount > 1) {
             throw new IllegalStateException("More than one result entries [" + resultEntryCount + "] for the market " + marketName);
         }

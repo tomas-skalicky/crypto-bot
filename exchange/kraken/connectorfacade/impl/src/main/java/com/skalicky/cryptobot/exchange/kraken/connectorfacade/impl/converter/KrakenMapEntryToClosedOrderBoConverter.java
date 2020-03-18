@@ -64,13 +64,13 @@ public class KrakenMapEntryToClosedOrderBoConverter
     @Override
     @Nonnull
     public ClosedOrderBo convert(@Nonnull final Map.Entry<String, KrakenClosedOrderDto> inputEntry) {
-        final KrakenClosedOrderDto inputOrder = inputEntry.getValue();
-        final KrakenOrderDescriptionDto inputOrderDescription = inputOrder.getDescr();
+        final var inputOrder = inputEntry.getValue();
+        final var inputOrderDescription = inputOrder.getDescr();
         Objects.requireNonNull(inputOrderDescription);
         Objects.requireNonNull(inputOrderDescription.getType());
         Objects.requireNonNull(inputOrderDescription.getOrdertype());
         Objects.requireNonNull(inputOrderDescription.getPair());
-        final CurrencyPairBo currencyPair =
+        final var currencyPair =
                 krakenMarketNameToCurrencyPairBoEnumConverter.convert(inputOrderDescription.getPair());
         Objects.requireNonNull(inputOrder.getVol());
         Objects.requireNonNull(inputOrder.getOpentm());
@@ -79,9 +79,9 @@ public class KrakenMapEntryToClosedOrderBoConverter
         Objects.requireNonNull(inputOrder.getVol_exec());
         Objects.requireNonNull(inputOrder.getPrice());
         Objects.requireNonNull(inputOrder.getCost());
-        final ImmutableList<String> outputTrades = inputOrder.getTrades() == null
+        final var outputTrades = inputOrder.getTrades() == null
                 ? ImmutableList.<String>builder().build() : ImmutableList.copyOf(inputOrder.getTrades());
-        final OrderStateBoEnum outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
+        final var outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
                 Pair.of(inputOrder.getStatus(), outputTrades.size()));
 
         return new ClosedOrderBo(

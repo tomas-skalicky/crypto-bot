@@ -33,8 +33,8 @@ public final class EpochSecondBigDecimalToLocalDateTimeConverter implements Nonn
     @Override
     @Nonnull
     public LocalDateTime convert(@Nonnull final BigDecimal epochSecond) {
-        final long epochInNanos = epochSecond.multiply(BigDecimal.valueOf(1_000_000_000)).longValue();
-        final Instant instant = Instant.ofEpochSecond(0, epochInNanos);
+        final var epochInNanos = epochSecond.multiply(BigDecimal.valueOf(1_000_000_000)).longValue();
+        final var instant = Instant.ofEpochSecond(0, epochInNanos);
         return LocalDateTime.ofInstant(instant, ZONE_ID);
     }
 }

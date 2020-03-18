@@ -25,7 +25,6 @@ import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
@@ -40,9 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -78,14 +75,14 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     @Override
     public void reportOpenOrders(@Nonnull final String tradingPlatformName,
                                  @Nullable final String slackWebhookUrl) {
-        final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
+        final var facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
 
-        final List<OpenOrderBo> openOrders = facade.getOpenOrders(true);
-        final StringBuilder messageBuilder = new StringBuilder("Open orders on ")
+        final var openOrders = facade.getOpenOrders(true);
+        final var messageBuilder = new StringBuilder("Open orders on ")
                 .append(tradingPlatformName).append(": ");
         if (openOrders.isEmpty()) {
             messageBuilder.append("none");
@@ -93,7 +90,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             openOrders.forEach(o -> messageBuilder.append(System.lineSeparator())
                     .append(toStringForNotificationPurposes(o)));
         }
-        final String message = messageBuilder.toString();
+        final var message = messageBuilder.toString();
         logger.info(message);
         if (slackWebhookUrl != null) {
             slackFacade.sendMessage(message, slackWebhookUrl);
@@ -101,20 +98,20 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     }
 
     private String toStringForNotificationPurposes(@Nonnull final OpenOrderBo order) {
-        final CurrencyPairBo currencyPair = order.getCurrencyPair();
-        final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
-        final BigDecimal desiredPrice = order.getDesiredPrice();
-        final String tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
-        final String desiredPriceString = desiredPrice == null ? "" : desiredPrice + " ";
-        final OrderStateBoEnum orderState = order.getState();
-        final BigDecimal averageActualPrice = order.getAverageActualPrice();
-        final String averageActualPriceString = orderState == OrderStateBoEnum.NEW ? ""
+        final var currencyPair = order.getCurrencyPair();
+        final var quoteCurrency = currencyPair.getQuoteCurrency();
+        final var desiredPrice = order.getDesiredPrice();
+        final var tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
+        final var desiredPriceString = desiredPrice == null ? "" : desiredPrice + " ";
+        final var orderState = order.getState();
+        final var averageActualPrice = order.getAverageActualPrice();
+        final var averageActualPriceString = orderState == OrderStateBoEnum.NEW ? ""
                 : "exec. avg. " + averageActualPrice + " ";
-        final BigDecimal actualFeeInQuoteCurrency = order.getActualFeeInQuoteCurrency();
-        final String actualFeeInQuoteCurrencyString = orderState == OrderStateBoEnum.NEW ? ""
+        final var actualFeeInQuoteCurrency = order.getActualFeeInQuoteCurrency();
+        final var actualFeeInQuoteCurrencyString = orderState == OrderStateBoEnum.NEW ? ""
                 : "fee " + actualFeeInQuoteCurrency + " " + quoteCurrency.getLabel() + " ";
-        final LocalDateTime expirationDateTime = order.getExpirationDateTime();
-        final String expirationDateTimeString = expirationDateTime == null ? ""
+        final var expirationDateTime = order.getExpirationDateTime();
+        final var expirationDateTimeString = expirationDateTime == null ? ""
                 : "expires on " + expirationDateTime.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " ";
         return order.getOrderType().getLabel() + " "
                 + order.getDesiredVolumeInQuoteCurrency() + " "
@@ -133,17 +130,17 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     @Override
     public void reportClosedOrders(@Nonnull final String tradingPlatformName,
                                    @Nullable final String slackWebhookUrl) {
-        final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
+        final var facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
 
-        final LocalDateTime from = localDateTimeProvider.now().minusDays(3);
-        final List<ClosedOrderBo> closedOrdersWithTrades = facade.getClosedOrders(true, from).stream() //
+        final var from = localDateTimeProvider.now().minusDays(3);
+        final var closedOrdersWithTrades = facade.getClosedOrders(true, from).stream() //
                 .filter(o -> !o.getTradeIds().isEmpty()) //
                 .collect(Collectors.toList());
-        final StringBuilder messageBuilder = new StringBuilder("Closed orders since ")
+        final var messageBuilder = new StringBuilder("Closed orders since ")
                 .append(from.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER)).append(" on ")
                 .append(tradingPlatformName).append(": ");
         if (closedOrdersWithTrades.isEmpty()) {
@@ -152,7 +149,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             closedOrdersWithTrades.forEach(o -> messageBuilder.append(System.lineSeparator())
                     .append(toStringForNotificationPurposes(o)));
         }
-        final String message = messageBuilder.toString();
+        final var message = messageBuilder.toString();
         logger.info(message);
         if (slackWebhookUrl != null) {
             slackFacade.sendMessage(message, slackWebhookUrl);
@@ -160,11 +157,11 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     }
 
     private String toStringForNotificationPurposes(@Nonnull final ClosedOrderBo order) {
-        final CurrencyPairBo currencyPair = order.getCurrencyPair();
-        final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
-        final BigDecimal desiredPrice = order.getDesiredPrice();
-        final String tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
-        final String desiredPriceString = desiredPrice != null ? desiredPrice + " " : "";
+        final var currencyPair = order.getCurrencyPair();
+        final var quoteCurrency = currencyPair.getQuoteCurrency();
+        final var desiredPrice = order.getDesiredPrice();
+        final var tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
+        final var desiredPriceString = desiredPrice != null ? desiredPrice + " " : "";
         return order.getOrderType().getLabel() + " "
                 + order.getDesiredVolumeInQuoteCurrency() + " "
                 + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
@@ -186,40 +183,41 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                                                @Nonnull final String quoteCurrencyLabel,
                                                @Nonnull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
                                                @Nullable final String slackWebhookUrl) {
-        final TradingPlatformPrivateApiFacade privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
+        final var privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (privateApiFacade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
-        final TradingPlatformPublicApiFacade publicApiFacade = publicApiFacadesByPlatformNames.get(tradingPlatformName);
+        final var publicApiFacade = publicApiFacadesByPlatformNames.get(tradingPlatformName);
         if (publicApiFacade == null) {
             throw new IllegalArgumentException("No public API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
 
-        final CurrencyBoEnum baseCurrency = CurrencyBoEnum.getByLabel(baseCurrencyLabel);
-        final BigDecimal baseCurrencyAmount = privateApiFacade.getAccountBalance().get(baseCurrency);
+        final var baseCurrency = CurrencyBoEnum.getByLabel(baseCurrencyLabel);
+        final var baseCurrencyAmount = privateApiFacade.getAccountBalance().get(baseCurrency);
         if (baseCurrencyAmount.compareTo(volumeInBaseCurrencyToInvestPerRun) >= 0) {
-            final String tickerMessage = "Going to retrieve a ticker for currencies quote " + quoteCurrencyLabel
+            final var tickerMessage = "Going to retrieve a ticker for currencies quote " + quoteCurrencyLabel
                     + " and base " + baseCurrencyLabel + " on " + tradingPlatformName + ".";
             logger.info(tickerMessage);
             if (slackWebhookUrl != null) {
                 slackFacade.sendMessage(tickerMessage, slackWebhookUrl);
             }
 
-            final CurrencyBoEnum quoteCurrency = CurrencyBoEnum.getByLabel(quoteCurrencyLabel);
-            final CurrencyPairBo currencyPair = new CurrencyPairBo(quoteCurrency, baseCurrency);
-            final TickerBo ticker = publicApiFacade.getTicker(currencyPair);
+            final var quoteCurrency = CurrencyBoEnum.getByLabel(quoteCurrencyLabel);
+            final var currencyPair = new CurrencyPairBo(quoteCurrency, baseCurrency);
+            final var ticker = publicApiFacade.getTicker(currencyPair);
 
-            final BigDecimal price = ticker.getBidPrice().multiply(BigDecimal.ONE.subtract(offsetRatioOfLimitPriceToBidPriceInDecimal));
-            final BigDecimal volumeInQuoteCurrency = volumeInBaseCurrencyToInvestPerRun.divide(price, 10,
+            final var price = ticker.getBidPrice().multiply(BigDecimal.ONE.subtract(
+                    offsetRatioOfLimitPriceToBidPriceInDecimal));
+            final var volumeInQuoteCurrency = volumeInBaseCurrencyToInvestPerRun.divide(price, 10,
                     RoundingMode.HALF_UP);
-            final OrderTypeBoEnum orderType = OrderTypeBoEnum.BUY;
-            final PriceOrderTypeBoEnum priceOrderType = PriceOrderTypeBoEnum.LIMIT;
+            final var orderType = OrderTypeBoEnum.BUY;
+            final var priceOrderType = PriceOrderTypeBoEnum.LIMIT;
             // 36 hours
             final long orderExpirationInSecondsFromNow = 60 * 60 * 36;
 
-            final String orderMessage = "Going to place a " + priceOrderType.getLabel() + " order to "
+            final var orderMessage = "Going to place a " + priceOrderType.getLabel() + " order to "
                     + orderType.getLabel() + " " + volumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
                     + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel + " on " + tradingPlatformName
                     + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel
@@ -229,7 +227,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             privateApiFacade.placeOrder(orderType, priceOrderType, currencyPair,
                     volumeInQuoteCurrency, price, true, orderExpirationInSecondsFromNow);
 
-            final String orderPlacedMessage = priceOrderType.getLabel() + " order to "
+            final var orderPlacedMessage = priceOrderType.getLabel() + " order to "
                     + orderType.getLabel() + " " + volumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
                     + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel
                     + " successfully placed on " + tradingPlatformName
@@ -241,7 +239,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             }
 
         } else {
-            final String message = "Too little base currency [" + baseCurrencyAmount + " "
+            final var message = "Too little base currency [" + baseCurrencyAmount + " "
                     + baseCurrencyLabel + "]. Needed volume to invest per run is "
                     + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel;
             logger.warn(message);

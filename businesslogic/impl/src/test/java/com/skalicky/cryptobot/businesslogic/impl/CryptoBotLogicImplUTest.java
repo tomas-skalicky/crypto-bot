@@ -83,7 +83,7 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportOpenOrders_when_noSlackUrl_then_noSlackMessage() {
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(privateApiFacade.getOpenOrders(includeTrades))
                 .thenReturn(ImmutableList.<OpenOrderBo>builder().build());
 
@@ -96,10 +96,10 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportOpenOrders_when_noOrder_and_providedSlackUrl_then_noneInSlackMessage() {
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(privateApiFacade.getOpenOrders(includeTrades))
                 .thenReturn(ImmutableList.<OpenOrderBo>builder().build());
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
 
@@ -111,8 +111,8 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportOpenOrders_when_twoOrders_then_twoInSlackMessage() {
-        final boolean includeTrades = true;
-        final OpenOrderBo openOrder1 = OpenOrderBoBuilder.aOpenOrderBo()
+        final var includeTrades = true;
+        final var openOrder1 = OpenOrderBoBuilder.aOpenOrderBo()
                 .withOrderType(OrderTypeBoEnum.SELL)
                 .withDesiredVolumeInQuoteCurrency(new BigDecimal("0.65"))
                 .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR))
@@ -125,7 +125,7 @@ public class CryptoBotLogicImplUTest {
                 .withOpenDateTime(LocalDateTime.of(2020, 3, 7, 8, 15))
                 .withExpirationDateTime(LocalDateTime.of(2020, 3, 9, 10, 45))
                 .withTradeIds(ImmutableList.<String>builder().build()).build();
-        final OpenOrderBo openOrder2 = OpenOrderBoBuilder.aOpenOrderBo()
+        final var openOrder2 = OpenOrderBoBuilder.aOpenOrderBo()
                 .withOrderType(OrderTypeBoEnum.BUY)
                 .withDesiredVolumeInQuoteCurrency(new BigDecimal("150.56"))
                 .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.EUR, CurrencyBoEnum.BTC))
@@ -139,7 +139,7 @@ public class CryptoBotLogicImplUTest {
                 .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
         when(privateApiFacade.getOpenOrders(includeTrades))
                 .thenReturn(ImmutableList.of(openOrder1, openOrder2));
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
 
@@ -166,9 +166,9 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_noSlackUrl_then_noSlackMessage() {
-        final LocalDateTime now = fixableLocalDateTimeProvider.fix();
-        final LocalDateTime fromDateTime = now.minusDays(3);
-        final boolean includeTrades = true;
+        final var now = fixableLocalDateTimeProvider.fix();
+        final var fromDateTime = now.minusDays(3);
+        final var includeTrades = true;
         when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
                 .thenReturn(ImmutableList.<ClosedOrderBo>builder().build());
 
@@ -181,12 +181,12 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_noOrder_and_providedSlackUrl_then_noneInSlackMessage() {
-        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+        final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
                 .thenReturn(ImmutableList.<ClosedOrderBo>builder().build());
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
 
@@ -198,10 +198,10 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_twoOrders_then_twoInSlackMessage() {
-        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+        final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
-        final boolean includeTrades = true;
-        final ClosedOrderBo closedOrder1 = ClosedOrderBoBuilder.aClosedOrderBo()
+        final var includeTrades = true;
+        final var closedOrder1 = ClosedOrderBoBuilder.aClosedOrderBo()
                 .withOrderType(OrderTypeBoEnum.SELL)
                 .withDesiredVolumeInQuoteCurrency(new BigDecimal("0.65"))
                 .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR))
@@ -214,7 +214,7 @@ public class CryptoBotLogicImplUTest {
                 .withOpenDateTime(LocalDateTime.of(2020, 3, 7, 8, 15))
                 .withCloseDateTime(LocalDateTime.of(2020, 3, 7, 8, 17))
                 .withTradeIds(ImmutableList.of("tradeId1")).build();
-        final ClosedOrderBo closedOrder2 = ClosedOrderBoBuilder.aClosedOrderBo()
+        final var closedOrder2 = ClosedOrderBoBuilder.aClosedOrderBo()
                 .withOrderType(OrderTypeBoEnum.BUY)
                 .withDesiredVolumeInQuoteCurrency(new BigDecimal("150.56"))
                 .withCurrencyPair(new CurrencyPairBo(CurrencyBoEnum.EUR, CurrencyBoEnum.BTC))
@@ -229,7 +229,7 @@ public class CryptoBotLogicImplUTest {
                 .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
         when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
                 .thenReturn(ImmutableList.of(closedOrder1, closedOrder2));
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
 
@@ -245,13 +245,13 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_orderHasNoTrades_then_orderIsSkipped() {
-        final LocalDateTime fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
+        final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
-        final boolean includeTrades = true;
-        final ClosedOrderBo closedOrder = ClosedOrderBoBuilder.aClosedOrderBo()
+        final var includeTrades = true;
+        final var closedOrder = ClosedOrderBoBuilder.aClosedOrderBo()
                 .withTradeIds(ImmutableList.<String>builder().build()).build();
         when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime)).thenReturn(ImmutableList.of(closedOrder));
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
 
@@ -289,7 +289,7 @@ public class CryptoBotLogicImplUTest {
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
         when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "LTC",
@@ -305,10 +305,10 @@ public class CryptoBotLogicImplUTest {
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_enoughBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
         when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
-        final TickerBo ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
-        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final var ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
         when(publicApiFacade.getTicker(currencyPair)).thenReturn(ticker);
-        final String slackUrl = "http://slack_url";
+        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), "EUR",
@@ -331,13 +331,13 @@ public class CryptoBotLogicImplUTest {
     }
 
     private TradingPlatformPublicApiFacade createKrakenPublicApiFacadeMock() {
-        final TradingPlatformPublicApiFacade facade = mock(TradingPlatformPublicApiFacade.class);
+        final var facade = mock(TradingPlatformPublicApiFacade.class);
         when(facade.getTradingPlatform()).thenReturn(KRAKEN_TRADING_PLATFORM_NAME);
         return facade;
     }
 
     private TradingPlatformPrivateApiFacade createKrakenPrivateApiFacadeMock() {
-        final TradingPlatformPrivateApiFacade facade = mock(TradingPlatformPrivateApiFacade.class);
+        final var facade = mock(TradingPlatformPrivateApiFacade.class);
         when(facade.getTradingPlatform()).thenReturn(KRAKEN_TRADING_PLATFORM_NAME);
         return facade;
     }

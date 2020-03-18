@@ -20,10 +20,8 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDtoBuilder;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDtoBuilder;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
@@ -33,16 +31,14 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.Kra
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToClosedOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToOpenOrderBoConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMarketNameToCurrencyPairBoEnumConverter;
-import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenOrderTypeToPriceOrderTypeBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.OrderTypeBoEnumToKrakenOrderTypeConverter;
+import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.PriceOrderTypeBoEnumToKrakenOrderTypeConverter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.EpochSecondBigDecimalToLocalDateTimeConverter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.LocalDateTimeToEpochSecondLongConverter;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
@@ -97,9 +93,9 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getOpenOrders_when_krakenResponseWithError_then_exception() {
 
-        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setError(List.of("Error 12343"));
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
 
         assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades))
@@ -112,12 +108,12 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getOpenOrders_when_krakenResponseWithNullResult_then_emptyListIsReturned() {
 
-        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setResult(null);
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
 
-        final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
+        final var openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
 
         verify(krakenPrivateApiConnector).openOrders(includeTrades);
 
@@ -127,14 +123,14 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getOpenOrders_when_krakenResponseWithEmptyOpen_then_emptyListIsReturned() {
 
-        final KrakenOpenOrderResultDto result = new KrakenOpenOrderResultDto();
+        final var result = new KrakenOpenOrderResultDto();
         result.setOpen(null);
-        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setResult(result);
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
 
-        final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
+        final var openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
 
         verify(krakenPrivateApiConnector).openOrders(includeTrades);
 
@@ -144,16 +140,16 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getOpenOrders_when_krakenResponseWithOneOpenOrder_then_oneOrderReturned() {
 
-        final KrakenOpenOrderDto order = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto().build();
-        final KrakenOpenOrderResultDto result = new KrakenOpenOrderResultDto();
-        final String orderId = "orderId1";
+        final var order = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto().build();
+        final var result = new KrakenOpenOrderResultDto();
+        final var orderId = "orderId1";
         result.setOpen(Map.of(orderId, order));
-        final KrakenResponseDto<KrakenOpenOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setResult(result);
-        final boolean includeTrades = true;
+        final var includeTrades = true;
         when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
 
-        final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
+        final var openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
 
         verify(krakenPrivateApiConnector).openOrders(includeTrades);
 
@@ -164,11 +160,11 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getClosedOrders_when_krakenResponseWithError_then_exception() {
 
-        final KrakenResponseDto<KrakenClosedOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
         krakenResponseDto.setError(List.of("Error 123"));
-        final boolean includeTrades = true;
-        final LocalDateTime from = LocalDateTime.of(2020, 3, 10, 10, 5);
-        final Long fromInEpochSeconds = 1583831100L;
+        final var includeTrades = true;
+        final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
+        final var fromInEpochSeconds = 1583831100L;
         when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
 
         assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades, from))
@@ -181,14 +177,14 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getClosedOrders_when_krakenResponseWithNullResult_then_emptyListIsReturned() {
 
-        final KrakenResponseDto<KrakenClosedOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
         krakenResponseDto.setResult(null);
-        final boolean includeTrades = true;
-        final LocalDateTime from = LocalDateTime.of(2020, 3, 10, 10, 5);
-        final Long fromInEpochSeconds = 1583831100L;
+        final var includeTrades = true;
+        final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
+        final var fromInEpochSeconds = 1583831100L;
         when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
 
-        final ImmutableList<ClosedOrderBo> closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
+        final var closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
                 from);
 
         verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
@@ -199,16 +195,16 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getClosedOrders_when_krakenResponseWithEmptyClosed_then_emptyListIsReturned() {
 
-        final KrakenClosedOrderResultDto result = new KrakenClosedOrderResultDto();
+        final var result = new KrakenClosedOrderResultDto();
         result.setClosed(null);
-        final KrakenResponseDto<KrakenClosedOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
         krakenResponseDto.setResult(result);
-        final boolean includeTrades = true;
-        final LocalDateTime from = LocalDateTime.of(2020, 3, 10, 10, 5);
-        final Long fromInEpochSeconds = 1583831100L;
+        final var includeTrades = true;
+        final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
+        final var fromInEpochSeconds = 1583831100L;
         when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
 
-        final ImmutableList<ClosedOrderBo> closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
+        final var closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
                 from);
 
         verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
@@ -219,18 +215,18 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getClosedOrders_when_krakenResponseWithOneClosedOrder_then_oneOrderReturned() {
 
-        final KrakenClosedOrderDto order = KrakenClosedOrderDtoBuilder.aKrakenClosedOrderDto().build();
-        final KrakenClosedOrderResultDto result = new KrakenClosedOrderResultDto();
-        final String orderId = "orderId1";
+        final var order = KrakenClosedOrderDtoBuilder.aKrakenClosedOrderDto().build();
+        final var result = new KrakenClosedOrderResultDto();
+        final var orderId = "orderId1";
         result.setClosed(Map.of(orderId, order));
-        final KrakenResponseDto<KrakenClosedOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
         krakenResponseDto.setResult(result);
-        final boolean includeTrades = true;
-        final LocalDateTime from = LocalDateTime.of(2020, 3, 10, 10, 5);
-        final Long fromInEpochSeconds = 1583831100L;
+        final var includeTrades = true;
+        final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
+        final var fromInEpochSeconds = 1583831100L;
         when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
 
-        final ImmutableList<ClosedOrderBo> closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
+        final var closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
                 from);
 
         verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
@@ -242,9 +238,9 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_getAccountBalance_when_rawKrakenDataProvided_then_askPriceReturned_and_bidPriceReturned() {
 
-        final Map<String, BigDecimal> balancesByCurrencies = Map.of("BCH", BigDecimal.ZERO,
+        final var balancesByCurrencies = Map.of("BCH", BigDecimal.ZERO,
                 "ZEUR", new BigDecimal("34"), "XXRP", new BigDecimal("32"));
-        final KrakenResponseDto<Map<String, BigDecimal>> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenResponseDto = new KrakenResponseDto<Map<String, BigDecimal>>();
         krakenResponseDto.setResult(balancesByCurrencies);
         when(krakenPrivateApiConnector.balance()).thenReturn(krakenResponseDto);
 
@@ -260,17 +256,17 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_krakenResponseWithoutErrors_then_noException() {
 
-        final String krakenMarketName = "XBTEUR";
-        final String krakenOrderType = "buy";
-        final String krakenPriceOrderType = "market";
-        final BigDecimal price = new BigDecimal("7000.3");
-        final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final ImmutableList<String> orderFlags = ImmutableList.<String>builder().build();
-        final long orderExpirationInSecondsFromNow = 0;
+        final var krakenMarketName = "XBTEUR";
+        final var krakenOrderType = "buy";
+        final var krakenPriceOrderType = "market";
+        final var price = new BigDecimal("7000.3");
+        final var volumeInQuoteCurrency = new BigDecimal("0.01");
+        final var orderFlags = ImmutableList.<String>builder().build();
+        final var orderExpirationInSecondsFromNow = 0L;
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
-        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
@@ -285,17 +281,17 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_preferFeeInQuoteCurrencyIsTrue_then_fciqInOrderFlags() {
 
-        final String krakenMarketName = "XBTEUR";
-        final String krakenOrderType = "buy";
-        final String krakenPriceOrderType = "market";
-        final BigDecimal price = new BigDecimal("7000.3");
-        final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final ImmutableList<String> orderFlags = ImmutableList.of("fciq");
-        final long orderExpirationInSecondsFromNow = 0;
+        final var krakenMarketName = "XBTEUR";
+        final var krakenOrderType = "buy";
+        final var krakenPriceOrderType = "market";
+        final var price = new BigDecimal("7000.3");
+        final var volumeInQuoteCurrency = new BigDecimal("0.01");
+        final var orderFlags = ImmutableList.of("fciq");
+        final var orderExpirationInSecondsFromNow = 0L;
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
-        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
@@ -310,17 +306,17 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_priceHasMoreThanOneDecimalPlace_then_priceRoundedToOneDecimalPlace() {
 
-        final String krakenMarketName = "XBTEUR";
-        final String krakenOrderType = "buy";
-        final String krakenPriceOrderType = "market";
-        final BigDecimal krakenPrice = new BigDecimal("7000.4");
-        final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final ImmutableList<String> orderFlags = ImmutableList.<String>builder().build();
-        final long orderExpirationInSecondsFromNow = 0;
+        final var krakenMarketName = "XBTEUR";
+        final var krakenOrderType = "buy";
+        final var krakenPriceOrderType = "market";
+        final var krakenPrice = new BigDecimal("7000.4");
+        final var volumeInQuoteCurrency = new BigDecimal("0.01");
+        final var orderFlags = ImmutableList.<String>builder().build();
+        final var orderExpirationInSecondsFromNow = 0L;
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
-        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
@@ -335,19 +331,19 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_krakenResponseWithError_then_exception() {
 
-        final String krakenMarketName = "XBTEUR";
-        final String krakenOrderType = "buy";
-        final String krakenPriceOrderType = "market";
-        final BigDecimal price = new BigDecimal("7000.3");
-        final BigDecimal volumeInQuoteCurrency = new BigDecimal("0.01");
-        final ImmutableList<String> orderFlags = ImmutableList.<String>builder().build();
-        final long orderExpirationInSecondsFromNow = 0;
-        final KrakenResponseDto<KrakenAddOrderResultDto> krakenResponseDto = new KrakenResponseDto<>();
+        final var krakenMarketName = "XBTEUR";
+        final var krakenOrderType = "buy";
+        final var krakenPriceOrderType = "market";
+        final var price = new BigDecimal("7000.3");
+        final var volumeInQuoteCurrency = new BigDecimal("0.01");
+        final var orderFlags = ImmutableList.<String>builder().build();
+        final var orderExpirationInSecondsFromNow = 0L;
+        final var krakenResponseDto = new KrakenResponseDto<KrakenAddOrderResultDto>();
         krakenResponseDto.setError(List.of("Kraken error"));
         when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow)).thenReturn(krakenResponseDto);
-        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
         assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,

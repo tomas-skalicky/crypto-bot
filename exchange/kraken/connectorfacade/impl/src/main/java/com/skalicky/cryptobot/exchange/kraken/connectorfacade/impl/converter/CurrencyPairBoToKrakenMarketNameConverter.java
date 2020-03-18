@@ -31,8 +31,8 @@ public class CurrencyPairBoToKrakenMarketNameConverter
     @Override
     @Nonnull
     public String convert(@Nonnull final CurrencyPairBo currencyPair) {
-        final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
-        final CurrencyBoEnum baseCurrency = currencyPair.getBaseCurrency();
+        final var quoteCurrency = currencyPair.getQuoteCurrency();
+        final var baseCurrency = currencyPair.getBaseCurrency();
         if (quoteCurrency == CurrencyBoEnum.BTC && baseCurrency == CurrencyBoEnum.EUR) {
             return "XBTEUR";
         } else {

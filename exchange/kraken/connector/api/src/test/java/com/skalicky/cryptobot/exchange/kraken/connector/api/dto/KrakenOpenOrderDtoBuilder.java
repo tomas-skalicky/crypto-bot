@@ -171,7 +171,7 @@ public final class KrakenOpenOrderDtoBuilder {
 
     @Nonnull
     public KrakenOpenOrderDto build() {
-        final KrakenOpenOrderDto krakenOpenOrderDto = new KrakenOpenOrderDto();
+        final var krakenOpenOrderDto = new KrakenOpenOrderDto();
         krakenOpenOrderDto.setRefid(refid);
         krakenOpenOrderDto.setUserref(userref);
         krakenOpenOrderDto.setStatus(status);

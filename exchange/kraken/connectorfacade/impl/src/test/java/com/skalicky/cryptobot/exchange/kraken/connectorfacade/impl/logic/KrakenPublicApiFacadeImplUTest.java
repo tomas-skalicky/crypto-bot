@@ -24,7 +24,6 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicAp
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
-import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,6 @@ import org.mockito.Mockito;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -60,16 +58,16 @@ public class KrakenPublicApiFacadeImplUTest {
     public void test_getTicker_when_rawKrakenDataProvided_then_askPriceReturned_and_bidPriceReturned() {
 
         final Map<String, Object> pairData = Map.of("a", List.of("8903.300000"), "b", List.of("8902.400000"));
-        final String tickerName = "XXBTZEUR";
-        final Map<String, Map<String, Object>> result = Map.of(tickerName, pairData);
-        final KrakenResponseDto<Map<String, Map<String, Object>>> expectedResponse = new KrakenResponseDto<>();
+        final var tickerName = "XXBTZEUR";
+        final var result = Map.of(tickerName, pairData);
+        final var expectedResponse = new KrakenResponseDto<Map<String, Map<String, Object>>>();
         expectedResponse.setResult(result);
-        final String marketName = "XBTEUR";
-        final ImmutableList<String> marketNames = ImmutableList.of(marketName);
+        final var marketName = "XBTEUR";
+        final var marketNames = ImmutableList.of(marketName);
         when(krakenPublicApiConnector.ticker(marketNames)).thenReturn(expectedResponse);
-        final CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
-        final TickerBo response = krakenPublicApiFacadeImpl.getTicker(currencyPair);
+        final var response = krakenPublicApiFacadeImpl.getTicker(currencyPair);
 
         verify(krakenPublicApiConnector).ticker(marketNames);
 

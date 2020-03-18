@@ -98,7 +98,7 @@ public final class KrakenOrderDescriptionDtoBuilder {
 
     @Nonnull
     public KrakenOrderDescriptionDto build() {
-        final KrakenOrderDescriptionDto krakenOrderDescriptionDto = new KrakenOrderDescriptionDto();
+        final var krakenOrderDescriptionDto = new KrakenOrderDescriptionDto();
         krakenOrderDescriptionDto.setPair(pair);
         krakenOrderDescriptionDto.setType(type);
         krakenOrderDescriptionDto.setOrdertype(ordertype);

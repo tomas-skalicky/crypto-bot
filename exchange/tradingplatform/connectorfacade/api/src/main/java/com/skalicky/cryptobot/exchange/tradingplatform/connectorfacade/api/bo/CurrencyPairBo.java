@@ -54,7 +54,7 @@ public final class CurrencyPairBo {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final CurrencyPairBo that = (CurrencyPairBo) o;
+        final var that = (CurrencyPairBo) o;
         return quoteCurrency == that.quoteCurrency &&
                 baseCurrency == that.baseCurrency;
     }

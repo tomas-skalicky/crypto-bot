@@ -51,7 +51,7 @@ public class KrakenPublicApiConnectorImplUTest {
     public void test_ticker_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
 
         // @formatter:off
-        final String expectedResponse = "{" +
+        final var expectedResponse = "{" +
                 "    \"error\": []," +
                 "    \"result\": {" +
                 "        \"XXBTZEUR\": {" +
@@ -68,11 +68,10 @@ public class KrakenPublicApiConnectorImplUTest {
                 "    }" +
                 "}";
         // @formatter:on
-        final Map<String, String> marketName = Collections.singletonMap("pair", "XBTEUR");
+        final var marketName = Collections.singletonMap("pair", "XBTEUR");
         when(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).thenReturn(expectedResponse);
 
-        final KrakenResponseDto<Map<String, Map<String, Object>>> response = krakenPublicApiConnectorImpl.ticker(
-                ImmutableList.of("XBTEUR"));
+        final var response = krakenPublicApiConnectorImpl.ticker(ImmutableList.of("XBTEUR"));
 
         verify(krakenApi).queryPublic(KrakenApi.Method.TICKER, marketName);
 
@@ -80,10 +79,10 @@ public class KrakenPublicApiConnectorImplUTest {
         assertThat(response.getResult()).hasSize(1);
         // Asserts to avoid warnings caused by presence of @Nullable.
         assertThat(response.getResult()).isNotNull();
-        final String tickerName = "XXBTZEUR";
-        @SuppressWarnings("unchecked") final List<String> actualAskData = (List<String>) response.getResult().get(tickerName).get("a");
+        final var tickerName = "XXBTZEUR";
+        @SuppressWarnings("unchecked") final var actualAskData = (List<String>) response.getResult().get(tickerName).get("a");
         assertThat(actualAskData.get(0)).isEqualTo("8903.30000");
-        @SuppressWarnings("unchecked") final List<String> actualBidData = (List<String>) response.getResult().get(tickerName).get("b");
+        @SuppressWarnings("unchecked") final var actualBidData = (List<String>) response.getResult().get(tickerName).get("b");
         assertThat(actualBidData.get(0)).isEqualTo("8902.40000");
     }
 }

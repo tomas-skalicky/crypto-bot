@@ -20,12 +20,8 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
-import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
@@ -43,7 +39,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -86,8 +81,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Nonnull
     @Override
     public ImmutableList<OpenOrderBo> getOpenOrders(final boolean includeTrades) {
-        final KrakenResponseDto<KrakenOpenOrderResultDto> response = krakenPrivateApiConnector.openOrders(
-                includeTrades);
+        final var response = krakenPrivateApiConnector.openOrders(includeTrades);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
@@ -105,9 +99,8 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Override
     public ImmutableList<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
                                                         @Nonnull final LocalDateTime from) {
-        final Long fromInEpochSeconds = localDateTimeToEpochSecondLongConverter.convert(from);
-        final KrakenResponseDto<KrakenClosedOrderResultDto> response = krakenPrivateApiConnector.closedOrders(
-                includeTrades, fromInEpochSeconds);
+        final var fromInEpochSeconds = localDateTimeToEpochSecondLongConverter.convert(from);
+        final var response = krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
@@ -124,7 +117,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Nonnull
     @Override
     public ImmutableMap<CurrencyBoEnum, BigDecimal> getAccountBalance() {
-        final KrakenResponseDto<Map<String, BigDecimal>> response = krakenPrivateApiConnector.balance();
+        final var response = krakenPrivateApiConnector.balance();
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
@@ -148,10 +141,10 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
                            final boolean preferFeeInQuoteCurrency,
                            final long orderExpirationInSecondsFromNow) {
 
-        final String krakenMarketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
-        final String krakenOrderType = orderTypeBoEnumToKrakenOrderTypeConverter.convert(orderType);
-        final String krakenPriceOrderType = priceOrderTypeBoEnumToKrakenOrderTypeConverter.convert(priceOrderType);
-        final List<String> krakenOrderFlags = new ArrayList<>();
+        final var krakenMarketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
+        final var krakenOrderType = orderTypeBoEnumToKrakenOrderTypeConverter.convert(orderType);
+        final var krakenPriceOrderType = priceOrderTypeBoEnumToKrakenOrderTypeConverter.convert(priceOrderType);
+        final var krakenOrderFlags = new ArrayList<String>();
         if (preferFeeInQuoteCurrency) {
             krakenOrderFlags.add("fciq");
         }
@@ -165,7 +158,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
             krakenPrice = price;
         }
 
-        final KrakenResponseDto<KrakenAddOrderResultDto> response = krakenPrivateApiConnector.addOrder(krakenMarketName,
+        final var response = krakenPrivateApiConnector.addOrder(krakenMarketName,
                 krakenOrderType, krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency,
                 ImmutableList.copyOf(krakenOrderFlags), orderExpirationInSecondsFromNow);
 
