@@ -22,7 +22,6 @@ import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Map;
 
 public interface KrakenPublicApiConnector {
