@@ -44,11 +44,6 @@ public enum CurrencyBoEnum {
         this.label = label;
     }
 
-    @Nullable
-    public String getLabel() {
-        return label;
-    }
-
     @Nonnull
     public static CurrencyBoEnum getByLabel(@Nullable final String label) {
         if (enumValuesByLabels.containsKey(label)) {
@@ -56,5 +51,10 @@ public enum CurrencyBoEnum {
         } else {
             throw new IllegalArgumentException("Unsupported label [" + label + "]");
         }
+    }
+
+    @Nullable
+    public String getLabel() {
+        return label;
     }
 }

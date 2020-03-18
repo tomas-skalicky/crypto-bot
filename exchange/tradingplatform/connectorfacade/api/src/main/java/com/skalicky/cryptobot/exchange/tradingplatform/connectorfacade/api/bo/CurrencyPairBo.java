@@ -47,6 +47,11 @@ public final class CurrencyPairBo {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(quoteCurrency, baseCurrency);
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -57,10 +62,5 @@ public final class CurrencyPairBo {
         final var that = (CurrencyPairBo) o;
         return quoteCurrency == that.quoteCurrency &&
                 baseCurrency == that.baseCurrency;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(quoteCurrency, baseCurrency);
     }
 }

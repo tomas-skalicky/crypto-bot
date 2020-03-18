@@ -41,6 +41,9 @@ final class KrakenUtils {
     private static final String SHA256 = "SHA-256";
     private static final String HMAC_SHA512 = "HmacSHA512";
 
+    private KrakenUtils() {
+    }
+
     public static byte[] base64Decode(String input) {
         return Base64.getDecoder().decode(input);
     }
@@ -87,8 +90,5 @@ final class KrakenUtils {
 
     public static String urlEncode(String input) throws UnsupportedEncodingException {
         return URLEncoder.encode(input, UTF8);
-    }
-
-    private KrakenUtils() {
     }
 }

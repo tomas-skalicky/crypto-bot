@@ -97,36 +97,6 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         }
     }
 
-    private String toStringForNotificationPurposes(@Nonnull final OpenOrderBo order) {
-        final var currencyPair = order.getCurrencyPair();
-        final var quoteCurrency = currencyPair.getQuoteCurrency();
-        final var desiredPrice = order.getDesiredPrice();
-        final var tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
-        final var desiredPriceString = desiredPrice == null ? "" : desiredPrice + " ";
-        final var orderState = order.getState();
-        final var averageActualPrice = order.getAverageActualPrice();
-        final var averageActualPriceString = orderState == OrderStateBoEnum.NEW ? ""
-                : "exec. avg. " + averageActualPrice + " ";
-        final var actualFeeInQuoteCurrency = order.getActualFeeInQuoteCurrency();
-        final var actualFeeInQuoteCurrencyString = orderState == OrderStateBoEnum.NEW ? ""
-                : "fee " + actualFeeInQuoteCurrency + " " + quoteCurrency.getLabel() + " ";
-        final var expirationDateTime = order.getExpirationDateTime();
-        final var expirationDateTimeString = expirationDateTime == null ? ""
-                : "expires on " + expirationDateTime.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " ";
-        return order.getOrderType().getLabel() + " "
-                + order.getDesiredVolumeInQuoteCurrency() + " "
-                + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
-                + order.getAlreadyExecutedVolumeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
-                + order.getPriceOrderType().getLabel() + " "
-                + desiredPriceString
-                + averageActualPriceString
-                + actualFeeInQuoteCurrencyString + "@ "
-                + orderState.getLabel() + " @ open "
-                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " "
-                + expirationDateTimeString + "@ "
-                + order.getTradeIds().size() + " " + tradesString;
-    }
-
     @Override
     public void reportClosedOrders(@Nonnull final String tradingPlatformName,
                                    @Nullable final String slackWebhookUrl) {
@@ -154,26 +124,6 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         if (slackWebhookUrl != null) {
             slackFacade.sendMessage(message, slackWebhookUrl);
         }
-    }
-
-    private String toStringForNotificationPurposes(@Nonnull final ClosedOrderBo order) {
-        final var currencyPair = order.getCurrencyPair();
-        final var quoteCurrency = currencyPair.getQuoteCurrency();
-        final var desiredPrice = order.getDesiredPrice();
-        final var tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
-        final var desiredPriceString = desiredPrice != null ? desiredPrice + " " : "";
-        return order.getOrderType().getLabel() + " "
-                + order.getDesiredVolumeInQuoteCurrency() + " "
-                + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
-                + order.getTotalExecutedVolumeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
-                + order.getPriceOrderType().getLabel() + " "
-                + desiredPriceString + "exec. avg. "
-                + order.getAverageActualPrice() + " fee "
-                + order.getActualFeeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
-                + order.getStatus().getLabel() + " @ open "
-                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " close "
-                + order.getCloseDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " @ "
-                + order.getTradeIds().size() + " " + tradesString;
     }
 
     @Override
@@ -247,5 +197,55 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 slackFacade.sendMessage(message, slackWebhookUrl);
             }
         }
+    }
+
+    private String toStringForNotificationPurposes(@Nonnull final OpenOrderBo order) {
+        final var currencyPair = order.getCurrencyPair();
+        final var quoteCurrency = currencyPair.getQuoteCurrency();
+        final var desiredPrice = order.getDesiredPrice();
+        final var tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
+        final var desiredPriceString = desiredPrice == null ? "" : desiredPrice + " ";
+        final var orderState = order.getState();
+        final var averageActualPrice = order.getAverageActualPrice();
+        final var averageActualPriceString = orderState == OrderStateBoEnum.NEW ? ""
+                : "exec. avg. " + averageActualPrice + " ";
+        final var actualFeeInQuoteCurrency = order.getActualFeeInQuoteCurrency();
+        final var actualFeeInQuoteCurrencyString = orderState == OrderStateBoEnum.NEW ? ""
+                : "fee " + actualFeeInQuoteCurrency + " " + quoteCurrency.getLabel() + " ";
+        final var expirationDateTime = order.getExpirationDateTime();
+        final var expirationDateTimeString = expirationDateTime == null ? ""
+                : "expires on " + expirationDateTime.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " ";
+        return order.getOrderType().getLabel() + " "
+                + order.getDesiredVolumeInQuoteCurrency() + " "
+                + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
+                + order.getAlreadyExecutedVolumeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
+                + order.getPriceOrderType().getLabel() + " "
+                + desiredPriceString
+                + averageActualPriceString
+                + actualFeeInQuoteCurrencyString + "@ "
+                + orderState.getLabel() + " @ open "
+                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " "
+                + expirationDateTimeString + "@ "
+                + order.getTradeIds().size() + " " + tradesString;
+    }
+
+    private String toStringForNotificationPurposes(@Nonnull final ClosedOrderBo order) {
+        final var currencyPair = order.getCurrencyPair();
+        final var quoteCurrency = currencyPair.getQuoteCurrency();
+        final var desiredPrice = order.getDesiredPrice();
+        final var tradesString = order.getTradeIds().size() == 1 ? "trade" : "trades";
+        final var desiredPriceString = desiredPrice != null ? desiredPrice + " " : "";
+        return order.getOrderType().getLabel() + " "
+                + order.getDesiredVolumeInQuoteCurrency() + " "
+                + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
+                + order.getTotalExecutedVolumeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
+                + order.getPriceOrderType().getLabel() + " "
+                + desiredPriceString + "exec. avg. "
+                + order.getAverageActualPrice() + " fee "
+                + order.getActualFeeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
+                + order.getStatus().getLabel() + " @ open "
+                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " close "
+                + order.getCloseDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " @ "
+                + order.getTradeIds().size() + " " + tradesString;
     }
 }
