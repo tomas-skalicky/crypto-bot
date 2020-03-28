@@ -18,4 +18,10 @@
 
 dependencies {
     api project(':exchange:shared:connectorfacade:api')
+
+    implementation libs.guava
+    implementation libs.jsr305
+
+    testImplementation lib_groups.junit_jupiter
+    testImplementation libs.assertj_core
 }

@@ -44,9 +44,9 @@ import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnector
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.EpochSecondBigDecimalToLocalDateTimeConverter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter.LocalDateTimeToEpochSecondLongConverter;
-import com.skalicky.cryptobot.exchange.slack.connector.impl.SlackConnectorImpl;
-import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
-import com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.SlackFacadeImpl;
+import com.skalicky.cryptobot.exchange.slack.connector.impl.logic.SlackConnectorImpl;
+import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
+import com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.logic.SlackFacadeImpl;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;

@@ -21,7 +21,7 @@ package com.skalicky.cryptobot.businesslogic.impl;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
-import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
+import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;

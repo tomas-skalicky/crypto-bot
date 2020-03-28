@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.slack.connector.impl;
+package com.skalicky.cryptobot.exchange.slack.connector.impl.logic;
 
 import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnectorSupport;
-import com.skalicky.cryptobot.exchange.slack.connector.api.SlackConnector;
-import com.skalicky.cryptobot.exchange.slack.connector.dto.SlackSendMessageRequest;
+import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
+import com.skalicky.cryptobot.exchange.slack.connector.impl.dto.SlackSendMessageRequest;
 
 import javax.annotation.Nonnull;
 

@@ -16,12 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.slack.connector.api;
-
-import javax.annotation.Nonnull;
-
-public interface SlackConnector {
-
-    void sendMessage(@Nonnull String text,
-                     @Nonnull String targetUrl);
+dependencies {
+    implementation libs.jsr305
 }

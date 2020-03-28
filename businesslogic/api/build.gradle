@@ -16,25 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.slack.connectorfacade.impl;
-
-import com.skalicky.cryptobot.exchange.slack.connector.api.SlackConnector;
-import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.SlackFacade;
-
-import javax.annotation.Nonnull;
-
-public class SlackFacadeImpl implements SlackFacade {
-
-    @Nonnull
-    private final SlackConnector slackConnector;
-
-    public SlackFacadeImpl(@Nonnull final SlackConnector slackConnector) {
-        this.slackConnector = slackConnector;
-    }
-
-    @Override
-    public void sendMessage(@Nonnull final String text,
-                            @Nonnull final String webhookUrl) {
-        this.slackConnector.sendMessage(text, webhookUrl);
-    }
+dependencies {
+    implementation libs.jsr305
 }

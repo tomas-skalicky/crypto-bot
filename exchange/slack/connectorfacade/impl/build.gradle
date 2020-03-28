@@ -17,6 +17,8 @@
  */
 
 dependencies {
-    implementation project(':exchange:slack:connector:api')
     api project(':exchange:slack:connectorfacade:api')
+
+    implementation libs.jsr305
+    implementation project(':exchange:slack:connector:api')
 }

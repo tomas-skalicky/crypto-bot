@@ -16,19 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api project(':businesslogic:api')
+package com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.logic;
 
-    implementation lib_groups.slf4j_with_log4j
-    implementation libs.guava
-    implementation libs.jsr305
-    implementation project(':exchange:slack:connectorfacade:api')
-    implementation project(':exchange:tradingplatform:connectorfacade:api')
+import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
+import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
 
-    testImplementation lib_groups.junit_jupiter
-    testImplementation libs.assertj_core
-    testImplementation libs.mockito_core
-    testImplementation project(':exchange:tradingplatform:connectorfacade:api').sourceSets.test.output
+import javax.annotation.Nonnull;
+
+public class SlackFacadeImpl implements SlackFacade {
+
+    @Nonnull
+    private final SlackConnector slackConnector;
+
+    public SlackFacadeImpl(@Nonnull final SlackConnector slackConnector) {
+        this.slackConnector = slackConnector;
+    }
+
+    @Override
+    public void sendMessage(@Nonnull final String text,
+                            @Nonnull final String webhookUrl) {
+        this.slackConnector.sendMessage(text, webhookUrl);
+    }
 }
-
-compileTestJava.dependsOn tasks.getByPath(':exchange:tradingplatform:connectorfacade:api:compileTestJava')

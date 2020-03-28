@@ -21,6 +21,11 @@ plugins {
 }
 
 dependencies {
+    implementation libs.commons_lang3
+    implementation libs.guava
+    implementation libs.jackson_databind
+    implementation libs.jcommander
+    implementation libs.jsr305
     implementation project(':businesslogic:impl')
     implementation project(':exchange:kraken:connector:impl')
     implementation project(':exchange:kraken:connectorfacade:impl')
@@ -28,10 +33,6 @@ dependencies {
     implementation project(':exchange:shared:connectorfacade:impl')
     implementation project(':exchange:slack:connector:impl')
     implementation project(':exchange:slack:connectorfacade:impl')
-
-    implementation libs.commons_lang3
-    implementation libs.jackson_databind
-    implementation libs.jcommander
 }
 
 application {

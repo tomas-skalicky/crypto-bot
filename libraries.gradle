@@ -59,6 +59,17 @@ ext {
             slf4j_api                : "org.slf4j:slf4j-api:${versions.slf4j_api}",
     ]
 
+    lib_groups = [
+            junit_jupiter   : [
+                    libs.junit_jupiter_api,
+                    libs.junit_jupiter_engine,
+            ],
+            slf4j_with_log4j: [
+                    libs.log4j_slf4j_impl,
+                    libs.slf4j_api,
+            ],
+    ]
+
     // Not called "plugins" due to name collision.
     plug_ins = [
             gradle_versions_plugin: "com.github.ben-manes:gradle-versions-plugin:${versions.gradle_versions_plugin}",

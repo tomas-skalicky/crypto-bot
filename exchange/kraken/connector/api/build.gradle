@@ -16,12 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.slack.connectorfacade.api;
+dependencies {
+    implementation libs.guava
+    implementation libs.jsr305
 
-import javax.annotation.Nonnull;
-
-public interface SlackFacade {
-
-    void sendMessage(@Nonnull String text,
-                     @Nonnull String webhookUrl);
+    testImplementation lib_groups.junit_jupiter
 }

@@ -17,12 +17,19 @@
  */
 
 dependencies {
-    implementation project(':exchange:kraken:connector:api')
     api project(':exchange:kraken:connectorfacade:api')
-    implementation project(':exchange:shared:connectorfacade:impl')
-    testImplementation project(':exchange:kraken:connector:api').sourceSets.test.output
 
+    implementation libs.commons_collections4
     implementation libs.commons_lang3
+    implementation libs.guava
+    implementation libs.jsr305
+    implementation project(':exchange:kraken:connector:api')
+    implementation project(':exchange:shared:connectorfacade:impl')
+
+    testImplementation lib_groups.junit_jupiter
+    testImplementation libs.assertj_core
+    testImplementation libs.mockito_core
+    testImplementation project(':exchange:kraken:connector:api').sourceSets.test.output
 }
 
 compileTestJava.dependsOn tasks.getByPath(':exchange:kraken:connector:api:compileTestJava')

@@ -1,4 +1,4 @@
-package com.skalicky.cryptobot.exchange.slack.connector.dto;
+package com.skalicky.cryptobot.exchange.slack.connector.impl.dto;
 
 import javax.annotation.Nonnull;
 
