@@ -24,126 +24,126 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public final class ClosedOrderBoBuilder {
-    @Nonnull
+    @NotNull
     private String orderId = "";
-    @Nonnull
+    @NotNull
     private OrderTypeBoEnum orderType = OrderTypeBoEnum.BUY;
-    @Nonnull
+    @NotNull
     private PriceOrderTypeBoEnum priceOrderType = PriceOrderTypeBoEnum.LIMIT;
-    @Nonnull
+    @NotNull
     private CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
-    @Nonnull
+    @NotNull
     private BigDecimal desiredVolumeInQuoteCurrency = new BigDecimal("0.56");
     @Nullable
     private BigDecimal desiredPrice = BigDecimal.valueOf(4988);
-    @Nonnull
+    @NotNull
     private LocalDateTime openDateTime = LocalDateTime.of(2020, 3, 13, 21, 0);
-    @Nonnull
+    @NotNull
     private LocalDateTime closeDateTime = LocalDateTime.of(2020, 3, 14, 10, 0);
-    @Nonnull
+    @NotNull
     private OrderStateBoEnum status = OrderStateBoEnum.FULLY_EXECUTED;
-    @Nonnull
+    @NotNull
     private BigDecimal totalExecutedVolumeInQuoteCurrency = new BigDecimal("0.56");
-    @Nonnull
+    @NotNull
     private BigDecimal averageActualPrice = BigDecimal.valueOf(4985);
-    @Nonnull
+    @NotNull
     private BigDecimal actualFeeInQuoteCurrency = BigDecimal.ZERO;
-    @Nonnull
+    @NotNull
     private ImmutableList<String> tradeIds = ImmutableList.<String>builder().build();
 
     private ClosedOrderBoBuilder() {
     }
 
-    @Nonnull
+    @NotNull
     public static ClosedOrderBoBuilder aClosedOrderBo() {
         return new ClosedOrderBoBuilder();
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withOrderId(@Nonnull final String orderId) {
+    @NotNull
+    public ClosedOrderBoBuilder withOrderId(@NotNull final String orderId) {
         this.orderId = orderId;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withOrderType(@Nonnull final OrderTypeBoEnum orderType) {
+    @NotNull
+    public ClosedOrderBoBuilder withOrderType(@NotNull final OrderTypeBoEnum orderType) {
         this.orderType = orderType;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withPriceOrderType(@Nonnull final PriceOrderTypeBoEnum priceOrderType) {
+    @NotNull
+    public ClosedOrderBoBuilder withPriceOrderType(@NotNull final PriceOrderTypeBoEnum priceOrderType) {
         this.priceOrderType = priceOrderType;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withCurrencyPair(@Nonnull final CurrencyPairBo currencyPair) {
+    @NotNull
+    public ClosedOrderBoBuilder withCurrencyPair(@NotNull final CurrencyPairBo currencyPair) {
         this.currencyPair = currencyPair;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withDesiredVolumeInQuoteCurrency(@Nonnull final BigDecimal desiredVolumeInQuoteCurrency) {
+    @NotNull
+    public ClosedOrderBoBuilder withDesiredVolumeInQuoteCurrency(@NotNull final BigDecimal desiredVolumeInQuoteCurrency) {
         this.desiredVolumeInQuoteCurrency = desiredVolumeInQuoteCurrency;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ClosedOrderBoBuilder withDesiredPrice(@Nullable final BigDecimal desiredPrice) {
         this.desiredPrice = desiredPrice;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withOpenDateTime(@Nonnull final LocalDateTime openDateTime) {
+    @NotNull
+    public ClosedOrderBoBuilder withOpenDateTime(@NotNull final LocalDateTime openDateTime) {
         this.openDateTime = openDateTime;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withCloseDateTime(@Nonnull final LocalDateTime closeDateTime) {
+    @NotNull
+    public ClosedOrderBoBuilder withCloseDateTime(@NotNull final LocalDateTime closeDateTime) {
         this.closeDateTime = closeDateTime;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withStatus(@Nonnull final OrderStateBoEnum status) {
+    @NotNull
+    public ClosedOrderBoBuilder withStatus(@NotNull final OrderStateBoEnum status) {
         this.status = status;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withTotalExecutedVolumeInQuoteCurrency(@Nonnull final BigDecimal totalExecutedVolumeInQuoteCurrency) {
+    @NotNull
+    public ClosedOrderBoBuilder withTotalExecutedVolumeInQuoteCurrency(@NotNull final BigDecimal totalExecutedVolumeInQuoteCurrency) {
         this.totalExecutedVolumeInQuoteCurrency = totalExecutedVolumeInQuoteCurrency;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withAverageActualPrice(@Nonnull final BigDecimal averageActualPrice) {
+    @NotNull
+    public ClosedOrderBoBuilder withAverageActualPrice(@NotNull final BigDecimal averageActualPrice) {
         this.averageActualPrice = averageActualPrice;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withActualFeeInQuoteCurrency(@Nonnull final BigDecimal actualFeeInQuoteCurrency) {
+    @NotNull
+    public ClosedOrderBoBuilder withActualFeeInQuoteCurrency(@NotNull final BigDecimal actualFeeInQuoteCurrency) {
         this.actualFeeInQuoteCurrency = actualFeeInQuoteCurrency;
         return this;
     }
 
-    @Nonnull
-    public ClosedOrderBoBuilder withTradeIds(@Nonnull final ImmutableList<String> tradeIds) {
+    @NotNull
+    public ClosedOrderBoBuilder withTradeIds(@NotNull final ImmutableList<String> tradeIds) {
         this.tradeIds = tradeIds;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ClosedOrderBo build() {
         return new ClosedOrderBo(orderId, orderType, priceOrderType, currencyPair, desiredVolumeInQuoteCurrency,
                 desiredPrice, openDateTime, closeDateTime, status, totalExecutedVolumeInQuoteCurrency,

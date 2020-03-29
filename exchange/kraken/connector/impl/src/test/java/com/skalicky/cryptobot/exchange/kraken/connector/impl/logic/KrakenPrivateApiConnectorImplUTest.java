@@ -26,7 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,9 +36,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class KrakenPrivateApiConnectorImplUTest {
-    @Nonnull
+    @NotNull
     private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
-    @Nonnull
+    @NotNull
     private final KrakenPrivateApiConnectorImpl krakenPrivateApiConnectorImpl = new KrakenPrivateApiConnectorImpl(
             krakenApi, new ObjectMapper());
 

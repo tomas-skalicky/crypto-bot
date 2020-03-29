@@ -22,20 +22,20 @@ import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnector
 import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connector.impl.dto.SlackSendMessageRequest;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class SlackConnectorImpl implements SlackConnector {
 
-    @Nonnull
+    @NotNull
     private final RestConnectorSupport restConnectorSupport;
 
-    public SlackConnectorImpl(@Nonnull final RestConnectorSupport restConnectorSupport) {
+    public SlackConnectorImpl(@NotNull final RestConnectorSupport restConnectorSupport) {
         this.restConnectorSupport = restConnectorSupport;
     }
 
     @Override
-    public void sendMessage(@Nonnull final String text,
-                            @Nonnull final String webhookUrl) {
+    public void sendMessage(@NotNull final String text,
+                            @NotNull final String webhookUrl) {
         restConnectorSupport.postJson(new SlackSendMessageRequest(text), webhookUrl);
     }
 }

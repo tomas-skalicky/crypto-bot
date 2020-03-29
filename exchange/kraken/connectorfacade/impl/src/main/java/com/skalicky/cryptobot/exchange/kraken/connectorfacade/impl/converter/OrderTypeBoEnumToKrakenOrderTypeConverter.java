@@ -21,13 +21,13 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class OrderTypeBoEnumToKrakenOrderTypeConverter implements NonnullConverter<OrderTypeBoEnum, String> {
 
     @Override
-    @Nonnull
-    public String convert(@Nonnull final OrderTypeBoEnum orderType) {
+    @NotNull
+    public String convert(@NotNull final OrderTypeBoEnum orderType) {
         switch (orderType) {
             case BUY:
                 return "buy";

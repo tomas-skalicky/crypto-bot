@@ -18,10 +18,10 @@
 
 package com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface SlackFacade {
 
-    void sendMessage(@Nonnull String text,
-                     @Nonnull String webhookUrl);
+    void sendMessage(@NotNull String text,
+                     @NotNull String webhookUrl);
 }

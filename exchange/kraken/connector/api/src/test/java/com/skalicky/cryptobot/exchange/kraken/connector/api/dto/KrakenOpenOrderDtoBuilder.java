@@ -18,8 +18,8 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -62,114 +62,114 @@ public final class KrakenOpenOrderDtoBuilder {
     private KrakenOpenOrderDtoBuilder() {
     }
 
-    @Nonnull
+    @NotNull
     public static KrakenOpenOrderDtoBuilder aKrakenOpenOrderDto() {
         return new KrakenOpenOrderDtoBuilder();
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withRefid(@Nullable final String refid) {
         this.refid = refid;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withUserref(@Nullable final Long userref) {
         this.userref = userref;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withStatus(@Nullable final String status) {
         this.status = status;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withOpentm(@Nullable final BigDecimal opentm) {
         this.opentm = opentm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withStarttm(@Nullable final BigDecimal starttm) {
         this.starttm = starttm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withExpiretm(@Nullable final BigDecimal expiretm) {
         this.expiretm = expiretm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withDescr(@Nullable final KrakenOrderDescriptionDto descr) {
         this.descr = descr;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withVol(@Nullable final BigDecimal vol) {
         this.vol = vol;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withVol_exec(@Nullable final BigDecimal vol_exec) {
         this.vol_exec = vol_exec;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withCost(@Nullable final BigDecimal cost) {
         this.cost = cost;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withFee(@Nullable final BigDecimal fee) {
         this.fee = fee;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withPrice(@Nullable final BigDecimal price) {
         this.price = price;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withStopprice(@Nullable final BigDecimal stopprice) {
         this.stopprice = stopprice;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withLimitprice(@Nullable final BigDecimal limitprice) {
         this.limitprice = limitprice;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withMisc(@Nullable final String misc) {
         this.misc = misc;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withOflags(@Nullable final String oflags) {
         this.oflags = oflags;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDtoBuilder withTrades(@Nullable final List<String> trades) {
         this.trades = trades;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOpenOrderDto build() {
         final var krakenOpenOrderDto = new KrakenOpenOrderDto();
         krakenOpenOrderDto.setRefid(refid);

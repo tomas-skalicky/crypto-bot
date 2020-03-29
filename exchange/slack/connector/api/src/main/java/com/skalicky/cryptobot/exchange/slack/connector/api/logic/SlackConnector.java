@@ -18,10 +18,10 @@
 
 package com.skalicky.cryptobot.exchange.slack.connector.api.logic;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface SlackConnector {
 
-    void sendMessage(@Nonnull String text,
-                     @Nonnull String targetUrl);
+    void sendMessage(@NotNull String text,
+                     @NotNull String targetUrl);
 }

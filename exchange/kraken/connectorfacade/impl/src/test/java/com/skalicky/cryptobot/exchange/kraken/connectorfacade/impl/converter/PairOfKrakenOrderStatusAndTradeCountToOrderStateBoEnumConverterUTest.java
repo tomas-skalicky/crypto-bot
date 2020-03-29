@@ -22,13 +22,13 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverterUTest {
-    @Nonnull
+    @NotNull
     private final PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter converter =
             new PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter();
 

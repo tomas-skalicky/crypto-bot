@@ -28,7 +28,7 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDt
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import edu.self.kraken.api.KrakenApi;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
@@ -37,18 +37,18 @@ import java.util.Collections;
 import java.util.Map;
 
 public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector {
-    @Nonnull
+    @NotNull
     private final KrakenApi krakenApi;
-    @Nonnull
+    @NotNull
     private final ObjectMapper objectMapper;
 
-    public KrakenPrivateApiConnectorImpl(@Nonnull final KrakenApi krakenApi,
-                                         @Nonnull final ObjectMapper objectMapper) {
+    public KrakenPrivateApiConnectorImpl(@NotNull final KrakenApi krakenApi,
+                                         @NotNull final ObjectMapper objectMapper) {
         this.krakenApi = krakenApi;
         this.objectMapper = objectMapper;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public KrakenResponseDto<KrakenOpenOrderResultDto> openOrders(final boolean includeTrades) {
         final var parameters = Collections.singletonMap(
@@ -62,10 +62,10 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(final boolean includeTrades,
-                                                                      @Nonnull final Long fromInEpochSeconds) {
+                                                                      @NotNull final Long fromInEpochSeconds) {
         final var parameters = Collections.unmodifiableMap(Map.of(
                 "trades", String.valueOf(includeTrades),
                 "start", String.valueOf(fromInEpochSeconds)));
@@ -78,7 +78,7 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public KrakenResponseDto<Map<String, BigDecimal>> balance() {
         try {
@@ -90,14 +90,14 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public KrakenResponseDto<KrakenAddOrderResultDto> addOrder(@Nonnull final String krakenMarketName,
-                                                               @Nonnull final String krakenOrderType,
-                                                               @Nonnull final String krakenPriceOrderType,
-                                                               @Nonnull final BigDecimal price,
-                                                               @Nonnull final BigDecimal volumeInQuoteCurrency,
-                                                               @Nonnull final ImmutableList<String> orderFlags,
+    public KrakenResponseDto<KrakenAddOrderResultDto> addOrder(@NotNull final String krakenMarketName,
+                                                               @NotNull final String krakenOrderType,
+                                                               @NotNull final String krakenPriceOrderType,
+                                                               @NotNull final BigDecimal price,
+                                                               @NotNull final BigDecimal volumeInQuoteCurrency,
+                                                               @NotNull final ImmutableList<String> orderFlags,
                                                                final long orderExpirationInSecondsFromNow) {
         final var parameters = Collections.unmodifiableMap(Map.of(
                 "pair", krakenMarketName,

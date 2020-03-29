@@ -21,20 +21,20 @@ package com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.logic;
 import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class SlackFacadeImpl implements SlackFacade {
 
-    @Nonnull
+    @NotNull
     private final SlackConnector slackConnector;
 
-    public SlackFacadeImpl(@Nonnull final SlackConnector slackConnector) {
+    public SlackFacadeImpl(@NotNull final SlackConnector slackConnector) {
         this.slackConnector = slackConnector;
     }
 
     @Override
-    public void sendMessage(@Nonnull final String text,
-                            @Nonnull final String webhookUrl) {
+    public void sendMessage(@NotNull final String text,
+                            @NotNull final String webhookUrl) {
         this.slackConnector.sendMessage(text, webhookUrl);
     }
 }

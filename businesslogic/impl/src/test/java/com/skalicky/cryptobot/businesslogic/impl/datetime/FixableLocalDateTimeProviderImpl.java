@@ -18,8 +18,8 @@
 
 package com.skalicky.cryptobot.businesslogic.impl.datetime;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.time.LocalDateTime;
 
 public class FixableLocalDateTimeProviderImpl implements FixableLocalDateTimeProvider {
@@ -28,20 +28,20 @@ public class FixableLocalDateTimeProviderImpl implements FixableLocalDateTimePro
     private LocalDateTime fixedDateTime;
 
     @Override
-    @Nonnull
+    @NotNull
     public LocalDateTime now() {
         return fixedDateTime == null ? LocalDateTime.now() : fixedDateTime;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public LocalDateTime fix() {
         fixedDateTime = LocalDateTime.now();
         return fixedDateTime;
     }
 
     @Override
-    public void fix(@Nonnull final LocalDateTime dateTime) {
+    public void fix(@NotNull final LocalDateTime dateTime) {
         fixedDateTime = dateTime;
     }
 }

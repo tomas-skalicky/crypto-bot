@@ -34,7 +34,7 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -43,31 +43,31 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
-    @Nonnull
+    @NotNull
     private final KrakenPrivateApiConnector krakenPrivateApiConnector;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter;
 
-    public KrakenPrivateApiFacadeImpl(@Nonnull final KrakenPrivateApiConnector krakenPrivateApiConnector,
-                                      @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter,
-                                      @Nonnull final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter,
-                                      @Nonnull final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter,
-                                      @Nonnull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter,
-                                      @Nonnull final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter,
-                                      @Nonnull final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter,
-                                      @Nonnull final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter) {
+    public KrakenPrivateApiFacadeImpl(@NotNull final KrakenPrivateApiConnector krakenPrivateApiConnector,
+                                      @NotNull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter,
+                                      @NotNull final NonnullConverter<OrderTypeBoEnum, String> orderTypeBoEnumToKrakenOrderTypeConverter,
+                                      @NotNull final NonnullConverter<PriceOrderTypeBoEnum, String> priceOrderTypeBoEnumToKrakenOrderTypeConverter,
+                                      @NotNull final NonnullConverter<String, CurrencyBoEnum> krakenCurrencyNameToCurrencyBoEnumConverter,
+                                      @NotNull final NonnullConverter<Map.Entry<String, KrakenOpenOrderDto>, OpenOrderBo> krakenMapEntryToOpenOrderBoConverter,
+                                      @NotNull final NonnullConverter<Map.Entry<String, KrakenClosedOrderDto>, ClosedOrderBo> krakenMapEntryToClosedOrderBoConverter,
+                                      @NotNull final NonnullConverter<LocalDateTime, Long> localDateTimeToEpochSecondLongConverter) {
         this.krakenPrivateApiConnector = krakenPrivateApiConnector;
         this.currencyPairBoEnumToKrakenMarketNameConverter = currencyPairBoEnumToKrakenMarketNameConverter;
         this.orderTypeBoEnumToKrakenOrderTypeConverter = orderTypeBoEnumToKrakenOrderTypeConverter;
@@ -78,7 +78,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
         this.localDateTimeToEpochSecondLongConverter = localDateTimeToEpochSecondLongConverter;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ImmutableList<OpenOrderBo> getOpenOrders(final boolean includeTrades) {
         final var response = krakenPrivateApiConnector.openOrders(includeTrades);
@@ -95,10 +95,10 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ImmutableList<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
-                                                        @Nonnull final LocalDateTime from) {
+                                                        @NotNull final LocalDateTime from) {
         final var fromInEpochSeconds = localDateTimeToEpochSecondLongConverter.convert(from);
         final var response = krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds);
 
@@ -114,7 +114,7 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ImmutableMap<CurrencyBoEnum, BigDecimal> getAccountBalance() {
         final var response = krakenPrivateApiConnector.balance();
@@ -133,11 +133,11 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     }
 
     @Override
-    public void placeOrder(@Nonnull final OrderTypeBoEnum orderType,
-                           @Nonnull final PriceOrderTypeBoEnum priceOrderType,
-                           @Nonnull final CurrencyPairBo currencyPair,
-                           @Nonnull final BigDecimal volumeInQuoteCurrency,
-                           @Nonnull final BigDecimal price,
+    public void placeOrder(@NotNull final OrderTypeBoEnum orderType,
+                           @NotNull final PriceOrderTypeBoEnum priceOrderType,
+                           @NotNull final CurrencyPairBo currencyPair,
+                           @NotNull final BigDecimal volumeInQuoteCurrency,
+                           @NotNull final BigDecimal price,
                            final boolean preferFeeInQuoteCurrency,
                            final long orderExpirationInSecondsFromNow) {
 

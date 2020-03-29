@@ -18,12 +18,12 @@
 
 package com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface NonnullConverter<Source, Target> {
 
-    @Nonnull
-    Target convert(@Nonnull Source source);
+    @NotNull
+    Target convert(@NotNull Source source);
 
 }

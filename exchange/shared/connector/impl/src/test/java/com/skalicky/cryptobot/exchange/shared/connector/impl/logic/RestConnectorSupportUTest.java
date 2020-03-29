@@ -24,7 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -37,11 +37,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class RestConnectorSupportUTest {
 
-    @Nonnull
+    @NotNull
     private WireMockServer wireMockServer;
-    @Nonnull
+    @NotNull
     private ObjectMapper objectMapper = new ObjectMapper();
-    @Nonnull
+    @NotNull
     private RestConnectorSupport restConnectorSupport = new RestConnectorSupport();
 
     @BeforeEach
@@ -106,14 +106,14 @@ public class RestConnectorSupportUTest {
     }
 
     private static final class TestRequest {
-        @Nonnull
+        @NotNull
         private final String name;
 
-        private TestRequest(@Nonnull final String name) {
+        private TestRequest(@NotNull final String name) {
             this.name = name;
         }
 
-        @Nonnull
+        @NotNull
         public String getName() {
             return name;
         }
@@ -123,7 +123,7 @@ public class RestConnectorSupportUTest {
         /**
          * Initialized to avoid nullability.
          */
-        @Nonnull
+        @NotNull
         private String result = "";
 
         /**
@@ -132,16 +132,16 @@ public class RestConnectorSupportUTest {
         public TestResponse() {
         }
 
-        public TestResponse(@Nonnull final String result) {
+        public TestResponse(@NotNull final String result) {
             this.result = result;
         }
 
-        @Nonnull
+        @NotNull
         public String getResult() {
             return result;
         }
 
-        public void setResult(@Nonnull final String result) {
+        public void setResult(@NotNull final String result) {
             this.result = result;
         }
     }

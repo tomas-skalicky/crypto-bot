@@ -18,8 +18,8 @@
 
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,7 +34,7 @@ public enum CurrencyBoEnum {
     ;
     // @formatter:on
 
-    @Nonnull
+    @NotNull
     private static final Map<String, CurrencyBoEnum> enumValuesByLabels = Arrays.stream(CurrencyBoEnum.values())
             .collect(Collectors.toMap(CurrencyBoEnum::getLabel, Function.identity()));
     @Nullable
@@ -44,7 +44,7 @@ public enum CurrencyBoEnum {
         this.label = label;
     }
 
-    @Nonnull
+    @NotNull
     public static CurrencyBoEnum getByLabel(@Nullable final String label) {
         if (enumValuesByLabels.containsKey(label)) {
             return enumValuesByLabels.get(label);

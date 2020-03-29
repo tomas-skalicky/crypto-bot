@@ -25,7 +25,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,9 +34,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class KrakenPublicApiConnectorImplUTest {
-    @Nonnull
+    @NotNull
     private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
-    @Nonnull
+    @NotNull
     private final KrakenPublicApiConnectorImpl krakenPublicApiConnectorImpl = new KrakenPublicApiConnectorImpl(krakenApi, new ObjectMapper());
 
     @AfterEach

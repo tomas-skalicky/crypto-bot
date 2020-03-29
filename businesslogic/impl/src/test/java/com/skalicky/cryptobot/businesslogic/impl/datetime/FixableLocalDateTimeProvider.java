@@ -20,13 +20,13 @@ package com.skalicky.cryptobot.businesslogic.impl.datetime;
 
 import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProvider;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 
 public interface FixableLocalDateTimeProvider extends LocalDateTimeProvider {
 
-    @Nonnull
+    @NotNull
     LocalDateTime fix();
 
-    void fix(@Nonnull LocalDateTime dateTime);
+    void fix(@NotNull LocalDateTime dateTime);
 }

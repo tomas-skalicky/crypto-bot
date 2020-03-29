@@ -18,7 +18,7 @@
 
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public enum OrderStateBoEnum {
 
@@ -31,14 +31,14 @@ public enum OrderStateBoEnum {
     ;
     // @formatter:on
 
-    @Nonnull
+    @NotNull
     private final String label;
 
-    OrderStateBoEnum(@Nonnull final String label) {
+    OrderStateBoEnum(@NotNull final String label) {
         this.label = label;
     }
 
-    @Nonnull
+    @NotNull
     public String getLabel() {
         return label;
     }

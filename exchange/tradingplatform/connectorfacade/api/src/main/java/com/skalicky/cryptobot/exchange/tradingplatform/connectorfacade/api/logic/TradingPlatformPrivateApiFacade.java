@@ -27,27 +27,27 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public interface TradingPlatformPrivateApiFacade extends TradingPlatformDesignated {
 
-    @Nonnull
+    @NotNull
     ImmutableList<OpenOrderBo> getOpenOrders(boolean includeTrades);
 
-    @Nonnull
+    @NotNull
     ImmutableList<ClosedOrderBo> getClosedOrders(boolean includeTrades,
-                                                 @Nonnull LocalDateTime from);
+                                                 @NotNull LocalDateTime from);
 
-    @Nonnull
+    @NotNull
     ImmutableMap<CurrencyBoEnum, BigDecimal> getAccountBalance();
 
-    void placeOrder(@Nonnull OrderTypeBoEnum orderType,
-                    @Nonnull PriceOrderTypeBoEnum priceOrderType,
-                    @Nonnull CurrencyPairBo currencyPair,
-                    @Nonnull BigDecimal volumeInQuoteCurrency,
-                    @Nonnull BigDecimal price,
+    void placeOrder(@NotNull OrderTypeBoEnum orderType,
+                    @NotNull PriceOrderTypeBoEnum priceOrderType,
+                    @NotNull CurrencyPairBo currencyPair,
+                    @NotNull BigDecimal volumeInQuoteCurrency,
+                    @NotNull BigDecimal price,
                     boolean preferFeeInQuoteCurrency,
                     long orderExpirationInSecondsFromNow);
 }

@@ -19,10 +19,10 @@
 dependencies {
     api project(':exchange:kraken:connectorfacade:api')
 
+    implementation libs.annotations
     implementation libs.commons_collections4
     implementation libs.commons_lang3
     implementation libs.guava
-    implementation libs.jsr305
     implementation project(':exchange:kraken:connector:api')
     implementation project(':exchange:shared:connectorfacade:impl')
 

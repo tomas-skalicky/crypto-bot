@@ -19,10 +19,10 @@
 package com.skalicky.cryptobot.exchange.shared.connector.impl.logic;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -30,13 +30,13 @@ import javax.ws.rs.core.MediaType;
 
 public class RestConnectorSupport {
 
-    @Nonnull
+    @NotNull
     private static final Logger logger = LoggerFactory.getLogger(RestConnectorSupport.class);
-    @Nonnull
+    @NotNull
     private static final Client client = ClientBuilder.newClient(new ClientConfig());
 
-    public <T> void postJson(@Nonnull final T requestPayload,
-                             @Nonnull final String targetUrl) {
+    public <T> void postJson(@NotNull final T requestPayload,
+                             @NotNull final String targetUrl) {
         final var webTarget = client.target(targetUrl);
 
         final var invocationBuilder = webTarget.request();

@@ -21,13 +21,13 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class PriceOrderTypeBoEnumToKrakenOrderTypeConverter implements NonnullConverter<PriceOrderTypeBoEnum, String> {
 
     @Override
-    @Nonnull
-    public String convert(@Nonnull final PriceOrderTypeBoEnum priceOrderType) {
+    @NotNull
+    public String convert(@NotNull final PriceOrderTypeBoEnum priceOrderType) {
         switch (priceOrderType) {
             case MARKET:
                 return "market";

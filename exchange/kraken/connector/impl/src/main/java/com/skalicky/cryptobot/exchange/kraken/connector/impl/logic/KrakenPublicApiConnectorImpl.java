@@ -25,26 +25,26 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDt
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
 import edu.self.kraken.api.KrakenApi;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
 public class KrakenPublicApiConnectorImpl implements KrakenPublicApiConnector {
-    @Nonnull
+    @NotNull
     private final KrakenApi krakenApi;
-    @Nonnull
+    @NotNull
     private final ObjectMapper objectMapper;
 
-    public KrakenPublicApiConnectorImpl(@Nonnull final KrakenApi krakenApi,
-                                        @Nonnull final ObjectMapper objectMapper) {
+    public KrakenPublicApiConnectorImpl(@NotNull final KrakenApi krakenApi,
+                                        @NotNull final ObjectMapper objectMapper) {
         this.krakenApi = krakenApi;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    @Nonnull
-    public KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull final ImmutableList<String> marketNames) {
+    @NotNull
+    public KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@NotNull final ImmutableList<String> marketNames) {
         if (marketNames.isEmpty()) {
             throw new IllegalArgumentException("Market names are mandatory and at least one name needs to be provided");
         }

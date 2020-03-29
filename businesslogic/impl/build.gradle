@@ -20,8 +20,8 @@ dependencies {
     api project(':businesslogic:api')
 
     implementation lib_groups.slf4j_with_log4j
+    implementation libs.annotations
     implementation libs.guava
-    implementation libs.jsr305
     implementation project(':exchange:slack:connectorfacade:api')
     implementation project(':exchange:tradingplatform:connectorfacade:api')
 

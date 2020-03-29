@@ -18,8 +18,8 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -66,126 +66,126 @@ public final class KrakenClosedOrderDtoBuilder {
     private KrakenClosedOrderDtoBuilder() {
     }
 
-    @Nonnull
+    @NotNull
     public static KrakenClosedOrderDtoBuilder aKrakenClosedOrderDto() {
         return new KrakenClosedOrderDtoBuilder();
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withRefid(@Nullable final String refid) {
         this.refid = refid;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withUserref(@Nullable final Long userref) {
         this.userref = userref;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withStatus(@Nullable final String status) {
         this.status = status;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withReason(@Nullable final String reason) {
         this.reason = reason;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withOpentm(@Nullable final BigDecimal opentm) {
         this.opentm = opentm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withClosetm(@Nullable final BigDecimal closetm) {
         this.closetm = closetm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withStarttm(@Nullable final BigDecimal starttm) {
         this.starttm = starttm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withExpiretm(@Nullable final BigDecimal expiretm) {
         this.expiretm = expiretm;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withDescr(@Nullable final KrakenOrderDescriptionDto descr) {
         this.descr = descr;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withVol(@Nullable final BigDecimal vol) {
         this.vol = vol;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withVol_exec(@Nullable final BigDecimal vol_exec) {
         this.vol_exec = vol_exec;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withCost(@Nullable final BigDecimal cost) {
         this.cost = cost;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withFee(@Nullable final BigDecimal fee) {
         this.fee = fee;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withPrice(@Nullable final BigDecimal price) {
         this.price = price;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withStopprice(@Nullable final BigDecimal stopprice) {
         this.stopprice = stopprice;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withLimitprice(@Nullable final BigDecimal limitprice) {
         this.limitprice = limitprice;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withMisc(@Nullable final String misc) {
         this.misc = misc;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withOflags(@Nullable final String oflags) {
         this.oflags = oflags;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDtoBuilder withTrades(@Nullable final List<String> trades) {
         this.trades = trades;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenClosedOrderDto build() {
         final var krakenClosedOrderDto = new KrakenClosedOrderDto();
         krakenClosedOrderDto.setRefid(refid);

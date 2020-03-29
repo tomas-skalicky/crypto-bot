@@ -20,8 +20,8 @@ package com.skalicky.cryptobot.application;
 
 import com.beust.jcommander.Parameter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 
 public class CryptoBotArguments {
@@ -29,7 +29,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--baseCurrency"},
             description = "Currency to buy for",
             required = true)
@@ -38,7 +38,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--quoteCurrency"},
             description = "Currency to buy",
             required = true)
@@ -47,7 +47,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--volumeInBaseCurrencyToInvestPerRun"},
             description = "How much of the base currency will be intended to be invested into the market currency per run of this bot",
             required = true)
@@ -56,7 +56,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--tradingPlatformName"},
             description = "Name of trading platform. Currently supported: kraken",
             required = true)
@@ -65,7 +65,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--tradingPlatformApiKey"},
             description = "Key for private part of trading platform API",
             required = true)
@@ -74,7 +74,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--tradingPlatformApiSecret"},
             description = "Secret for private part of trading platform API",
             required = true)
@@ -83,7 +83,7 @@ public class CryptoBotArguments {
     /**
      * Initialized to avoid nullability.
      */
-    @Nonnull
+    @NotNull
     @Parameter(names = {"--offsetRatioOfLimitPriceToBidPriceInDecimal"},
             description = "Offset ratio of limit price to the bid price. In Decimal. Sample value: 0.01 (= limit" +
                     " price 1% below the bid price)",
@@ -95,37 +95,37 @@ public class CryptoBotArguments {
             description = "Slack Webhook to notify the user about placing of orders, open and closed orders, etc.")
     private String slackWebhookUrl;
 
-    @Nonnull
+    @NotNull
     public String getBaseCurrency() {
         return baseCurrency;
     }
 
-    @Nonnull
+    @NotNull
     public String getQuoteCurrency() {
         return quoteCurrency;
     }
 
-    @Nonnull
+    @NotNull
     public BigDecimal getVolumeInBaseCurrencyToInvestPerRun() {
         return volumeInBaseCurrencyToInvestPerRun;
     }
 
-    @Nonnull
+    @NotNull
     public String getTradingPlatformName() {
         return tradingPlatformName;
     }
 
-    @Nonnull
+    @NotNull
     public String getTradingPlatformKey() {
         return tradingPlatformKey;
     }
 
-    @Nonnull
+    @NotNull
     public String getTradingPlatformSecret() {
         return tradingPlatformSecret;
     }
 
-    @Nonnull
+    @NotNull
     public BigDecimal getOffsetRatioOfLimitPriceToBidPriceInDecimal() {
         return offsetRatioOfLimitPriceToBidPriceInDecimal;
     }

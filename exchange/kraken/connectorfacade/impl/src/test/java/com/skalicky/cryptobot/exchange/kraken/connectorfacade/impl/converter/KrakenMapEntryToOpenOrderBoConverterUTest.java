@@ -29,7 +29,7 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class KrakenMapEntryToOpenOrderBoConverterUTest {
 
-    @Nonnull
+    @NotNull
     private final KrakenMapEntryToOpenOrderBoConverter converter =
             new KrakenMapEntryToOpenOrderBoConverter(
                     new KrakenOrderTypeToOrderTypeBoEnumConverter(),

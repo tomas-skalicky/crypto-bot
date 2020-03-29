@@ -16,9 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-group = 'com.skalicky'
-version = '0.0.1-SNAPSHOT'
-
 buildscript {
     apply from: "libraries.gradle"
 
@@ -30,6 +27,14 @@ buildscript {
         classpath plug_ins.gradle_versions_plugin
     }
 }
+
+plugins {
+    // apply false -> do not apply the plugin on the current (=root) project
+    id 'org.javamodularity.moduleplugin' version '1.6.0' apply false
+}
+
+group = 'com.skalicky'
+version = '0.0.1-SNAPSHOT'
 
 apply plugin: "com.github.ben-manes.versions"
 
@@ -77,6 +82,7 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'java-library'
+    apply plugin: 'org.javamodularity.moduleplugin'
 
     sourceCompatibility = '11'
     targetCompatibility = '11'

@@ -36,8 +36,8 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
@@ -46,23 +46,23 @@ import java.util.stream.Collectors;
 
 public class CryptoBotLogicImpl implements CryptoBotLogic {
 
-    @Nonnull
+    @NotNull
     private static final DateTimeFormatter ORDER_NOTIFICATION_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM. HH:mm");
-    @Nonnull
+    @NotNull
     private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogicImpl.class);
-    @Nonnull
+    @NotNull
     private final ImmutableMap<String, TradingPlatformPublicApiFacade> publicApiFacadesByPlatformNames;
-    @Nonnull
+    @NotNull
     private final ImmutableMap<String, TradingPlatformPrivateApiFacade> privateApiFacadesByPlatformNames;
-    @Nonnull
+    @NotNull
     private final SlackFacade slackFacade;
-    @Nonnull
+    @NotNull
     private final LocalDateTimeProvider localDateTimeProvider;
 
-    public CryptoBotLogicImpl(@Nonnull final ImmutableList<TradingPlatformPublicApiFacade> publicApiFacades,
-                              @Nonnull final ImmutableList<TradingPlatformPrivateApiFacade> privateApiFacades,
-                              @Nonnull final SlackFacade slackFacade,
-                              @Nonnull final LocalDateTimeProvider localDateTimeProvider) {
+    public CryptoBotLogicImpl(@NotNull final ImmutableList<TradingPlatformPublicApiFacade> publicApiFacades,
+                              @NotNull final ImmutableList<TradingPlatformPrivateApiFacade> privateApiFacades,
+                              @NotNull final SlackFacade slackFacade,
+                              @NotNull final LocalDateTimeProvider localDateTimeProvider) {
         this.publicApiFacadesByPlatformNames = ImmutableMap.copyOf(publicApiFacades.stream()
                 .collect(Collectors.toUnmodifiableMap(
                         TradingPlatformDesignated::getTradingPlatform, Function.identity())));
@@ -74,7 +74,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     }
 
     @Override
-    public void reportOpenOrders(@Nonnull final String tradingPlatformName,
+    public void reportOpenOrders(@NotNull final String tradingPlatformName,
                                  @Nullable final String slackWebhookUrl) {
         final var facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
@@ -99,7 +99,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     }
 
     @Override
-    public void reportClosedOrders(@Nonnull final String tradingPlatformName,
+    public void reportClosedOrders(@NotNull final String tradingPlatformName,
                                    @Nullable final String slackWebhookUrl) {
         final var facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
@@ -128,11 +128,11 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     }
 
     @Override
-    public void placeBuyOrderIfEnoughAvailable(@Nonnull final String tradingPlatformName,
-                                               @Nonnull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
-                                               @Nonnull final String baseCurrencyLabel,
-                                               @Nonnull final String quoteCurrencyLabel,
-                                               @Nonnull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
+    public void placeBuyOrderIfEnoughAvailable(@NotNull final String tradingPlatformName,
+                                               @NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                                               @NotNull final String baseCurrencyLabel,
+                                               @NotNull final String quoteCurrencyLabel,
+                                               @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
                                                @Nullable final String slackWebhookUrl) {
         final var privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (privateApiFacade == null) {
@@ -200,7 +200,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         }
     }
 
-    private String toStringForNotificationPurposes(@Nonnull final OpenOrderBo order) {
+    private String toStringForNotificationPurposes(@NotNull final OpenOrderBo order) {
         final var currencyPair = order.getCurrencyPair();
         final var quoteCurrency = currencyPair.getQuoteCurrency();
         final var desiredPrice = order.getDesiredPrice();
@@ -230,7 +230,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 + order.getTradeIds().size() + " " + tradesString;
     }
 
-    private String toStringForNotificationPurposes(@Nonnull final ClosedOrderBo order) {
+    private String toStringForNotificationPurposes(@NotNull final ClosedOrderBo order) {
         final var currencyPair = order.getCurrencyPair();
         final var quoteCurrency = currencyPair.getQuoteCurrency();
         final var desiredPrice = order.getDesiredPrice();

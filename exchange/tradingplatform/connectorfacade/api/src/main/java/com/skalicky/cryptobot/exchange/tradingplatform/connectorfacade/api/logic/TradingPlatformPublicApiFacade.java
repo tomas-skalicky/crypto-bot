@@ -21,10 +21,10 @@ package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logi
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
 
-    @Nonnull
-    TickerBo getTicker(@Nonnull CurrencyPairBo currencyPair);
+    @NotNull
+    TickerBo getTicker(@NotNull CurrencyPairBo currencyPair);
 }

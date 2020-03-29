@@ -18,11 +18,10 @@
 
 dependencies {
     implementation lib_groups.slf4j_with_log4j
-    implementation libs.activation
+    implementation libs.annotations
     implementation libs.jersey_client
     implementation libs.jersey_hk2
     implementation libs.jersey_media_json_jackson
-    implementation libs.jsr305
 
     testImplementation lib_groups.junit_jupiter
     testImplementation libs.assertj_core

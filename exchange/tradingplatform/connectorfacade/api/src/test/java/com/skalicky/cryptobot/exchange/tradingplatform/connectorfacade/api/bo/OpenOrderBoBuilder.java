@@ -24,126 +24,126 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public final class OpenOrderBoBuilder {
-    @Nonnull
+    @NotNull
     private String orderId = "";
-    @Nonnull
+    @NotNull
     private OrderTypeBoEnum orderType = OrderTypeBoEnum.BUY;
-    @Nonnull
+    @NotNull
     private PriceOrderTypeBoEnum priceOrderType = PriceOrderTypeBoEnum.LIMIT;
-    @Nonnull
+    @NotNull
     private CurrencyPairBo currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
-    @Nonnull
+    @NotNull
     private BigDecimal desiredVolumeInQuoteCurrency = new BigDecimal("0.56");
     @Nullable
     private BigDecimal desiredPrice = BigDecimal.valueOf(4988);
-    @Nonnull
+    @NotNull
     private LocalDateTime openDateTime = LocalDateTime.of(2020, 3, 13, 21, 0);
     @Nullable
     private LocalDateTime expirationDateTime;
-    @Nonnull
+    @NotNull
     private OrderStateBoEnum status = OrderStateBoEnum.NEW;
-    @Nonnull
+    @NotNull
     private BigDecimal alreadyExecutedVolumeInQuoteCurrency = BigDecimal.ZERO;
     @Nullable
     private BigDecimal averageActualPrice;
     @Nullable
     private BigDecimal actualFeeInQuoteCurrency;
-    @Nonnull
+    @NotNull
     private ImmutableList<String> tradeIds = ImmutableList.<String>builder().build();
 
     private OpenOrderBoBuilder() {
     }
 
-    @Nonnull
+    @NotNull
     public static OpenOrderBoBuilder aOpenOrderBo() {
         return new OpenOrderBoBuilder();
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withOrderId(@Nonnull final String orderId) {
+    @NotNull
+    public OpenOrderBoBuilder withOrderId(@NotNull final String orderId) {
         this.orderId = orderId;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withOrderType(@Nonnull final OrderTypeBoEnum orderType) {
+    @NotNull
+    public OpenOrderBoBuilder withOrderType(@NotNull final OrderTypeBoEnum orderType) {
         this.orderType = orderType;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withPriceOrderType(@Nonnull final PriceOrderTypeBoEnum priceOrderType) {
+    @NotNull
+    public OpenOrderBoBuilder withPriceOrderType(@NotNull final PriceOrderTypeBoEnum priceOrderType) {
         this.priceOrderType = priceOrderType;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withCurrencyPair(@Nonnull final CurrencyPairBo currencyPair) {
+    @NotNull
+    public OpenOrderBoBuilder withCurrencyPair(@NotNull final CurrencyPairBo currencyPair) {
         this.currencyPair = currencyPair;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withDesiredVolumeInQuoteCurrency(@Nonnull final BigDecimal desiredVolumeInQuoteCurrency) {
+    @NotNull
+    public OpenOrderBoBuilder withDesiredVolumeInQuoteCurrency(@NotNull final BigDecimal desiredVolumeInQuoteCurrency) {
         this.desiredVolumeInQuoteCurrency = desiredVolumeInQuoteCurrency;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public OpenOrderBoBuilder withDesiredPrice(@Nullable final BigDecimal desiredPrice) {
         this.desiredPrice = desiredPrice;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withOpenDateTime(@Nonnull final LocalDateTime openDateTime) {
+    @NotNull
+    public OpenOrderBoBuilder withOpenDateTime(@NotNull final LocalDateTime openDateTime) {
         this.openDateTime = openDateTime;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withExpirationDateTime(@Nonnull final LocalDateTime expirationDateTime) {
+    @NotNull
+    public OpenOrderBoBuilder withExpirationDateTime(@NotNull final LocalDateTime expirationDateTime) {
         this.expirationDateTime = expirationDateTime;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withStatus(@Nonnull final OrderStateBoEnum status) {
+    @NotNull
+    public OpenOrderBoBuilder withStatus(@NotNull final OrderStateBoEnum status) {
         this.status = status;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withAlreadyExecutedVolumeInQuoteCurrency(@Nonnull final BigDecimal alreadyExecutedVolumeInQuoteCurrency) {
+    @NotNull
+    public OpenOrderBoBuilder withAlreadyExecutedVolumeInQuoteCurrency(@NotNull final BigDecimal alreadyExecutedVolumeInQuoteCurrency) {
         this.alreadyExecutedVolumeInQuoteCurrency = alreadyExecutedVolumeInQuoteCurrency;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public OpenOrderBoBuilder withAverageActualPrice(@Nullable final BigDecimal averageActualPrice) {
         this.averageActualPrice = averageActualPrice;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public OpenOrderBoBuilder withActualFeeInQuoteCurrency(@Nullable final BigDecimal actualFeeInQuoteCurrency) {
         this.actualFeeInQuoteCurrency = actualFeeInQuoteCurrency;
         return this;
     }
 
-    @Nonnull
-    public OpenOrderBoBuilder withTradeIds(@Nonnull final ImmutableList<String> tradeIds) {
+    @NotNull
+    public OpenOrderBoBuilder withTradeIds(@NotNull final ImmutableList<String> tradeIds) {
         this.tradeIds = tradeIds;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public OpenOrderBo build() {
         return new OpenOrderBo(orderId, orderType, priceOrderType, currencyPair, desiredVolumeInQuoteCurrency,
                 desiredPrice, openDateTime, expirationDateTime, status, alreadyExecutedVolumeInQuoteCurrency,
