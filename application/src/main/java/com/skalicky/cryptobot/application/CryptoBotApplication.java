@@ -22,7 +22,7 @@ import com.beust.jcommander.JCommander;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicImpl;
-import com.skalicky.cryptobot.businesslogic.impl.LocalDateTimeProviderImpl;
+import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPrivateApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPublicApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;

@@ -16,15 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.businesslogic.impl;
+package com.skalicky.cryptobot.businesslogic.impl.datetime;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 
-public interface FixableLocalDateTimeProvider extends LocalDateTimeProvider {
+public class LocalDateTimeProviderImpl implements LocalDateTimeProvider {
 
+    @Override
     @Nonnull
-    LocalDateTime fix();
-
-    void fix(@Nonnull LocalDateTime dateTime);
+    public LocalDateTime now() {
+        return LocalDateTime.now();
+    }
 }
