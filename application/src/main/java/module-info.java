@@ -16,4 +16,6 @@ module com.skalicky.cryptobot.application {
     requires jcommander;
     requires org.apache.commons.lang3;
     requires org.jetbrains.annotations;
+
+    opens com.skalicky.cryptobot.application.input to jcommander;
 }

@@ -21,6 +21,7 @@ package com.skalicky.cryptobot.application;
 import com.beust.jcommander.JCommander;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.skalicky.cryptobot.application.input.CryptoBotArguments;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicImpl;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPrivateApiConnectorImpl;
@@ -52,8 +53,8 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import edu.self.kraken.api.KrakenApi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 public class CryptoBotApplication {
@@ -65,6 +66,15 @@ public class CryptoBotApplication {
         final var arguments = new CryptoBotArguments();
         JCommander.newBuilder()
                 .addObject(arguments)
+                // FIXME Tomas Check the plugin java9-modularity in a more detail
+                // There is probably a bug in a plugin https://github.com/java9-modularity/gradle-modules-plugin
+                // which causes that system properties are located after
+                //   --module com.skalicky.cryptobot.application/com.skalicky.cryptobot.application.CryptoBotApplication
+                // not before the "module" parameter. We do not want to parse the system properties.
+                // All currently skipped system properties and other properties:
+                //   -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant
+                //   com.skalicky.cryptobot.application/com.skalicky.cryptobot.application.CryptoBotApplication
+                .acceptUnknownOptions(true)
                 .build()
                 .parse(args);
 

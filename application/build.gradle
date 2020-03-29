@@ -36,5 +36,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.skalicky.cryptobot.application.CryptoBotApplication'
+    // The plugin https://github.com/java9-modularity/gradle-modules-plugin injects a variable $moduleName in the build
+    // script.
+    mainClassName = "$moduleName/com.skalicky.cryptobot.application.CryptoBotApplication"
 }

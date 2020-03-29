@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.application;
+package com.skalicky.cryptobot.application.input;
 
 import com.beust.jcommander.Parameter;
 
