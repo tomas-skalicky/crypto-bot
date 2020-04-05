@@ -38,6 +38,8 @@ public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter imp
                 return OrderStateBoEnum.FULLY_EXECUTED;
             case "canceled":
                 return (tradeCount == 0) ? OrderStateBoEnum.FULLY_CANCELED : OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_CANCELED;
+            case "expired":
+                return (tradeCount == 0) ? OrderStateBoEnum.FULLY_EXPIRED : OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_EXPIRED;
             default:
                 throw new IllegalArgumentException("Unsupported Kraken order status [" + krakenOrderStatus + "]");
         }
