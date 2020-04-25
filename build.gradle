@@ -59,7 +59,7 @@ allprojects {
 
                 componentSelection {
                     all { final ComponentSelection selection ->
-                        final def rejected_substrings = ['alpha', 'beta', 'rc']
+                        final def rejected_substrings = ['alpha', 'beta', 'rc', 'M1']
                         final boolean rejected = rejected_substrings.any { final qualifier ->
                             selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
                         }
