@@ -1,3 +1,8 @@
+| Branch Name | Build Status |
+| ----------- | ------------ |
+| master | [![Build Status](https://travis-ci.com/tomas-skalicky/crypto-bot.svg?branch=master)](https://travis-ci.com/tomas-skalicky/crypto-bot) |
+| fb-tom-introduction-of-jpms | [![Build Status](https://travis-ci.com/tomas-skalicky/crypto-bot.svg?branch=fb-tom-introduction-of-jpms)](https://travis-ci.com/tomas-skalicky/crypto-bot) |
+
 # When to use this bot
 
 You want to invest in cryptocurrencies long term. You want to buy
