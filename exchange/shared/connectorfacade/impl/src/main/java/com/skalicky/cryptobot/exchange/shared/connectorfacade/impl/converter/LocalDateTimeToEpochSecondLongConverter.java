@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.converter;
 
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
+import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.util.DateTimeUtil;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
@@ -26,12 +27,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public final class LocalDateTimeToEpochSecondLongConverter implements NonnullConverter<LocalDateTime, Long> {
-    @Nonnull
-    private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
     @Override
     @Nonnull
     public Long convert(@Nonnull final LocalDateTime localDateTime) {
-        return ZonedDateTime.of(localDateTime, ZONE_ID).toEpochSecond();
+        return ZonedDateTime.of(localDateTime, DateTimeUtil.BERLIN_ZONE_ID).toEpochSecond();
     }
 }
