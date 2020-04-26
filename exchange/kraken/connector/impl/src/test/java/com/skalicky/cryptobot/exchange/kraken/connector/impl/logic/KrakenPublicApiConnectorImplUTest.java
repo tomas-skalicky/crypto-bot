@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.kraken.connector.impl.logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import edu.self.kraken.api.KrakenApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import org.mockito.Mockito;
 import org.jetbrains.annotations.NotNull;.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -69,7 +71,8 @@ public class KrakenPublicApiConnectorImplUTest {
         final var marketName = Collections.singletonMap("pair", "XBTEUR");
         when(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).thenReturn(expectedResponse);
 
-        final var response = krakenPublicApiConnectorImpl.ticker(ImmutableList.of("XBTEUR"));
+        final KrakenResponseDto<Map<String, Map<String, Object>>> response =
+                krakenPublicApiConnectorImpl.ticker(ImmutableList.of("XBTEUR"));
 
         verify(krakenApi).queryPublic(KrakenApi.Method.TICKER, marketName);
 

@@ -26,7 +26,10 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 public class RestConnectorSupport {
 
@@ -37,18 +40,18 @@ public class RestConnectorSupport {
 
     public <T> void postJson(@NotNull final T requestPayload,
                              @NotNull final String targetUrl) {
-        final var webTarget = client.target(targetUrl);
+        final WebTarget webTarget = client.target(targetUrl);
 
-        final var invocationBuilder = webTarget.request();
-        final var requestEntity = Entity.entity(requestPayload, MediaType.APPLICATION_JSON);
+        final Invocation.Builder invocationBuilder = webTarget.request();
+        final Entity<T> requestEntity = Entity.entity(requestPayload, MediaType.APPLICATION_JSON);
 
         logger.debug("URI {} - Request: {}", targetUrl, requestEntity);
 
-        final var response = invocationBuilder.post(requestEntity);
+        final Response response = invocationBuilder.post(requestEntity);
 
-        final var responseString = response.readEntity(String.class);
+        final String responseString = response.readEntity(String.class);
         final var maxLength = 512;
-        final var showDots = responseString.length() > maxLength;
+        final boolean showDots = responseString.length() > maxLength;
         logger.debug("URI {} - Raw Response: {}{}", targetUrl,
                 responseString.substring(0, Math.min(maxLength, responseString.length())), showDots ? "..." : "");
 

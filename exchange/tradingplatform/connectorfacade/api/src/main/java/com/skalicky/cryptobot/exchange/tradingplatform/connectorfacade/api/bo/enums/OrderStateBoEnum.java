@@ -28,6 +28,8 @@ public enum OrderStateBoEnum {
     FULLY_EXECUTED                    ("fully executed -> trades exist"),
     PARTIALLY_EXECUTED_THEN_CANCELED  ("partially executed, then canceled -> trades exist"),
     FULLY_CANCELED                    ("fully canceled -> no trades"),
+    PARTIALLY_EXECUTED_THEN_EXPIRED   ("partially executed, then expired -> trades exist"),
+    FULLY_EXPIRED                     ("fully expired -> no trades"),
     ;
     // @formatter:on
 

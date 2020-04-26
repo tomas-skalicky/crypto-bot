@@ -23,9 +23,9 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -55,7 +55,7 @@ public final class OpenOrderBoBuilder {
     @Nullable
     private BigDecimal actualFeeInQuoteCurrency;
     @NotNull
-    private ImmutableList<String> tradeIds = ImmutableList.<String>builder().build();
+    private ImmutableList<String> tradeIds = ImmutableList.of();
 
     private OpenOrderBoBuilder() {
     }

@@ -20,8 +20,12 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPrivateApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
@@ -33,8 +37,8 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -81,13 +85,14 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @NotNull
     @Override
     public ImmutableList<OpenOrderBo> getOpenOrders(final boolean includeTrades) {
-        final var response = krakenPrivateApiConnector.openOrders(includeTrades);
+        final KrakenResponseDto<KrakenOpenOrderResultDto> response =
+                krakenPrivateApiConnector.openOrders(includeTrades);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
         }
         if (response.getResult() == null || MapUtils.isEmpty(response.getResult().getOpen())) {
-            return ImmutableList.<OpenOrderBo>builder().build();
+            return ImmutableList.of();
         }
 
         return ImmutableList.copyOf(response.getResult().getOpen().entrySet().stream() //
@@ -99,14 +104,15 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @Override
     public ImmutableList<ClosedOrderBo> getClosedOrders(final boolean includeTrades,
                                                         @NotNull final LocalDateTime from) {
-        final var fromInEpochSeconds = localDateTimeToEpochSecondLongConverter.convert(from);
-        final var response = krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds);
+        final Long fromInEpochSeconds = localDateTimeToEpochSecondLongConverter.convert(from);
+        final KrakenResponseDto<KrakenClosedOrderResultDto> response =
+                krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
         }
         if (response.getResult() == null || MapUtils.isEmpty(response.getResult().getClosed())) {
-            return ImmutableList.<ClosedOrderBo>builder().build();
+            return ImmutableList.of();
         }
 
         return ImmutableList.copyOf(response.getResult().getClosed().entrySet().stream() //
@@ -117,13 +123,13 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
     @NotNull
     @Override
     public ImmutableMap<CurrencyBoEnum, BigDecimal> getAccountBalance() {
-        final var response = krakenPrivateApiConnector.balance();
+        final KrakenResponseDto<Map<String, BigDecimal>> response = krakenPrivateApiConnector.balance();
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
         }
         if (MapUtils.isEmpty(response.getResult())) {
-            return ImmutableMap.<CurrencyBoEnum, BigDecimal>builder().build();
+            return ImmutableMap.of();
         }
 
         return ImmutableMap.copyOf(response.getResult().entrySet().stream() //
@@ -141,9 +147,9 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
                            final boolean preferFeeInQuoteCurrency,
                            final long orderExpirationInSecondsFromNow) {
 
-        final var krakenMarketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
-        final var krakenOrderType = orderTypeBoEnumToKrakenOrderTypeConverter.convert(orderType);
-        final var krakenPriceOrderType = priceOrderTypeBoEnumToKrakenOrderTypeConverter.convert(priceOrderType);
+        final String krakenMarketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
+        final String krakenOrderType = orderTypeBoEnumToKrakenOrderTypeConverter.convert(orderType);
+        final String krakenPriceOrderType = priceOrderTypeBoEnumToKrakenOrderTypeConverter.convert(priceOrderType);
         final var krakenOrderFlags = new ArrayList<String>();
         if (preferFeeInQuoteCurrency) {
             krakenOrderFlags.add("fciq");
@@ -158,9 +164,10 @@ public class KrakenPrivateApiFacadeImpl implements KrakenPrivateApiFacade {
             krakenPrice = price;
         }
 
-        final var response = krakenPrivateApiConnector.addOrder(krakenMarketName,
-                krakenOrderType, krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency,
-                ImmutableList.copyOf(krakenOrderFlags), orderExpirationInSecondsFromNow);
+        final KrakenResponseDto<KrakenAddOrderResultDto> response =
+                krakenPrivateApiConnector.addOrder(krakenMarketName,
+                        krakenOrderType, krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency,
+                        ImmutableList.copyOf(krakenOrderFlags), orderExpirationInSecondsFromNow);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());

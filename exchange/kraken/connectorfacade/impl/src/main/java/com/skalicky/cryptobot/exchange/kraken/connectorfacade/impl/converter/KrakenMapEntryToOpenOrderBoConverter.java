@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOrderDescriptionDto;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
@@ -27,8 +28,8 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -63,24 +64,24 @@ public class KrakenMapEntryToOpenOrderBoConverter
     @Override
     @NotNull
     public OpenOrderBo convert(@NotNull final Map.Entry<String, KrakenOpenOrderDto> inputEntry) {
-        final var inputOrder = inputEntry.getValue();
-        final var inputOrderDescription = inputOrder.getDescr();
+        final KrakenOpenOrderDto inputOrder = inputEntry.getValue();
+        final KrakenOrderDescriptionDto inputOrderDescription = inputOrder.getDescr();
         Objects.requireNonNull(inputOrderDescription);
         Objects.requireNonNull(inputOrderDescription.getType());
         Objects.requireNonNull(inputOrderDescription.getOrdertype());
         Objects.requireNonNull(inputOrderDescription.getPair());
-        final var currencyPair =
+        final CurrencyPairBo currencyPair =
                 krakenMarketNameToCurrencyPairBoEnumConverter.convert(inputOrderDescription.getPair());
         Objects.requireNonNull(inputOrder.getVol());
         Objects.requireNonNull(inputOrder.getOpentm());
         Objects.requireNonNull(inputOrder.getStatus());
         Objects.requireNonNull(inputOrder.getVol_exec());
-        final var outputTrades = inputOrder.getTrades() == null
-                ? ImmutableList.<String>builder().build() : ImmutableList.copyOf(inputOrder.getTrades());
-        final var outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
+        final ImmutableList<String> outputTrades = inputOrder.getTrades() == null
+                ? ImmutableList.of() : ImmutableList.copyOf(inputOrder.getTrades());
+        final OrderStateBoEnum outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
                 Pair.of(inputOrder.getStatus(), outputTrades.size()));
-        final var inputOrderExpiration = inputOrder.getExpiretm();
-        final var outputExpiration = inputOrderExpiration == null ? null
+        final BigDecimal inputOrderExpiration = inputOrder.getExpiretm();
+        final LocalDateTime outputExpiration = inputOrderExpiration == null ? null
                 : epochSecondBigDecimalToLocalDateTimeConverter.convert(inputOrderExpiration);
 
         return new OpenOrderBo(

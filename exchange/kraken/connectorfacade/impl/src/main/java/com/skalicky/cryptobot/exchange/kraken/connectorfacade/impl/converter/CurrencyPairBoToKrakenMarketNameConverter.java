@@ -21,7 +21,6 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
-
 import org.jetbrains.annotations.NotNull;
 
 public class CurrencyPairBoToKrakenMarketNameConverter
@@ -30,8 +29,8 @@ public class CurrencyPairBoToKrakenMarketNameConverter
     @Override
     @NotNull
     public String convert(@NotNull final CurrencyPairBo currencyPair) {
-        final var quoteCurrency = currencyPair.getQuoteCurrency();
-        final var baseCurrency = currencyPair.getBaseCurrency();
+        final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
+        final CurrencyBoEnum baseCurrency = currencyPair.getBaseCurrency();
         if (quoteCurrency == CurrencyBoEnum.BTC && baseCurrency == CurrencyBoEnum.EUR) {
             return "XBTEUR";
         } else {

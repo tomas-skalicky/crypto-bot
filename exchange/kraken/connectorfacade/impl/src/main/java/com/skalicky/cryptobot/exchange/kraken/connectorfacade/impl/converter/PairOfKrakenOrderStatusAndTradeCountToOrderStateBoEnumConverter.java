@@ -29,8 +29,8 @@ public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter imp
     @Override
     @NotNull
     public OrderStateBoEnum convert(@NotNull final Pair<String, Integer> krakenOrderStatusAndTradeCount) {
-        final var krakenOrderStatus = krakenOrderStatusAndTradeCount.getLeft();
-        final var tradeCount = krakenOrderStatusAndTradeCount.getRight();
+        final String krakenOrderStatus = krakenOrderStatusAndTradeCount.getLeft();
+        final Integer tradeCount = krakenOrderStatusAndTradeCount.getRight();
         switch (krakenOrderStatus) {
             case "open":
                 return (tradeCount == 0) ? OrderStateBoEnum.NEW : OrderStateBoEnum.PARTIALLY_EXECUTED;
@@ -38,6 +38,8 @@ public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter imp
                 return OrderStateBoEnum.FULLY_EXECUTED;
             case "canceled":
                 return (tradeCount == 0) ? OrderStateBoEnum.FULLY_CANCELED : OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_CANCELED;
+            case "expired":
+                return (tradeCount == 0) ? OrderStateBoEnum.FULLY_EXPIRED : OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_EXPIRED;
             default:
                 throw new IllegalArgumentException("Unsupported Kraken order status [" + krakenOrderStatus + "]");
         }

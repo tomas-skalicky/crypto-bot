@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.logic;
 
 import com.google.common.collect.ImmutableList;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic.KrakenPublicApiFacade;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
@@ -26,8 +27,8 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.Cu
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
@@ -49,9 +50,10 @@ public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
     @Override
     @NotNull
     public TickerBo getTicker(@NotNull final CurrencyPairBo currencyPair) {
-        final var marketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
+        final String marketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
         final var marketNames = ImmutableList.of(marketName);
-        final var response = krakenPublicApiConnector.ticker(marketNames);
+        final KrakenResponseDto<Map<String, Map<String, Object>>> response =
+                krakenPublicApiConnector.ticker(marketNames);
 
         if (CollectionUtils.isNotEmpty(response.getError())) {
             throw new IllegalStateException(response.getError().toString());
@@ -59,7 +61,7 @@ public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
         if (MapUtils.isEmpty(response.getResult())) {
             throw new IllegalArgumentException("No result for the market name " + marketName);
         }
-        final var resultEntryCount = MapUtils.size(response.getResult());
+        final int resultEntryCount = MapUtils.size(response.getResult());
         if (resultEntryCount > 1) {
             throw new IllegalStateException("More than one result entries [" + resultEntryCount + "] for the market " + marketName);
         }
