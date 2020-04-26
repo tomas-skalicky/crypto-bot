@@ -1,7 +1,7 @@
-| Branch Name | Build Status |
-| ----------- | ------------ |
-| master | [![Build Status](https://travis-ci.com/tomas-skalicky/crypto-bot.svg?branch=master)](https://travis-ci.com/tomas-skalicky/crypto-bot) |
-| fb-tom-introduction-of-jpms | [![Build Status](https://travis-ci.com/tomas-skalicky/crypto-bot.svg?branch=fb-tom-introduction-of-jpms)](https://travis-ci.com/tomas-skalicky/crypto-bot) |
+| Branch Name | Build Status | Notes |
+| ----------- | ------------ | ----- |
+| master | [![Build Status](https://travis-ci.com/tomas-skalicky/crypto-bot.svg?branch=master)](https://travis-ci.com/tomas-skalicky/crypto-bot) | |
+| fb-tom-introduction-of-jpms | [![Build Status](https://travis-ci.com/tomas-skalicky/crypto-bot.svg?branch=fb-tom-introduction-of-jpms)](https://travis-ci.com/tomas-skalicky/crypto-bot) | Experimental branch to introduce JPMS to the project |
 
 # When to use this bot
 
