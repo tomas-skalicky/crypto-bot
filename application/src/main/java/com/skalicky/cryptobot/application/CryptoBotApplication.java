@@ -72,14 +72,14 @@ public class CryptoBotApplication {
         final var publicApiFacades = new ArrayList<TradingPlatformPublicApiFacade>();
         final var privateApiFacades = new ArrayList<TradingPlatformPrivateApiFacade>();
         if (KRAKEN_TRADING_PLATFORM_NAME.equals(arguments.getTradingPlatformName())) {
-            final var krakenApi = initializeKrakenApi(arguments);
+            final KrakenApi krakenApi = initializeKrakenApi(arguments);
             final var objectMapper = new ObjectMapper();
             publicApiFacades.add(initializeKrakenPublicApiFacade(krakenApi, objectMapper,
                     currencyPairBoEnumToKrakenMarketNameConverter));
             privateApiFacades.add(initializeKrakenPrivateApiFacade(krakenApi, objectMapper,
                     currencyPairBoEnumToKrakenMarketNameConverter));
         }
-        final var slackFacade = initializeSlackFacade();
+        final SlackFacade slackFacade = initializeSlackFacade();
         final var cryptoBotLogic = new CryptoBotLogicImpl(ImmutableList.copyOf(publicApiFacades),
                 ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
 
@@ -96,9 +96,9 @@ public class CryptoBotApplication {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (arguments.getSlackWebhookUrl() != null) {
-                final var stackTrace = ExceptionUtils.getStackTrace(ex);
+                final String stackTrace = ExceptionUtils.getStackTrace(ex);
                 final var maxLength = 512;
-                final var showDots = stackTrace.length() > maxLength;
+                final boolean showDots = stackTrace.length() > maxLength;
                 slackFacade.sendMessage("Exception: "
                                 + stackTrace.substring(0, Math.min(maxLength, stackTrace.length()))
                                 + (showDots ? "..." : ""),

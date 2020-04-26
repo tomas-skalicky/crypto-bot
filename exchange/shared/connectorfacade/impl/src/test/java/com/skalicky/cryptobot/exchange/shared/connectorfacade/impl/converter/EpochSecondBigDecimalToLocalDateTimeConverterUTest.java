@@ -31,7 +31,7 @@ public class EpochSecondBigDecimalToLocalDateTimeConverterUTest {
     public void test_serialize_when_germanTimeZone_then_resultLocalDateTimeWithGermanTimeZone() {
         final var epochSecondsWithoutNanos = BigDecimal.valueOf(1583659801);
 
-        final var actualDateTime =
+        final LocalDateTime actualDateTime =
                 new EpochSecondBigDecimalToLocalDateTimeConverter().convert(epochSecondsWithoutNanos);
 
         final var expectedDateTime = LocalDateTime.of(
@@ -43,7 +43,7 @@ public class EpochSecondBigDecimalToLocalDateTimeConverterUTest {
     public void test_serialize_when_nanoSecondsInEpochAreNonZero_then_nanoSecondsInResultAsWell() {
         final var epochSecondsWithNanos = new BigDecimal("1583659801.999999999");
 
-        final var actualDateTime =
+        final LocalDateTime actualDateTime =
                 new EpochSecondBigDecimalToLocalDateTimeConverter().convert(epochSecondsWithNanos);
 
         final var expectedDateTime = LocalDateTime.of(

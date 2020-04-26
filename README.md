@@ -102,6 +102,44 @@ responses from) trading platforms.
 
 The program is written without any dependency injection solution.
 
+## Coding conventions
+
+### `var` used only when contributing to code readability
+
+The reserved type name `var` is allowed to be used only in situations when
+its usage contributes to the code readability, or at least not decrease code
+readability. It is unwanted to create a situation that the developer would need
+to track down what type a variable is of.
+
+Therefore, use `var` **only**
+1. when there is an instance creation on the right side of the
+expression, nothing else (e.g. `var message = "success";`, `var count = 3;`,
+`var user = new User("Tomas", "Skalicky", MaritalStatusEnum.MARRIED);`).
+1. when there is a `String` concatenation on the right side of the
+expression, nothing else (e.g.
+`var orderPlacedMessage = priceOrderType.getLabel() + " order to " +
+orderType.getLabel();`).
+1. when there is a factory method invoked, containing no nested factory
+method invocation, followed by no other method
+invoked on the factory method result, on the right side of
+the expression (e.g. `var dateTime = LocalDateTime.of(2020, 4, 26, 11, 30);`,
+`var amount = BigDecimal.valueOf(4988);`,
+`var facade = mock(TradingPlatformPublicApiFacade.class);`,
+`var marketName = Collections.singletonMap("pair", "XBTEUR");`)
+1. when there is an enum value on the right side of the expression, nothing
+else (e.g. `var orderType = OrderTypeBoEnum.BUY;`)
+1. when there is a `static final` variable (aka constant) on the right side of
+the expression, nothing else (e.g. `var volume = BigDecimal.ZERO;`)
+1. when the entire right side of the expression is casted to a certain type (e.g.
+`var askArray = (List<String>) inputEntry.getValue().get("a");`)
+
+Do **NOT** use `var` in any other context, like in the following ones:
+* `StringBuilder builder = new StringBuilder("user is ").append(user
+);` (violates the rule 3)
+* `var orderFlags = ImmutableList.<String>builder().build();` (violates
+the rule 3)
+* `Collections.unmodifiableMap(Map.of("trades", String.valueOf(trades),
+"start", String.valueOf(from)));` (violates the rule 3)
+
 ## TODOs:
 1) use JDK 9, 10, 11 enhancements except JPMS
-2) use JPMS

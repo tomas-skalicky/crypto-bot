@@ -24,6 +24,7 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicAp
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.CurrencyPairBoToKrakenMarketNameConverter;
 import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.KrakenMapEntryToTickerBoConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
+import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,7 @@ public class KrakenPublicApiFacadeImplUTest {
         when(krakenPublicApiConnector.ticker(marketNames)).thenReturn(expectedResponse);
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
-        final var response = krakenPublicApiFacadeImpl.getTicker(currencyPair);
+        final TickerBo response = krakenPublicApiFacadeImpl.getTicker(currencyPair);
 
         verify(krakenPublicApiConnector).ticker(marketNames);
 

@@ -55,7 +55,7 @@ public final class ClosedOrderBoBuilder {
     @Nonnull
     private BigDecimal actualFeeInQuoteCurrency = BigDecimal.ZERO;
     @Nonnull
-    private ImmutableList<String> tradeIds = ImmutableList.<String>builder().build();
+    private ImmutableList<String> tradeIds = ImmutableList.of();
 
     private ClosedOrderBoBuilder() {
     }

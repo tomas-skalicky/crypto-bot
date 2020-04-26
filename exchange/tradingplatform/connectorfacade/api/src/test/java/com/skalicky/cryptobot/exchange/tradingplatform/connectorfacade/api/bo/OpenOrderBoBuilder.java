@@ -55,7 +55,7 @@ public final class OpenOrderBoBuilder {
     @Nullable
     private BigDecimal actualFeeInQuoteCurrency;
     @Nonnull
-    private ImmutableList<String> tradeIds = ImmutableList.<String>builder().build();
+    private ImmutableList<String> tradeIds = ImmutableList.of();
 
     private OpenOrderBoBuilder() {
     }

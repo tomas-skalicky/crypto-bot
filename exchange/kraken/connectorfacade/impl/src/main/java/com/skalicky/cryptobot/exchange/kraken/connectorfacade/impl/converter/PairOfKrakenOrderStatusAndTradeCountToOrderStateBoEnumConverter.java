@@ -29,8 +29,8 @@ public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter imp
     @Override
     @Nonnull
     public OrderStateBoEnum convert(@Nonnull final Pair<String, Integer> krakenOrderStatusAndTradeCount) {
-        final var krakenOrderStatus = krakenOrderStatusAndTradeCount.getLeft();
-        final var tradeCount = krakenOrderStatusAndTradeCount.getRight();
+        final String krakenOrderStatus = krakenOrderStatusAndTradeCount.getLeft();
+        final Integer tradeCount = krakenOrderStatusAndTradeCount.getRight();
         switch (krakenOrderStatus) {
             case "open":
                 return (tradeCount == 0) ? OrderStateBoEnum.NEW : OrderStateBoEnum.PARTIALLY_EXECUTED;

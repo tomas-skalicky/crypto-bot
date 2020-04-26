@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderDto;
+import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOrderDescriptionDto;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
@@ -63,13 +64,13 @@ public class KrakenMapEntryToClosedOrderBoConverter
     @Override
     @Nonnull
     public ClosedOrderBo convert(@Nonnull final Map.Entry<String, KrakenClosedOrderDto> inputEntry) {
-        final var inputOrder = inputEntry.getValue();
-        final var inputOrderDescription = inputOrder.getDescr();
+        final KrakenClosedOrderDto inputOrder = inputEntry.getValue();
+        final KrakenOrderDescriptionDto inputOrderDescription = inputOrder.getDescr();
         Objects.requireNonNull(inputOrderDescription);
         Objects.requireNonNull(inputOrderDescription.getType());
         Objects.requireNonNull(inputOrderDescription.getOrdertype());
         Objects.requireNonNull(inputOrderDescription.getPair());
-        final var currencyPair =
+        final CurrencyPairBo currencyPair =
                 krakenMarketNameToCurrencyPairBoEnumConverter.convert(inputOrderDescription.getPair());
         Objects.requireNonNull(inputOrder.getVol());
         Objects.requireNonNull(inputOrder.getOpentm());
@@ -78,9 +79,9 @@ public class KrakenMapEntryToClosedOrderBoConverter
         Objects.requireNonNull(inputOrder.getVol_exec());
         Objects.requireNonNull(inputOrder.getPrice());
         Objects.requireNonNull(inputOrder.getCost());
-        final var outputTrades = inputOrder.getTrades() == null
-                ? ImmutableList.<String>builder().build() : ImmutableList.copyOf(inputOrder.getTrades());
-        final var outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
+        final ImmutableList<String> outputTrades = inputOrder.getTrades() == null
+                ? ImmutableList.of() : ImmutableList.copyOf(inputOrder.getTrades());
+        final OrderStateBoEnum outputState = pairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter.convert(
                 Pair.of(inputOrder.getStatus(), outputTrades.size()));
 
         return new ClosedOrderBo(

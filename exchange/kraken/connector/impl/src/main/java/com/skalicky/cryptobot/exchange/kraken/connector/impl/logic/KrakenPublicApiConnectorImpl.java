@@ -49,9 +49,9 @@ public class KrakenPublicApiConnectorImpl implements KrakenPublicApiConnector {
             throw new IllegalArgumentException("Market names are mandatory and at least one name needs to be provided");
         }
 
-        final var parameters = Collections.singletonMap("pair", String.join(",", marketNames));
+        final Map<String, String> parameters = Collections.singletonMap("pair", String.join(",", marketNames));
         try {
-            final var responseString = krakenApi.queryPublic(KrakenApi.Method.TICKER, parameters);
+            final String responseString = krakenApi.queryPublic(KrakenApi.Method.TICKER, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
         } catch (final IOException exception) {

@@ -54,7 +54,7 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
         final var parameters = Collections.singletonMap(
                 "trades", String.valueOf(includeTrades));
         try {
-            final var responseString = krakenApi.queryPrivate(KrakenApi.Method.OPEN_ORDERS, parameters);
+            final String responseString = krakenApi.queryPrivate(KrakenApi.Method.OPEN_ORDERS, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
         } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {
@@ -66,11 +66,11 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
     @Override
     public KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(final boolean includeTrades,
                                                                       @Nonnull final Long fromInEpochSeconds) {
-        final var parameters = Collections.unmodifiableMap(Map.of(
+        final Map<String, String> parameters = Collections.unmodifiableMap(Map.of(
                 "trades", String.valueOf(includeTrades),
                 "start", String.valueOf(fromInEpochSeconds)));
         try {
-            final var responseString = krakenApi.queryPrivate(KrakenApi.Method.CLOSED_ORDERS, parameters);
+            final String responseString = krakenApi.queryPrivate(KrakenApi.Method.CLOSED_ORDERS, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
         } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {
@@ -82,7 +82,7 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
     @Override
     public KrakenResponseDto<Map<String, BigDecimal>> balance() {
         try {
-            final var responseString = krakenApi.queryPrivate(KrakenApi.Method.BALANCE);
+            final String responseString = krakenApi.queryPrivate(KrakenApi.Method.BALANCE);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
         } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {
@@ -99,7 +99,7 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
                                                                @Nonnull final BigDecimal volumeInQuoteCurrency,
                                                                @Nonnull final ImmutableList<String> orderFlags,
                                                                final long orderExpirationInSecondsFromNow) {
-        final var parameters = Collections.unmodifiableMap(Map.of(
+        final Map<String, String> parameters = Collections.unmodifiableMap(Map.of(
                 "pair", krakenMarketName,
                 "type", krakenOrderType,
                 "ordertype", krakenPriceOrderType,
@@ -109,7 +109,7 @@ public class KrakenPrivateApiConnectorImpl implements KrakenPrivateApiConnector 
                 "expiretm", "+" + orderExpirationInSecondsFromNow
         ));
         try {
-            final var responseString = krakenApi.queryPrivate(KrakenApi.Method.ADD_ORDER, parameters);
+            final String responseString = krakenApi.queryPrivate(KrakenApi.Method.ADD_ORDER, parameters);
             return objectMapper.readValue(responseString, new TypeReference<>() {
             });
         } catch (final IOException | InvalidKeyException | NoSuchAlgorithmException exception) {

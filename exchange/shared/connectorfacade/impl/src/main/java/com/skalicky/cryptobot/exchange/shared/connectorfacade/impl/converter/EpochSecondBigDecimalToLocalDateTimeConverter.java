@@ -25,14 +25,13 @@ import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public final class EpochSecondBigDecimalToLocalDateTimeConverter implements NonnullConverter<BigDecimal, LocalDateTime> {
 
     @Override
     @Nonnull
     public LocalDateTime convert(@Nonnull final BigDecimal epochSecond) {
-        final var epochInNanos = epochSecond.multiply(BigDecimal.valueOf(1_000_000_000)).longValue();
+        final long epochInNanos = epochSecond.multiply(BigDecimal.valueOf(1_000_000_000)).longValue();
         final var instant = Instant.ofEpochSecond(0, epochInNanos);
         return LocalDateTime.ofInstant(instant, DateTimeUtil.BERLIN_ZONE_ID);
     }

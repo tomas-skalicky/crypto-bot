@@ -58,9 +58,9 @@ public class RestConnectorSupportUTest {
     @Test
     public void test_postJson_when_successHttpStatus_then_noException() throws Exception {
         final var testRequest = new TestRequest("Tomas Skalicky");
-        final var serializedRequest = objectMapper.writeValueAsString(testRequest);
+        final String serializedRequest = objectMapper.writeValueAsString(testRequest);
         final var testResponse = new TestResponse("no problem");
-        final var serializedResponse = objectMapper.writeValueAsString(testResponse);
+        final String serializedResponse = objectMapper.writeValueAsString(testResponse);
         final var endpoint = "/context-path/servlet-mapping/endpoint";
         wireMockServer.stubFor(
                 post(urlEqualTo(endpoint))
@@ -69,7 +69,7 @@ public class RestConnectorSupportUTest {
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withBody(serializedResponse)));
-        final var port = wireMockServer.port();
+        final int port = wireMockServer.port();
 
         restConnectorSupport.postJson(testRequest, "http://localhost:" + port + endpoint);
 
@@ -82,9 +82,9 @@ public class RestConnectorSupportUTest {
     @Test
     public void test_postJson_when_nonSuccessHttpStatus_then_exception() throws Exception {
         final var testRequest = new TestRequest("Tomas Skalicky");
-        final var serializedRequest = objectMapper.writeValueAsString(testRequest);
+        final String serializedRequest = objectMapper.writeValueAsString(testRequest);
         final var testResponse = new TestResponse("redirection to a new URL");
-        final var serializedResponse = objectMapper.writeValueAsString(testResponse);
+        final String serializedResponse = objectMapper.writeValueAsString(testResponse);
         final var endpoint = "/context-path/servlet-mapping/endpoint";
         wireMockServer.stubFor(
                 post(urlEqualTo(endpoint))
@@ -93,7 +93,7 @@ public class RestConnectorSupportUTest {
                         .willReturn(aResponse()
                                 .withStatus(300)
                                 .withBody(serializedResponse)));
-        final var port = wireMockServer.port();
+        final int port = wireMockServer.port();
 
         assertThatThrownBy(() -> restConnectorSupport.postJson(testRequest, "http://localhost:" + port + endpoint))
                 .isInstanceOf(IllegalStateException.class)
