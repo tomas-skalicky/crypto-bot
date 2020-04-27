@@ -22,17 +22,12 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideOutsideOfPackage;
-import static com.tngtech.archunit.lang.conditions.ArchConditions.onlyDependOnClassesThat;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.skalicky.cryptobot.application.TestConstants.BASE_PACKAGE;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-@AnalyzeClasses(packages = LayeredArchitectureUTest.BASE_PACKAGE)
+@AnalyzeClasses(packages = BASE_PACKAGE)
 public class LayeredArchitectureUTest {
 
-    static final String BASE_PACKAGE = "com.skalicky.cryptobot";
     private static final String APPLICATION_LAYER_NAME = "Application";
     private static final String BUSINESS_LOGIC_API_LAYER_NAME = "BusinessLogicApi";
     private static final String BUSINESS_LOGIC_IMPL_LAYER_NAME = "BusinessLogicImpl";
@@ -74,35 +69,5 @@ public class LayeredArchitectureUTest {
                     EXCHANGE_CONNECTOR_IMPL_LAYER_NAME)
             .whereLayer(EXCHANGE_CONNECTOR_IMPL_LAYER_NAME).mayOnlyBeAccessedByLayers(
                     APPLICATION_LAYER_NAME);
-
-    @ArchTest
-    static final ArchRule test_dependencies_when_sharedPackage_then_dependsOnlyOn_shared_or_nonProject_packages =
-            classes().that().resideInAPackage(BASE_PACKAGE + "..shared..")
-                    .should(onlyDependOnClassesThat(
-                            resideInAPackage(BASE_PACKAGE + "..shared..")
-                                    .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
-
-    @ArchTest
-    static final ArchRule test_dependencies_when_slackPackages_then_dependsOnlyOn_shared_or_slack_or_nonProject_packages =
-            classes().that().resideInAPackage(BASE_PACKAGE + "..slack..")
-                    .should(onlyDependOnClassesThat(
-                            resideInAnyPackage(BASE_PACKAGE + "..shared..", BASE_PACKAGE + "..slack..")
-                                    .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
-
-    @ArchTest
-    static final ArchRule test_dependencies_when_tradingPlatformPackages_then_dependsOnlyOn_shared_or_tradingPlatform_or_nonProject_packages =
-            classes().that().resideInAPackage(BASE_PACKAGE + "..tradingplatform..")
-                    .should(onlyDependOnClassesThat(
-                            resideInAnyPackage(BASE_PACKAGE + "..shared..",
-                                    BASE_PACKAGE + "..tradingplatform..")
-                                    .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
-
-    @ArchTest
-    static final ArchRule test_dependencies_when_krakenPackages_then_dependsOnlyOn_shared_or_tradingPlatform_or_kraken_or_nonProject_packages =
-            classes().that().resideInAPackage(BASE_PACKAGE + "..kraken..")
-                    .should(onlyDependOnClassesThat(
-                            resideInAnyPackage(BASE_PACKAGE + "..shared..",
-                                    BASE_PACKAGE + "..tradingplatform..", BASE_PACKAGE + "..kraken..")
-                                    .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
 
 }
