@@ -23,7 +23,6 @@ import com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.util.DateTime
 
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public final class LocalDateTimeToEpochSecondLongConverter implements NonnullConverter<LocalDateTime, Long> {
