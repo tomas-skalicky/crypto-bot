@@ -33,6 +33,9 @@ dependencies {
     implementation project(':exchange:shared:connectorfacade:impl')
     implementation project(':exchange:slack:connector:impl')
     implementation project(':exchange:slack:connectorfacade:impl')
+
+    testImplementation libs.archunit_junit5_api
+    testRuntimeOnly libs.archunit_junit5_engine
 }
 
 application {
