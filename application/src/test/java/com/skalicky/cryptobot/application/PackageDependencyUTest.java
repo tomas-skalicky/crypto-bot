@@ -32,7 +32,7 @@ import static com.tngtech.archunit.lang.conditions.ArchConditions.onlyDependOnCl
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(packages = BASE_PACKAGE)
-public class DependencyUTest {
+public class PackageDependencyUTest {
 
     @ArchTest
     @Nonnull
