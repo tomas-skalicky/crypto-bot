@@ -32,6 +32,10 @@ import static com.tngtech.archunit.lang.conditions.ArchConditions.beAnnotatedWit
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
+/**
+ * Note it would be better to implement this check with Checkstyle using a "raw" java code, not to use ArchUnit using
+ * a bytecode.
+ */
 @AnalyzeClasses(packages = BASE_PACKAGE)
 public class MandatoryAnnotationUTest {
 
