@@ -33,7 +33,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 @AnalyzeClasses(packages = BASE_PACKAGE)
-public class AnnotationUTest {
+public class MandatoryAnnotationUTest {
 
     @Nonnull
     private static final DescribedPredicate<JavaClass> isPrimitive = JavaClass.Predicates.belongToAnyOf(byte.class,
@@ -44,7 +44,7 @@ public class AnnotationUTest {
 
     @ArchTest
     @Nonnull
-    static final ArchRule test_fields_when_notDeclaredInEnums_and_havingNonPrimitiveType_and_havingNonGeneratedName_then_fieldsMustBeAnnotatedWithNullnessAnnotation =
+    static final ArchRule test_fields_when_notDeclaredInEnums_and_haveNonPrimitiveType_and_haveNonGeneratedName_then_mustBeAnnotatedWithNullnessAnnotation =
             fields()
 
                     .that()
@@ -56,7 +56,7 @@ public class AnnotationUTest {
 
     @ArchTest
     @Nonnull
-    static final ArchRule test_fields_when_declaredInEnums_and_havingNonPrimitiveType_and_havingNonGeneratedName_and_havingNonEnumValueType_then_fieldsMustBeAnnotatedWithNullnessAnnotation =
+    static final ArchRule test_fields_when_declaredInEnums_and_haveNonPrimitiveType_and_haveNonGeneratedName_and_haveNonEnumValueType_then_mustBeAnnotatedWithNullnessAnnotation =
             fields()
 
                     .that()
@@ -71,7 +71,7 @@ public class AnnotationUTest {
 
     @ArchTest
     @Nonnull
-    static final ArchRule test_methods_when_notDeclaredInEnums_and_returningNonPrimitiveTypeAndNonVoid_and_havingNonGeneratedName_then_methodsMustBeAnnotatedWithNullnessAnnotation =
+    static final ArchRule test_methods_when_notDeclaredInEnums_and_returnNonPrimitiveTypeAndNonVoid_and_haveNonGeneratedName_then_mustBeAnnotatedWithNullnessAnnotation =
             methods()
 
                     .that()
@@ -83,7 +83,7 @@ public class AnnotationUTest {
 
     @ArchTest
     @Nonnull
-    static final ArchRule test_methods_when_declaredInEnums_and_returningNonPrimitiveTypeAndNonVoid_and_havingNonGeneratedName_and_beingNonAutomaticallyProvided_then_methodsMustBeAnnotatedWithNullnessAnnotation =
+    static final ArchRule test_methods_when_declaredInEnums_and_returnNonPrimitiveTypeAndNonVoid_and_haveNonGeneratedName_and_areNotAutomaticallyProvided_then_mustBeAnnotatedWithNullnessAnnotation =
             methods()
 
                     .that()
