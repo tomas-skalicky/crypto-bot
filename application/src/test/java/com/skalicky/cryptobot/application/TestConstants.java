@@ -18,8 +18,11 @@
 
 package com.skalicky.cryptobot.application;
 
+import javax.annotation.Nonnull;
+
 public final class TestConstants {
 
+    @Nonnull
     public static final String BASE_PACKAGE = "com.skalicky.cryptobot";
 
     private TestConstants() {

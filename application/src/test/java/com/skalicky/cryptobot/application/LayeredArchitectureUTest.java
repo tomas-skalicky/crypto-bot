@@ -22,21 +22,31 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
+import javax.annotation.Nonnull;
+
 import static com.skalicky.cryptobot.application.TestConstants.BASE_PACKAGE;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 @AnalyzeClasses(packages = BASE_PACKAGE)
 public class LayeredArchitectureUTest {
 
+    @Nonnull
     private static final String APPLICATION_LAYER_NAME = "Application";
+    @Nonnull
     private static final String BUSINESS_LOGIC_API_LAYER_NAME = "BusinessLogicApi";
+    @Nonnull
     private static final String BUSINESS_LOGIC_IMPL_LAYER_NAME = "BusinessLogicImpl";
+    @Nonnull
     private static final String EXCHANGE_CONNECTOR_FACADE_API_LAYER_NAME = "ExchangeConnectorFacadeApi";
+    @Nonnull
     private static final String EXCHANGE_CONNECTOR_FACADE_IMPL_LAYER_NAME = "ExchangeConnectorFacadeImpl";
+    @Nonnull
     private static final String EXCHANGE_CONNECTOR_API_LAYER_NAME = "ExchangeConnectorApi";
+    @Nonnull
     private static final String EXCHANGE_CONNECTOR_IMPL_LAYER_NAME = "ExchangeConnectorImpl";
 
     @ArchTest
+    @Nonnull
     static final ArchRule test_layers_when_accessesRespectLayers_then_ok = layeredArchitecture()
 
             .layer(APPLICATION_LAYER_NAME).definedBy(BASE_PACKAGE + ".application..")
