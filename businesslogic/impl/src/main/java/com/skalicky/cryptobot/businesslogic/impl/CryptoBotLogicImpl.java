@@ -203,6 +203,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         }
     }
 
+    @NotNull
     private String toStringForNotificationPurposes(@NotNull final OpenOrderBo order) {
         final CurrencyPairBo currencyPair = order.getCurrencyPair();
         final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
@@ -233,6 +234,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 + order.getTradeIds().size() + " " + tradesString;
     }
 
+    @NotNull
     private String toStringForNotificationPurposes(@NotNull final ClosedOrderBo order) {
         final CurrencyPairBo currencyPair = order.getCurrencyPair();
         final CurrencyBoEnum quoteCurrency = currencyPair.getQuoteCurrency();
