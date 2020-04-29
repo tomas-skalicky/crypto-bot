@@ -22,6 +22,5 @@ import javax.annotation.Nonnull;
 
 public interface SlackConnector {
 
-    void sendMessage(@Nonnull String text,
-                     @Nonnull String targetUrl);
+    void sendMessage(@Nonnull String text);
 }

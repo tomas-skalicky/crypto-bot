@@ -19,6 +19,9 @@
 dependencies {
     api project(':exchange:slack:connector:api')
 
+    implementation lib_groups.slf4j_with_log4j
+    implementation libs.jackson_core
+    implementation libs.jersey_common
     implementation libs.jsr305
     implementation project(':exchange:shared:connector:impl')
 }

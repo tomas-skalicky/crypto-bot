@@ -37,11 +37,17 @@ public enum CurrencyBoEnum {
     @Nonnull
     private static final Map<String, CurrencyBoEnum> enumValuesByLabels = Arrays.stream(CurrencyBoEnum.values())
             .collect(Collectors.toMap(CurrencyBoEnum::getLabel, Function.identity()));
+
     @Nullable
     private final String label;
 
     CurrencyBoEnum(@Nullable final String label) {
         this.label = label;
+    }
+
+    @Nullable
+    public String getLabel() {
+        return label;
     }
 
     @Nonnull
@@ -51,10 +57,5 @@ public enum CurrencyBoEnum {
         } else {
             throw new IllegalArgumentException("Unsupported label [" + label + "]");
         }
-    }
-
-    @Nullable
-    public String getLabel() {
-        return label;
     }
 }

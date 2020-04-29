@@ -68,4 +68,13 @@ public class PackageDependencyUTest {
                                     BASE_PACKAGE + "..tradingplatform..", BASE_PACKAGE + "..kraken..")
                                     .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
 
+    @ArchTest
+    @Nonnull
+    static final ArchRule test_dependencies_when_poloniexPackages_then_dependsOnlyOn_shared_or_tradingPlatform_or_poloniex_or_nonProject_packages =
+            classes().that().resideInAPackage(BASE_PACKAGE + "..poloniex..")
+                    .should(onlyDependOnClassesThat(
+                            resideInAnyPackage(BASE_PACKAGE + "..shared..",
+                                    BASE_PACKAGE + "..tradingplatform..", BASE_PACKAGE + "..poloniex..")
+                                    .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
+
 }

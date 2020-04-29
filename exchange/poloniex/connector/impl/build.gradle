@@ -16,24 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.logic;
+dependencies {
+    api project(':exchange:poloniex:connector:api')
 
-import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
-import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
-
-import javax.annotation.Nonnull;
-
-public class SlackFacadeImpl implements SlackFacade {
-
-    @Nonnull
-    private final SlackConnector slackConnector;
-
-    public SlackFacadeImpl(@Nonnull final SlackConnector slackConnector) {
-        this.slackConnector = slackConnector;
-    }
-
-    @Override
-    public void sendMessage(@Nonnull final String text) {
-        this.slackConnector.sendMessage(text);
-    }
+    implementation libs.guava
+    implementation libs.httpclient
+    implementation libs.jackson_core
+    implementation libs.jersey_common
+    implementation libs.jsr305
+    implementation project(':exchange:shared:connector:impl')
 }

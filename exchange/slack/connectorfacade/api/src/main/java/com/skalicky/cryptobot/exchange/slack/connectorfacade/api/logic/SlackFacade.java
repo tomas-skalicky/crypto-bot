@@ -22,6 +22,5 @@ import javax.annotation.Nonnull;
 
 public interface SlackFacade {
 
-    void sendMessage(@Nonnull String text,
-                     @Nonnull String webhookUrl);
+    void sendMessage(@Nonnull String text);
 }

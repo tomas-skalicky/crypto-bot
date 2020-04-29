@@ -18,21 +18,27 @@
 
 package com.skalicky.cryptobot.exchange.shared.connector.impl.logic;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import org.glassfish.jersey.internal.util.collection.ImmutableMultivaluedMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nonnull;
+import java.net.URI;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class RestConnectorSupportUTest {
@@ -40,9 +46,9 @@ public class RestConnectorSupportUTest {
     @Nonnull
     private WireMockServer wireMockServer;
     @Nonnull
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Nonnull
-    private RestConnectorSupport restConnectorSupport = new RestConnectorSupport();
+    private final RestConnectorSupport restConnectorSupport = new RestConnectorSupport(objectMapper);
 
     @BeforeEach
     public void setup() {
@@ -56,10 +62,34 @@ public class RestConnectorSupportUTest {
     }
 
     @Test
-    public void test_postJson_when_successHttpStatus_then_noException() throws Exception {
+    public void test_getAcceptingJson_when_successHttpStatus_and_responsePayloadIsJsonDeserializable_then_responseIsDeserializedSuccessfully() throws Exception {
+        final var testResponse = new TestResponse("valid");
+        final String serializedResponse = objectMapper.writeValueAsString(testResponse);
+        final var endpoint = "/context-path/servlet-mapping/endpoint";
+        wireMockServer.stubFor(
+                get(urlEqualTo(endpoint))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withBody(serializedResponse)));
+        final int port = wireMockServer.port();
+        final var uri = new URI("http://localhost:" + port + endpoint);
+        final var responseTypeReference = new TypeReference<TestResponse>() {
+        };
+
+        final TestResponse actualResponse = restConnectorSupport.getAcceptingJson(uri,
+                ImmutableMultivaluedMap.empty(), responseTypeReference);
+
+        wireMockServer.verify(
+                getRequestedFor(urlEqualTo(endpoint)));
+
+        assertThat(actualResponse.getResult()).isEqualTo(testResponse.getResult());
+    }
+
+    @Test
+    public void test_postJsonAcceptingJson_when_successHttpStatus_and_responsePayloadIsJsonDeserializable_then_responseIsDeserializedSuccessfully() throws Exception {
         final var testRequest = new TestRequest("Tomas Skalicky");
         final String serializedRequest = objectMapper.writeValueAsString(testRequest);
-        final var testResponse = new TestResponse("no problem");
+        final var testResponse = new TestResponse("valid");
         final String serializedResponse = objectMapper.writeValueAsString(testResponse);
         final var endpoint = "/context-path/servlet-mapping/endpoint";
         wireMockServer.stubFor(
@@ -70,21 +100,26 @@ public class RestConnectorSupportUTest {
                                 .withStatus(200)
                                 .withBody(serializedResponse)));
         final int port = wireMockServer.port();
+        final var uri = new URI("http://localhost:" + port + endpoint);
+        final var responseTypeReference = new TypeReference<TestResponse>() {
+        };
 
-        restConnectorSupport.postJson(testRequest, "http://localhost:" + port + endpoint);
+        final TestResponse actualResponse = restConnectorSupport.postJsonAcceptingJson(uri,
+                ImmutableMultivaluedMap.empty(), testRequest, responseTypeReference);
 
         wireMockServer.verify(
                 postRequestedFor(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
                         .withRequestBody(equalToJson(serializedRequest)));
+
+        assertThat(actualResponse.getResult()).isEqualTo(testResponse.getResult());
     }
 
     @Test
-    public void test_postJson_when_nonSuccessHttpStatus_then_exception() throws Exception {
+    public void test_postJsonAcceptingJson_when_nonSuccessHttpStatus_then_exception() throws Exception {
         final var testRequest = new TestRequest("Tomas Skalicky");
         final String serializedRequest = objectMapper.writeValueAsString(testRequest);
-        final var testResponse = new TestResponse("redirection to a new URL");
-        final String serializedResponse = objectMapper.writeValueAsString(testResponse);
+        final String serializedResponse = objectMapper.writeValueAsString(new TestResponse("redirection"));
         final var endpoint = "/context-path/servlet-mapping/endpoint";
         wireMockServer.stubFor(
                 post(urlEqualTo(endpoint))
@@ -94,10 +129,73 @@ public class RestConnectorSupportUTest {
                                 .withStatus(300)
                                 .withBody(serializedResponse)));
         final int port = wireMockServer.port();
+        final var uri = new URI("http://localhost:" + port + endpoint);
+        final var responseTypeReference = new TypeReference<TestResponse>() {
+        };
 
-        assertThatThrownBy(() -> restConnectorSupport.postJson(testRequest, "http://localhost:" + port + endpoint))
+        assertThatThrownBy(() -> restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),
+                testRequest, responseTypeReference))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageStartingWith("Unexpected response status. Response: ");
+                .hasMessageStartingWith("Unexpected response status code [300]");
+
+        wireMockServer.verify(
+                postRequestedFor(urlEqualTo(endpoint))
+                        .withHeader("Content-Type", equalTo("application/json"))
+                        .withRequestBody(equalToJson(serializedRequest)));
+    }
+
+    @Test
+    public void test_postJsonAcceptingJson_when_responsePayloadIsString_then_responsePayloadIsNormalized() throws Exception {
+        final var testRequest = new TestRequest("Tomas Skalicky");
+        final String serializedRequest = objectMapper.writeValueAsString(testRequest);
+        final String response = "test response";
+        final var endpoint = "/context-path/servlet-mapping/endpoint";
+        wireMockServer.stubFor(
+                post(urlEqualTo(endpoint))
+                        .withHeader("Content-Type", equalTo("application/json"))
+                        .withRequestBody(equalToJson(serializedRequest))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withBody(response)));
+        final int port = wireMockServer.port();
+        final var uri = new URI("http://localhost:" + port + endpoint);
+        final var responseTypeReference = new TypeReference<String>() {
+        };
+
+        final String actualResponse = restConnectorSupport.postJsonAcceptingJson(uri,
+                ImmutableMultivaluedMap.empty(), testRequest, responseTypeReference);
+
+        wireMockServer.verify(
+                postRequestedFor(urlEqualTo(endpoint))
+                        .withHeader("Content-Type", equalTo("application/json"))
+                        .withRequestBody(equalToJson(serializedRequest)));
+
+        assertThat(actualResponse).isEqualTo(response);
+    }
+
+    @Test
+    public void test_postJsonAcceptingJson_when_responsePayloadIsNotJsonDeserializable_then_exception() throws Exception {
+        final var testRequest = new TestRequest("Tomas Skalicky");
+        final String serializedRequest = objectMapper.writeValueAsString(testRequest);
+        final String serializedResponse = "{ \"nonExistingField\": \"Foo\" }";
+        final var endpoint = "/context-path/servlet-mapping/endpoint";
+        wireMockServer.stubFor(
+                post(urlEqualTo(endpoint))
+                        .withHeader("Content-Type", equalTo("application/json"))
+                        .withRequestBody(equalToJson(serializedRequest))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withBody(serializedResponse)));
+        final int port = wireMockServer.port();
+        final var uri = new URI("http://localhost:" + port + endpoint);
+        final var responseTypeReference = new TypeReference<TestResponse>() {
+        };
+
+        assertThatThrownBy(() -> restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),
+                testRequest, responseTypeReference))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageEndingWith("Snapshot of data: responsePayloadString = { \"nonExistingField\": \"Foo\" }," +
+                        " normalizedResponseBodyString = { \"nonExistingField\": \"Foo\" }");
 
         wireMockServer.verify(
                 postRequestedFor(urlEqualTo(endpoint))

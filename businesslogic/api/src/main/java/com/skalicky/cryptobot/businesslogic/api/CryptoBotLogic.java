@@ -19,21 +19,17 @@
 package com.skalicky.cryptobot.businesslogic.api;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
 public interface CryptoBotLogic {
 
-    void reportOpenOrders(@Nonnull String tradingPlatformName,
-                          @Nullable final String slackWebhookUrl);
+    void reportOpenOrders(@Nonnull String tradingPlatformName);
 
-    void reportClosedOrders(@Nonnull String tradingPlatformName,
-                            @Nullable final String slackWebhookUrl);
+    void reportClosedOrders(@Nonnull String tradingPlatformName);
 
     void placeBuyOrderIfEnoughAvailable(@Nonnull String tradingPlatformName,
                                         @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
                                         @Nonnull String baseCurrencyLabel,
                                         @Nonnull String quoteCurrencyLabel,
-                                        @Nonnull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
-                                        @Nullable String slackWebhookUrl);
+                                        @Nonnull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal);
 }
