@@ -21,13 +21,13 @@ public class PoloniexPublicApiConnectorImpl implements PoloniexPublicApiConnecto
             };
 
     @Nonnull
-    private final String urlString;
+    private final URI publicApiUri;
     @Nonnull
     private final RestConnectorSupport restConnectorSupport;
 
-    public PoloniexPublicApiConnectorImpl(@Nonnull final String urlString,
+    public PoloniexPublicApiConnectorImpl(@Nonnull final URI publicApiUri,
                                           @Nonnull final RestConnectorSupport restConnectorSupport) {
-        this.urlString = urlString;
+        this.publicApiUri = publicApiUri;
         this.restConnectorSupport = restConnectorSupport;
     }
 
@@ -36,7 +36,7 @@ public class PoloniexPublicApiConnectorImpl implements PoloniexPublicApiConnecto
     @Override
     public ImmutableMap<String, PoloniexReturnTickerDto> returnTicker() {
         try {
-            final URI uri = new URIBuilder(urlString)
+            final URI uri = new URIBuilder(publicApiUri)
                     .addParameter(COMMAND_QUERY_PARAMETER_NAME, "returnTicker")
                     .build();
             return restConnectorSupport.getAcceptingJson(uri, ImmutableMultivaluedMap.empty(),

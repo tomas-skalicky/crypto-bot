@@ -48,7 +48,7 @@ public class KrakenPublicApiConnectorImplUTest {
     }
 
     @Test
-    public void test_ticker_when_dataForPairInResponseFile_then_askPriceReturned_and_bidPriceReturned() throws Exception {
+    public void test_ticker_when_responsePayloadIsValid_then_askPriceReturned_and_bidPriceReturned() throws Exception {
 
         // @formatter:off
         final var expectedResponse = "{" +

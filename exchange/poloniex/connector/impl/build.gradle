@@ -25,4 +25,11 @@ dependencies {
     implementation libs.jersey_common
     implementation libs.jsr305
     implementation project(':exchange:shared:connector:impl')
+
+    testImplementation lib_groups.junit_jupiter
+    testImplementation libs.assertj_core
+    testImplementation libs.mockito_core
+    testImplementation project(':exchange:poloniex:connector:api').sourceSets.test.output
 }
+
+compileTestJava.dependsOn tasks.getByPath(':exchange:poloniex:connector:api:compileTestJava')

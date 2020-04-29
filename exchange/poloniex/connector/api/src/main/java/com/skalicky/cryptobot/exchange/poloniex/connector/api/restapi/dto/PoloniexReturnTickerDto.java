@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
 /**
+ * Sample object:
  * <pre>
  * {
  *     "id": 121,
