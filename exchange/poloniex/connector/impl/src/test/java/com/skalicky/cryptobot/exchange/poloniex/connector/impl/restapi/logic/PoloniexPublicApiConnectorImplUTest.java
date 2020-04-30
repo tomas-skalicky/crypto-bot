@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.skalicky.cryptobot.exchange.poloniex.connector.impl.restapi;
+package com.skalicky.cryptobot.exchange.poloniex.connector.impl.restapi.logic;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
