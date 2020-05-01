@@ -62,8 +62,6 @@ public class CryptoBotApplication {
 
     @Nonnull
     private static final String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
-    @Nonnull
-    private static final String POLONIEX_TRADING_PLATFORM_NAME = "poloniex";
 
     public static void main(String[] args) {
         final var arguments = new CryptoBotArguments();
@@ -78,19 +76,14 @@ public class CryptoBotApplication {
         final var objectMapper = new ObjectMapper();
         objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
         final String tradingPlatformName = arguments.getTradingPlatformName();
-        switch (tradingPlatformName) {
-            case KRAKEN_TRADING_PLATFORM_NAME:
-                final KrakenApi krakenApi = initializeKrakenApi(arguments);
-                publicApiFacades.add(initializeKrakenPublicApiFacade(krakenApi, objectMapper,
-                        currencyPairBoEnumToKrakenMarketNameConverter));
-                privateApiFacades.add(initializeKrakenPrivateApiFacade(krakenApi, objectMapper,
-                        currencyPairBoEnumToKrakenMarketNameConverter));
-                break;
-            case POLONIEX_TRADING_PLATFORM_NAME:
-                // FIXME Tomas 3 Poloniex
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported trading platform [" + tradingPlatformName + "]");
+        if (KRAKEN_TRADING_PLATFORM_NAME.equals(tradingPlatformName)) {
+            final KrakenApi krakenApi = initializeKrakenApi(arguments);
+            publicApiFacades.add(initializeKrakenPublicApiFacade(krakenApi, objectMapper,
+                    currencyPairBoEnumToKrakenMarketNameConverter));
+            privateApiFacades.add(initializeKrakenPrivateApiFacade(krakenApi, objectMapper,
+                    currencyPairBoEnumToKrakenMarketNameConverter));
+        } else {
+            throw new IllegalArgumentException("Unsupported trading platform [" + tradingPlatformName + "]");
         }
         final RestConnectorSupport restConnectorSupport = new RestConnectorSupport(objectMapper);
         final SlackFacade slackFacade = initializeSlackFacade(arguments.getSlackWebhookUrl(), restConnectorSupport);

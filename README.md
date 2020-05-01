@@ -64,8 +64,6 @@ orders were executed.
 
 [Kraken](https://www.kraken.com/). Id of the trading platform is passed to
 the bot as an argument. See input parameters.
-[Poloniex]
-#TODO Tomas 4
 
 ## Supported reporting tools
 

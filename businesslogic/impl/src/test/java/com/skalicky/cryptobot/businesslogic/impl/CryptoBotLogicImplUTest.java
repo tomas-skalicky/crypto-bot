@@ -53,7 +53,7 @@ public class CryptoBotLogicImplUTest {
     @Nonnull
     private final static String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
     @Nonnull
-    private final static String POLONIEX_TRADING_PLATFORM_NAME = "poloniex";
+    private final static String BITTREX_TRADING_PLATFORM_NAME = "bittrex";
     @Nonnull
     private final TradingPlatformPublicApiFacade publicApiFacade = createKrakenPublicApiFacadeMock();
     @Nonnull
@@ -75,9 +75,9 @@ public class CryptoBotLogicImplUTest {
     @Test
     public void test_reportOpenOrders_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.reportOpenOrders(
-                POLONIEX_TRADING_PLATFORM_NAME))
+                BITTREX_TRADING_PLATFORM_NAME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
@@ -143,9 +143,9 @@ public class CryptoBotLogicImplUTest {
     @Test
     public void test_reportClosedOrders_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.reportClosedOrders(
-                POLONIEX_TRADING_PLATFORM_NAME))
+                BITTREX_TRADING_PLATFORM_NAME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
@@ -235,10 +235,10 @@ public class CryptoBotLogicImplUTest {
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                POLONIEX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
+                BITTREX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
                 new BigDecimal("0.01")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
