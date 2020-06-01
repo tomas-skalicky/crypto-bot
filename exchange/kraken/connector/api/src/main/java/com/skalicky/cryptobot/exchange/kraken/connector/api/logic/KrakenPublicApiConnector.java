@@ -20,8 +20,8 @@ package com.skalicky.cryptobot.exchange.kraken.connector.api.logic;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 public interface KrakenPublicApiConnector {

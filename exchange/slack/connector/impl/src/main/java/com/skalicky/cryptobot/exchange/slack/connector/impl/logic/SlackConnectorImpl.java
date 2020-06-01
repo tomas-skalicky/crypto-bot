@@ -21,7 +21,6 @@ package com.skalicky.cryptobot.exchange.slack.connector.impl.logic;
 import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnectorSupport;
 import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connector.impl.dto.SlackSendMessageRequest;
-
 import org.jetbrains.annotations.NotNull;
 
 public class SlackConnectorImpl implements SlackConnector {

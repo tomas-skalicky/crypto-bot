@@ -18,9 +18,8 @@
 
 package com.skalicky.cryptobot.businesslogic.impl.datetime;
 
-import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProvider;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
 
 public interface FixableLocalDateTimeProvider extends LocalDateTimeProvider {

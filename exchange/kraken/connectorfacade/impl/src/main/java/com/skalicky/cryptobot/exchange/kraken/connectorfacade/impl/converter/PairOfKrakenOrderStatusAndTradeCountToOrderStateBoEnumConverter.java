@@ -21,7 +21,6 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.jetbrains.annotations.NotNull;
 
 public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter implements NonnullConverter<Pair<String, Integer>, OrderStateBoEnum> {

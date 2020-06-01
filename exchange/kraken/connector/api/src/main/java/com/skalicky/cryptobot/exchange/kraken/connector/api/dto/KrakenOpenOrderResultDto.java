@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Map;
 
 public class KrakenOpenOrderResultDto {

@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo;
 
 import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 
 public final class TickerBo {

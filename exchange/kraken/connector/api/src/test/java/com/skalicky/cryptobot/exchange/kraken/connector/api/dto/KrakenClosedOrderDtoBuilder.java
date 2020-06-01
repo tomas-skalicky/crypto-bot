@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 import java.util.List;
 

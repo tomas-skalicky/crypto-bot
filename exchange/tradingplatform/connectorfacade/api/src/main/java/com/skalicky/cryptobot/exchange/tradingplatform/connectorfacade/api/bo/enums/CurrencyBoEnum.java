@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.e
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;

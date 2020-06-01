@@ -19,7 +19,6 @@
 package com.skalicky.cryptobot.exchange.kraken.connectorfacade.api.logic;
 
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformDesignated;
-
 import org.jetbrains.annotations.NotNull;
 
 public interface KrakenApiFacade extends TradingPlatformDesignated {

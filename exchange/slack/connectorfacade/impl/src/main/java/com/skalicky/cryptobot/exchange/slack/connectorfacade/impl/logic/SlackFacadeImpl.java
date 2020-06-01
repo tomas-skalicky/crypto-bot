@@ -20,7 +20,6 @@ package com.skalicky.cryptobot.exchange.slack.connectorfacade.impl.logic;
 
 import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
-
 import org.jetbrains.annotations.NotNull;
 
 public class SlackFacadeImpl implements SlackFacade {

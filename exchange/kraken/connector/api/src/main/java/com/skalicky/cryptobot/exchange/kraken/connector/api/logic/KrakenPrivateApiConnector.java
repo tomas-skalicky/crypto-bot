@@ -23,8 +23,8 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderRe
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 import java.util.Map;
 

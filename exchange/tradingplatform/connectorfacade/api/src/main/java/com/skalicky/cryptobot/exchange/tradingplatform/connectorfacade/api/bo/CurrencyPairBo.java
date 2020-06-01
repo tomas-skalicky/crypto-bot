@@ -19,8 +19,8 @@
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo;
 
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public final class CurrencyPairBo {

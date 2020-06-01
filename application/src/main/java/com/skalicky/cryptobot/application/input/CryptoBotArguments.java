@@ -19,9 +19,9 @@
 package com.skalicky.cryptobot.application.input;
 
 import com.beust.jcommander.Parameter;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 
 public class CryptoBotArguments {

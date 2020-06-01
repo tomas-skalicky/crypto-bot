@@ -24,8 +24,8 @@ import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.logic.KrakenPublicApiConnector;
 import edu.self.kraken.api.KrakenApi;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;

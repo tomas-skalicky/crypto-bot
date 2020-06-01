@@ -20,7 +20,6 @@ package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logi
 
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
-
 import org.jetbrains.annotations.NotNull;
 
 public interface TradingPlatformPublicApiFacade extends TradingPlatformDesignated {
