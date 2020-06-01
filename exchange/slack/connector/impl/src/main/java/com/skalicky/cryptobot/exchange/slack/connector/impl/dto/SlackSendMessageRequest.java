@@ -15,7 +15,7 @@ public class SlackSendMessageRequest {
         return text;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String toString() {
         return "SlackSendMessageRequest{" +

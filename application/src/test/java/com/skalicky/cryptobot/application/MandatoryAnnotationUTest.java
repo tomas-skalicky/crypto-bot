@@ -23,12 +23,12 @@ import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static com.skalicky.cryptobot.application.TestConstants.BASE_PACKAGE;
-import static com.tngtech.archunit.lang.conditions.ArchConditions.beAnnotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
@@ -39,15 +39,15 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 @AnalyzeClasses(packages = BASE_PACKAGE)
 public class MandatoryAnnotationUTest {
 
-    @Nonnull
+    @NotNull
     private static final DescribedPredicate<JavaClass> isPrimitive = JavaClass.Predicates.belongToAnyOf(byte.class,
             short.class, int.class, long.class, float.class, double.class, char.class, boolean.class);
-    @Nonnull
+    @NotNull
     private static final DescribedPredicate<JavaClass> isPrimitiveOrVoid = JavaClass.Predicates.belongToAnyOf(byte.class,
             short.class, int.class, long.class, float.class, double.class, char.class, boolean.class, void.class);
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_fields_when_notDeclaredInEnums_and_haveNonPrimitiveType_and_haveNonGeneratedName_then_mustBeAnnotatedWithNullnessAnnotation =
             fields()
 
@@ -59,7 +59,7 @@ public class MandatoryAnnotationUTest {
                     .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_fields_when_declaredInEnums_and_haveNonPrimitiveType_and_haveNonGeneratedName_and_haveNonEnumValueType_then_mustBeAnnotatedWithNullnessAnnotation =
             fields()
 
@@ -74,7 +74,7 @@ public class MandatoryAnnotationUTest {
                     .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_methods_when_notDeclaredInEnums_and_returnNonPrimitiveTypeAndNonVoid_and_haveNonGeneratedName_then_mustBeAnnotatedWithNullnessAnnotation =
             methods()
 
@@ -86,7 +86,7 @@ public class MandatoryAnnotationUTest {
                     .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_methods_when_declaredInEnums_and_returnNonPrimitiveTypeAndNonVoid_and_haveNonGeneratedName_and_areNotAutomaticallyProvided_then_mustBeAnnotatedWithNullnessAnnotation =
             methods()
 

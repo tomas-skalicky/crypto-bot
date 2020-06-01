@@ -53,7 +53,7 @@ public final class TickerBo {
         return bidPrice;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String toString() {
         return "TickerBo{" +

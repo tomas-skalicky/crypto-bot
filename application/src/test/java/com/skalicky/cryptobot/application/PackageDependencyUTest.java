@@ -21,8 +21,7 @@ package com.skalicky.cryptobot.application;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static com.skalicky.cryptobot.application.TestConstants.BASE_PACKAGE;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
@@ -35,7 +34,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 public class PackageDependencyUTest {
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_dependencies_when_sharedPackage_then_dependsOnlyOn_shared_or_nonProject_packages =
             classes().that().resideInAPackage(BASE_PACKAGE + "..shared..")
                     .should(onlyDependOnClassesThat(
@@ -43,7 +42,7 @@ public class PackageDependencyUTest {
                                     .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_dependencies_when_slackPackages_then_dependsOnlyOn_shared_or_slack_or_nonProject_packages =
             classes().that().resideInAPackage(BASE_PACKAGE + "..slack..")
                     .should(onlyDependOnClassesThat(
@@ -51,7 +50,7 @@ public class PackageDependencyUTest {
                                     .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_dependencies_when_tradingPlatformPackages_then_dependsOnlyOn_shared_or_tradingPlatform_or_nonProject_packages =
             classes().that().resideInAPackage(BASE_PACKAGE + "..tradingplatform..")
                     .should(onlyDependOnClassesThat(
@@ -60,7 +59,7 @@ public class PackageDependencyUTest {
                                     .or(resideOutsideOfPackage(BASE_PACKAGE + ".."))));
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_dependencies_when_krakenPackages_then_dependsOnlyOn_shared_or_tradingPlatform_or_kraken_or_nonProject_packages =
             classes().that().resideInAPackage(BASE_PACKAGE + "..kraken..")
                     .should(onlyDependOnClassesThat(

@@ -22,8 +22,7 @@ import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.Nonn
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static com.skalicky.cryptobot.application.TestConstants.BASE_PACKAGE;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
@@ -32,7 +31,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 public class ClassNamingUTest {
 
     @ArchTest
-    @Nonnull
+    @NotNull
     static final ArchRule test_classes_when_implementNonnullConverter_then_haveNameWithConverterSuffix =
             classes()
 
