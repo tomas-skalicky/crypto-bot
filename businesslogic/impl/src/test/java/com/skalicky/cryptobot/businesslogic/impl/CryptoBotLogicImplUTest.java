@@ -53,7 +53,11 @@ public class CryptoBotLogicImplUTest {
     @NotNull
     private final static String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
     @NotNull
+<<<<<<< HEAD
     private final static String POLONIEX_TRADING_PLATFORM_NAME = "poloniex";
+=======
+    private final static String BITTREX_TRADING_PLATFORM_NAME = "bittrex";
+>>>>>>> origin/master
     @NotNull
     private final TradingPlatformPublicApiFacade publicApiFacade = createKrakenPublicApiFacadeMock();
     @NotNull
@@ -75,40 +79,26 @@ public class CryptoBotLogicImplUTest {
     @Test
     public void test_reportOpenOrders_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.reportOpenOrders(
-                POLONIEX_TRADING_PLATFORM_NAME, null))
+                BITTREX_TRADING_PLATFORM_NAME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
     }
 
     @Test
-    public void test_reportOpenOrders_when_noSlackUrl_then_noSlackMessage() {
+    public void test_reportOpenOrders_when_noOrder_then_appropriateMessageIsToBeSentViaSlack() {
         final var includeTrades = true;
         when(privateApiFacade.getOpenOrders(includeTrades))
                 .thenReturn(ImmutableList.of());
 
-        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, null);
+        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getOpenOrders(includeTrades);
-    }
-
-    @Test
-    public void test_reportOpenOrders_when_noOrder_and_providedSlackUrl_then_noneInSlackMessage() {
-        final var includeTrades = true;
-        when(privateApiFacade.getOpenOrders(includeTrades))
-                .thenReturn(ImmutableList.of());
-        final var slackUrl = "http://slack_url";
-
-        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
-
-        verify(publicApiFacade).getTradingPlatform();
-        verify(privateApiFacade).getTradingPlatform();
-        verify(privateApiFacade).getOpenOrders(includeTrades);
-        verify(slackFacade).sendMessage("Open orders on kraken: none", slackUrl);
+        verify(slackFacade).sendMessage("Open orders on kraken: none");
     }
 
     @Test
@@ -141,9 +131,8 @@ public class CryptoBotLogicImplUTest {
                 .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
         when(privateApiFacade.getOpenOrders(includeTrades))
                 .thenReturn(ImmutableList.of(openOrder1, openOrder2));
-        final var slackUrl = "http://slack_url";
 
-        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+        cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
@@ -152,50 +141,34 @@ public class CryptoBotLogicImplUTest {
                 "sell 0.65 BTC-EUR exec. 0 BTC @ market @ new -> no trades yet @ open 07.03. 08:15" +
                 " expires on 09.03. 10:45 @ 0 trades\n" +
                 "buy 150.56 EUR-BTC exec. 100 EUR @ limit 0.000176 exec. avg. 0.000175 fee 0.5 EUR @" +
-                " partially executed -> trades exist @ open 06.03. 18:15 @ 2 trades", slackUrl);
+                " partially executed -> trades exist @ open 06.03. 18:15 @ 2 trades");
     }
 
     @Test
     public void test_reportClosedOrders_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.reportClosedOrders(
-                POLONIEX_TRADING_PLATFORM_NAME, null))
+                BITTREX_TRADING_PLATFORM_NAME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
     }
 
     @Test
-    public void test_reportClosedOrders_when_noSlackUrl_then_noSlackMessage() {
-        final LocalDateTime now = fixableLocalDateTimeProvider.fix();
-        final LocalDateTime fromDateTime = now.minusDays(3);
-        final var includeTrades = true;
-        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
-                .thenReturn(ImmutableList.of());
-
-        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, null);
-
-        verify(publicApiFacade).getTradingPlatform();
-        verify(privateApiFacade).getTradingPlatform();
-        verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
-    }
-
-    @Test
-    public void test_reportClosedOrders_when_noOrder_and_providedSlackUrl_then_noneInSlackMessage() {
+    public void test_reportClosedOrders_when_noOrder_then_appropriateMessageIsToBeSentViaSlack() {
         final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
         final var includeTrades = true;
         when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
                 .thenReturn(ImmutableList.of());
-        final var slackUrl = "http://slack_url";
 
-        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
-        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: none", slackUrl);
+        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: none");
     }
 
     @Test
@@ -233,7 +206,7 @@ public class CryptoBotLogicImplUTest {
                 .thenReturn(ImmutableList.of(closedOrder1, closedOrder2));
         final var slackUrl = "http://slack_url";
 
-        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
@@ -242,7 +215,7 @@ public class CryptoBotLogicImplUTest {
                 "sell 0.65 BTC-EUR exec. 0.65 BTC @ market exec. avg. 5650 fee 0 BTC @" +
                 " fully executed -> trades exist @ open 07.03. 08:15 close 07.03. 08:17 @ 1 trade\n" +
                 "buy 150.56 EUR-BTC exec. 100 EUR @ limit 0.000176 exec. avg. 0.000175 fee 0.5 EUR @" +
-                " partially executed -> trades exist @ open 06.03. 18:15 close 07.03. 08:05 @ 2 trades", slackUrl);
+                " partially executed -> trades exist @ open 06.03. 18:15 close 07.03. 08:05 @ 2 trades");
     }
 
     @Test
@@ -255,53 +228,39 @@ public class CryptoBotLogicImplUTest {
         when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime)).thenReturn(ImmutableList.of(closedOrder));
         final var slackUrl = "http://slack_url";
 
-        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME, slackUrl);
+        cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
-        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: none", slackUrl);
+        verify(slackFacade).sendMessage("Closed orders since 08.03. 10:30 on kraken: none");
     }
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
         assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                POLONIEX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
-                new BigDecimal("0.01"), null))
+                BITTREX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
+                new BigDecimal("0.01")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"poloniex\"");
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
     }
 
     @Test
-    public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_and_noSlackUrl_then_noPurchase_and_noSlackMessage() {
+    public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_then_noPurchase_and_appropriateMessageIsToBeSentViaSlack() {
         when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
-
-        cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
-                KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "XRP",
-                new BigDecimal("0.01"), null);
-
-        verify(publicApiFacade).getTradingPlatform();
-        verify(privateApiFacade).getTradingPlatform();
-        verify(privateApiFacade).getAccountBalance();
-    }
-
-    @Test
-    public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
-        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "LTC",
-                new BigDecimal("0.01"), slackUrl);
+                new BigDecimal("0.01"));
 
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
         verify(slackFacade).sendMessage(
-                "Too little base currency [1 EUR]. Needed volume to invest per run is 10 EUR", slackUrl);
+                "Too little base currency [1 EUR]. Needed volume to invest per run is 10 EUR");
     }
 
     @Test
@@ -310,11 +269,10 @@ public class CryptoBotLogicImplUTest {
         final var ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
         when(publicApiFacade.getTicker(currencyPair)).thenReturn(ticker);
-        final var slackUrl = "http://slack_url";
 
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), "EUR",
-                "BTC", new BigDecimal("0.001"), slackUrl);
+                "BTC", new BigDecimal("0.001"));
 
         verify(publicApiFacade).getTradingPlatform();
         verify(publicApiFacade).getTicker(currencyPair);
@@ -324,12 +282,11 @@ public class CryptoBotLogicImplUTest {
                 new BigDecimal("2.2244466689"), new BigDecimal("8.991"),
                 true, 129_600);
         verify(slackFacade).sendMessage(
-                "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.", slackUrl);
+                "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.");
         verify(slackFacade).sendMessage(
                 "limit order to buy 2.2244466689 BTC for 20 EUR successfully placed on kraken." +
                         " Limit price of 1 BTC = 8.991 EUR." +
-                        " Order expiration is in 129600 seconds from now.",
-                slackUrl);
+                        " Order expiration is in 129600 seconds from now.");
     }
 
     private TradingPlatformPublicApiFacade createKrakenPublicApiFacadeMock() {

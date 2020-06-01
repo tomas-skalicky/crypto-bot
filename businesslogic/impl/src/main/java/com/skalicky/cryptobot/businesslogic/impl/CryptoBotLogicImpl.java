@@ -35,7 +35,6 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +76,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
     }
 
     @Override
-    public void reportOpenOrders(@NotNull final String tradingPlatformName,
-                                 @Nullable final String slackWebhookUrl) {
+    public void reportOpenOrders(@NotNull final String tradingPlatformName) {
         final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
@@ -96,14 +94,11 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         }
         final String message = messageBuilder.toString();
         logger.info(message);
-        if (slackWebhookUrl != null) {
-            slackFacade.sendMessage(message, slackWebhookUrl);
-        }
+        slackFacade.sendMessage(message);
     }
 
     @Override
-    public void reportClosedOrders(@NotNull final String tradingPlatformName,
-                                   @Nullable final String slackWebhookUrl) {
+    public void reportClosedOrders(@NotNull final String tradingPlatformName) {
         final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
@@ -125,9 +120,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         }
         final String message = messageBuilder.toString();
         logger.info(message);
-        if (slackWebhookUrl != null) {
-            slackFacade.sendMessage(message, slackWebhookUrl);
-        }
+        slackFacade.sendMessage(message);
     }
 
     @Override
@@ -135,8 +128,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                                                @NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
                                                @NotNull final String baseCurrencyLabel,
                                                @NotNull final String quoteCurrencyLabel,
-                                               @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
-                                               @Nullable final String slackWebhookUrl) {
+                                               @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal) {
         final TradingPlatformPrivateApiFacade privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (privateApiFacade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
@@ -154,9 +146,7 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
             final var tickerMessage = "Going to retrieve a ticker for currencies quote " + quoteCurrencyLabel
                     + " and base " + baseCurrencyLabel + " on " + tradingPlatformName + ".";
             logger.info(tickerMessage);
-            if (slackWebhookUrl != null) {
-                slackFacade.sendMessage(tickerMessage, slackWebhookUrl);
-            }
+            slackFacade.sendMessage(tickerMessage);
 
             final CurrencyBoEnum quoteCurrency = CurrencyBoEnum.getByLabel(quoteCurrencyLabel);
             final var currencyPair = new CurrencyPairBo(quoteCurrency, baseCurrency);
@@ -188,18 +178,14 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                     + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel
                     + ". Order expiration is in " + orderExpirationInSecondsFromNow + " seconds from now.";
             logger.info(orderPlacedMessage);
-            if (slackWebhookUrl != null) {
-                slackFacade.sendMessage(orderPlacedMessage, slackWebhookUrl);
-            }
+            slackFacade.sendMessage(orderPlacedMessage);
 
         } else {
             final var message = "Too little base currency [" + baseCurrencyAmount + " "
                     + baseCurrencyLabel + "]. Needed volume to invest per run is "
                     + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel;
             logger.warn(message);
-            if (slackWebhookUrl != null) {
-                slackFacade.sendMessage(message, slackWebhookUrl);
-            }
+            slackFacade.sendMessage(message);
         }
     }
 

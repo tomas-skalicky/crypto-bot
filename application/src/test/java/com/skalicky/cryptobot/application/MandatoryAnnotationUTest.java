@@ -24,11 +24,10 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import static com.skalicky.cryptobot.application.TestConstants.BASE_PACKAGE;
+import static com.tngtech.archunit.lang.conditions.ArchConditions.beAnnotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
@@ -56,7 +55,7 @@ public class MandatoryAnnotationUTest {
                     .and().doNotHaveRawType(isPrimitive)
                     .and().haveNameNotMatching(".*\\$.*")
 
-                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
+                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(NotNull.class)));
 
     @ArchTest
     @NotNull
@@ -71,7 +70,7 @@ public class MandatoryAnnotationUTest {
                     // (also ordinary enum fields).
                     .and().doNotHaveRawType(JavaClass.Predicates.ENUMS)
 
-                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
+                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(NotNull.class)));
 
     @ArchTest
     @NotNull
@@ -83,7 +82,7 @@ public class MandatoryAnnotationUTest {
                     .and().doNotHaveRawReturnType(isPrimitiveOrVoid)
                     .and().haveNameNotMatching(".*\\$.*")
 
-                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
+                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(NotNull.class)));
 
     @ArchTest
     @NotNull
@@ -97,6 +96,6 @@ public class MandatoryAnnotationUTest {
                     .and().doNotHaveName("valueOf")
                     .and().doNotHaveName("values")
 
-                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(Nonnull.class)));
+                    .should(beAnnotatedWith(Nullable.class).or(beAnnotatedWith(NotNull.class)));
 
 }

@@ -22,6 +22,5 @@ import org.jetbrains.annotations.NotNull;
 
 public interface SlackConnector {
 
-    void sendMessage(@NotNull String text,
-                     @NotNull String targetUrl);
+    void sendMessage(@NotNull String text);
 }

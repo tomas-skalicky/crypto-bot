@@ -32,8 +32,7 @@ public class SlackFacadeImpl implements SlackFacade {
     }
 
     @Override
-    public void sendMessage(@NotNull final String text,
-                            @NotNull final String webhookUrl) {
-        this.slackConnector.sendMessage(text, webhookUrl);
+    public void sendMessage(@NotNull final String text) {
+        this.slackConnector.sendMessage(text);
     }
 }

@@ -22,6 +22,5 @@ import org.jetbrains.annotations.NotNull;
 
 public interface SlackFacade {
 
-    void sendMessage(@NotNull String text,
-                     @NotNull String webhookUrl);
+    void sendMessage(@NotNull String text);
 }

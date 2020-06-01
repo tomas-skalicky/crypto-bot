@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.application;
 
 import com.beust.jcommander.JCommander;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.application.input.CryptoBotArguments;
@@ -54,6 +55,7 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import edu.self.kraken.api.KrakenApi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -81,27 +83,31 @@ public class CryptoBotApplication {
         final var currencyPairBoEnumToKrakenMarketNameConverter = new CurrencyPairBoToKrakenMarketNameConverter();
         final var publicApiFacades = new ArrayList<TradingPlatformPublicApiFacade>();
         final var privateApiFacades = new ArrayList<TradingPlatformPrivateApiFacade>();
-        if (KRAKEN_TRADING_PLATFORM_NAME.equals(arguments.getTradingPlatformName())) {
+        final var objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+        final String tradingPlatformName = arguments.getTradingPlatformName();
+        if (KRAKEN_TRADING_PLATFORM_NAME.equals(tradingPlatformName)) {
             final KrakenApi krakenApi = initializeKrakenApi(arguments);
-            final var objectMapper = new ObjectMapper();
             publicApiFacades.add(initializeKrakenPublicApiFacade(krakenApi, objectMapper,
                     currencyPairBoEnumToKrakenMarketNameConverter));
             privateApiFacades.add(initializeKrakenPrivateApiFacade(krakenApi, objectMapper,
                     currencyPairBoEnumToKrakenMarketNameConverter));
+        } else {
+            throw new IllegalArgumentException("Unsupported trading platform [" + tradingPlatformName + "]");
         }
-        final SlackFacade slackFacade = initializeSlackFacade();
+        final RestConnectorSupport restConnectorSupport = new RestConnectorSupport(objectMapper);
+        final SlackFacade slackFacade = initializeSlackFacade(arguments.getSlackWebhookUrl(), restConnectorSupport);
         final var cryptoBotLogic = new CryptoBotLogicImpl(ImmutableList.copyOf(publicApiFacades),
                 ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
 
         try {
-            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(arguments.getTradingPlatformName(),
+            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName,
                     arguments.getVolumeInBaseCurrencyToInvestPerRun(),
                     arguments.getBaseCurrency(),
                     arguments.getQuoteCurrency(),
-                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
-                    arguments.getSlackWebhookUrl());
-            cryptoBotLogic.reportClosedOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
-            cryptoBotLogic.reportOpenOrders(arguments.getTradingPlatformName(), arguments.getSlackWebhookUrl());
+                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal());
+            cryptoBotLogic.reportClosedOrders(tradingPlatformName);
+            cryptoBotLogic.reportOpenOrders(tradingPlatformName);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -110,9 +116,8 @@ public class CryptoBotApplication {
                 final var maxLength = 512;
                 final boolean showDots = stackTrace.length() > maxLength;
                 slackFacade.sendMessage("Exception: "
-                                + stackTrace.substring(0, Math.min(maxLength, stackTrace.length()))
-                                + (showDots ? "..." : ""),
-                        arguments.getSlackWebhookUrl());
+                        + stackTrace.substring(0, Math.min(maxLength, stackTrace.length()))
+                        + (showDots ? "..." : ""));
             }
         }
     }
@@ -175,9 +180,9 @@ public class CryptoBotApplication {
     }
 
     @NotNull
-    private static SlackFacade initializeSlackFacade() {
-        final var restConnectorSupport = new RestConnectorSupport();
-        final var slackConnector = new SlackConnectorImpl(restConnectorSupport);
+    private static SlackFacade initializeSlackFacade(@Nullable final String slackWebhookUrl,
+                                                     @NotNull final RestConnectorSupport restConnectorSupport) {
+        final var slackConnector = new SlackConnectorImpl(restConnectorSupport, slackWebhookUrl);
         return new SlackFacadeImpl(slackConnector);
     }
 }
