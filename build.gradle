@@ -30,7 +30,7 @@ buildscript {
 
 plugins {
     // apply false -> do not apply the plugin on the current (=root) project
-    id 'org.javamodularity.moduleplugin' version '1.6.0' apply false
+    id 'org.javamodularity.moduleplugin' version '1.7.0' apply false
 }
 
 group = 'com.skalicky'
