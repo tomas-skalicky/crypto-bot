@@ -23,29 +23,29 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenAddOrderRe
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenClosedOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderResultDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.Map;
 
 public interface KrakenPrivateApiConnector {
 
-    @Nonnull
+    @NotNull
     KrakenResponseDto<KrakenOpenOrderResultDto> openOrders(boolean includeTrades);
 
-    @Nonnull
+    @NotNull
     KrakenResponseDto<KrakenClosedOrderResultDto> closedOrders(boolean includeTrades,
-                                                               @Nonnull Long fromInEpochSeconds);
+                                                               @NotNull Long fromInEpochSeconds);
 
-    @Nonnull
+    @NotNull
     KrakenResponseDto<Map<String, BigDecimal>> balance();
 
-    @Nonnull
-    KrakenResponseDto<KrakenAddOrderResultDto> addOrder(@Nonnull String krakenMarketName,
-                                                        @Nonnull String krakenOrderType,
-                                                        @Nonnull String krakenPriceOrderType,
-                                                        @Nonnull BigDecimal price,
-                                                        @Nonnull BigDecimal volumeInQuoteCurrency,
-                                                        @Nonnull ImmutableList<String> orderFlags,
+    @NotNull
+    KrakenResponseDto<KrakenAddOrderResultDto> addOrder(@NotNull String krakenMarketName,
+                                                        @NotNull String krakenOrderType,
+                                                        @NotNull String krakenPriceOrderType,
+                                                        @NotNull BigDecimal price,
+                                                        @NotNull BigDecimal volumeInQuoteCurrency,
+                                                        @NotNull ImmutableList<String> orderFlags,
                                                         long orderExpirationInSecondsFromNow);
 }

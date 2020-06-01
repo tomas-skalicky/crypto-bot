@@ -20,12 +20,12 @@ package com.skalicky.cryptobot.exchange.kraken.connector.api.logic;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 public interface KrakenPublicApiConnector {
 
-    @Nonnull
-    KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@Nonnull ImmutableList<String> marketNames);
+    @NotNull
+    KrakenResponseDto<Map<String, Map<String, Object>>> ticker(@NotNull ImmutableList<String> marketNames);
 }

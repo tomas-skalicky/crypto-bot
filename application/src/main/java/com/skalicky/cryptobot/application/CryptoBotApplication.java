@@ -53,14 +53,14 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import edu.self.kraken.api.KrakenApi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class CryptoBotApplication {
 
-    @Nonnull
+    @NotNull
     private static final String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
 
     public static void main(String[] args) {
@@ -112,18 +112,18 @@ public class CryptoBotApplication {
         }
     }
 
-    @Nonnull
-    private static KrakenApi initializeKrakenApi(@Nonnull final CryptoBotArguments arguments) {
+    @NotNull
+    private static KrakenApi initializeKrakenApi(@NotNull final CryptoBotArguments arguments) {
         final var krakenApi = new KrakenApi();
         krakenApi.setKey(arguments.getTradingPlatformKey());
         krakenApi.setSecret(arguments.getTradingPlatformSecret());
         return krakenApi;
     }
 
-    @Nonnull
-    private static KrakenPrivateApiFacade initializeKrakenPrivateApiFacade(@Nonnull final KrakenApi krakenApi,
-                                                                           @Nonnull final ObjectMapper objectMapper,
-                                                                           @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
+    @NotNull
+    private static KrakenPrivateApiFacade initializeKrakenPrivateApiFacade(@NotNull final KrakenApi krakenApi,
+                                                                           @NotNull final ObjectMapper objectMapper,
+                                                                           @NotNull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
         final var krakenPrivateApiConnector = new KrakenPrivateApiConnectorImpl(krakenApi, objectMapper);
         final var orderTypeBoEnumToKrakenOrderTypeConverter = new OrderTypeBoEnumToKrakenOrderTypeConverter();
         final var priceOrderTypeBoEnumToKrakenOrderTypeConverter = new PriceOrderTypeBoEnumToKrakenOrderTypeConverter();
@@ -159,19 +159,19 @@ public class CryptoBotApplication {
                 new LocalDateTimeToEpochSecondLongConverter());
     }
 
-    @Nonnull
-    private static KrakenPublicApiFacade initializeKrakenPublicApiFacade(@Nonnull final KrakenApi krakenApi,
-                                                                         @Nonnull final ObjectMapper objectMapper,
-                                                                         @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
+    @NotNull
+    private static KrakenPublicApiFacade initializeKrakenPublicApiFacade(@NotNull final KrakenApi krakenApi,
+                                                                         @NotNull final ObjectMapper objectMapper,
+                                                                         @NotNull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter) {
         final var krakenPublicApiConnector = new KrakenPublicApiConnectorImpl(krakenApi, objectMapper);
         final var krakenMapEntryToTickerBoConverter = new KrakenMapEntryToTickerBoConverter();
         return new KrakenPublicApiFacadeImpl(krakenPublicApiConnector, currencyPairBoEnumToKrakenMarketNameConverter,
                 krakenMapEntryToTickerBoConverter);
     }
 
-    @Nonnull
+    @NotNull
     private static SlackFacade initializeSlackFacade(@Nullable final String slackWebhookUrl,
-                                                     @Nonnull final RestConnectorSupport restConnectorSupport) {
+                                                     @NotNull final RestConnectorSupport restConnectorSupport) {
         final var slackConnector = new SlackConnectorImpl(restConnectorSupport, slackWebhookUrl);
         return new SlackFacadeImpl(slackConnector);
     }

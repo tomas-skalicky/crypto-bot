@@ -20,14 +20,13 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class KrakenCurrencyNameToCurrencyBoEnumConverter implements NonnullConverter<String, CurrencyBoEnum> {
 
     @Override
-    @Nonnull
-    public CurrencyBoEnum convert(@Nonnull final String inputEntry) {
+    @NotNull
+    public CurrencyBoEnum convert(@NotNull final String inputEntry) {
         switch (inputEntry) {
             case "ZEUR":
                 return CurrencyBoEnum.EUR;

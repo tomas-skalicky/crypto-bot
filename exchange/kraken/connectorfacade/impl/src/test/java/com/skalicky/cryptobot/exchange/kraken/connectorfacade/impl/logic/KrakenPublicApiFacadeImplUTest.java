@@ -26,11 +26,11 @@ import com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter.Kra
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +41,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class KrakenPublicApiFacadeImplUTest {
-    @Nonnull
+    @NotNull
     private final KrakenPublicApiConnector krakenPublicApiConnector = mock(KrakenPublicApiConnector.class);
-    @Nonnull
+    @NotNull
     private final KrakenPublicApiFacadeImpl krakenPublicApiFacadeImpl = new KrakenPublicApiFacadeImpl(
             krakenPublicApiConnector,
             new CurrencyPairBoToKrakenMarketNameConverter(),

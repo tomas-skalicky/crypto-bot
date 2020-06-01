@@ -18,18 +18,19 @@
 
 package com.skalicky.cryptobot.businesslogic.api;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 
 public interface CryptoBotLogic {
 
-    void reportOpenOrders(@Nonnull String tradingPlatformName);
+    void reportOpenOrders(@NotNull String tradingPlatformName);
 
-    void reportClosedOrders(@Nonnull String tradingPlatformName);
+    void reportClosedOrders(@NotNull String tradingPlatformName);
 
-    void placeBuyOrderIfEnoughAvailable(@Nonnull String tradingPlatformName,
-                                        @Nonnull BigDecimal volumeInBaseCurrencyToInvestPerRun,
-                                        @Nonnull String baseCurrencyLabel,
-                                        @Nonnull String quoteCurrencyLabel,
-                                        @Nonnull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal);
+    void placeBuyOrderIfEnoughAvailable(@NotNull String tradingPlatformName,
+                                        @NotNull BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                                        @NotNull String baseCurrencyLabel,
+                                        @NotNull String quoteCurrencyLabel,
+                                        @NotNull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal);
 }

@@ -23,11 +23,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.internal.util.collection.ImmutableMultivaluedMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -40,38 +40,38 @@ import java.net.URI;
 
 public class RestConnectorSupport {
 
-    @Nonnull
+    @NotNull
     private static final Logger logger = LoggerFactory.getLogger(RestConnectorSupport.class);
-    @Nonnull
+    @NotNull
     private static final Client client = ClientBuilder.newClient(new ClientConfig());
-    @Nonnull
+    @NotNull
     private final ObjectMapper objectMapper;
 
-    public RestConnectorSupport(@Nonnull final ObjectMapper objectMapper) {
+    public RestConnectorSupport(@NotNull final ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    @Nonnull
-    public <RequestPayload, ResponsePayload> ResponsePayload getAcceptingJson(@Nonnull URI uri,
-                                                                              @Nonnull ImmutableMultivaluedMap<String, Object> requestHeaders,
-                                                                              @Nonnull TypeReference<ResponsePayload> responseTypeReference) {
+    @NotNull
+    public <RequestPayload, ResponsePayload> ResponsePayload getAcceptingJson(@NotNull URI uri,
+                                                                              @NotNull ImmutableMultivaluedMap<String, Object> requestHeaders,
+                                                                              @NotNull TypeReference<ResponsePayload> responseTypeReference) {
         return sendJsonAcceptingJson(HttpMethod.GET, uri, requestHeaders, null, responseTypeReference);
     }
 
-    @Nonnull
-    public <RequestPayload, ResponsePayload> ResponsePayload postJsonAcceptingJson(@Nonnull URI uri,
-                                                                                   @Nonnull ImmutableMultivaluedMap<String, Object> requestHeaders,
+    @NotNull
+    public <RequestPayload, ResponsePayload> ResponsePayload postJsonAcceptingJson(@NotNull URI uri,
+                                                                                   @NotNull ImmutableMultivaluedMap<String, Object> requestHeaders,
                                                                                    @Nullable RequestPayload requestPayload,
-                                                                                   @Nonnull TypeReference<ResponsePayload> responseTypeReference) {
+                                                                                   @NotNull TypeReference<ResponsePayload> responseTypeReference) {
         return sendJsonAcceptingJson(HttpMethod.POST, uri, requestHeaders, requestPayload, responseTypeReference);
     }
 
-    @Nonnull
-    private <RequestPayload, ResponsePayload> ResponsePayload sendJsonAcceptingJson(@Nonnull final String httpMethod,
-                                                                                    @Nonnull final URI uri,
-                                                                                    @Nonnull final ImmutableMultivaluedMap<String, Object> requestHeaders,
+    @NotNull
+    private <RequestPayload, ResponsePayload> ResponsePayload sendJsonAcceptingJson(@NotNull final String httpMethod,
+                                                                                    @NotNull final URI uri,
+                                                                                    @NotNull final ImmutableMultivaluedMap<String, Object> requestHeaders,
                                                                                     @Nullable final RequestPayload requestPayload,
-                                                                                    @Nonnull TypeReference<ResponsePayload> responseTypeReference) {
+                                                                                    @NotNull TypeReference<ResponsePayload> responseTypeReference) {
 
         final Response response = sendJson(httpMethod, uri, requestHeaders, requestPayload);
         final Response.StatusType responseStatusInfo = response.getStatusInfo();
@@ -89,7 +89,7 @@ public class RestConnectorSupport {
             return objectMapper.readValue(normalizedResponsePayloadString,
                     responseTypeReference);
 
-        } catch (@Nonnull final JsonProcessingException ex) {
+        } catch (@NotNull final JsonProcessingException ex) {
             final String message = "Snapshot of data: responsePayloadString = " + responsePayloadString
                     + ", normalizedResponseBodyString = " + normalizedResponsePayloadString + "";
             logger.error(message);
@@ -97,10 +97,10 @@ public class RestConnectorSupport {
         }
     }
 
-    @Nonnull
-    private <RequestPayload> Response sendJson(@Nonnull final String httpMethod,
-                                               @Nonnull final URI uri,
-                                               @Nonnull final ImmutableMultivaluedMap<String, Object> requestHeaders,
+    @NotNull
+    private <RequestPayload> Response sendJson(@NotNull final String httpMethod,
+                                               @NotNull final URI uri,
+                                               @NotNull final ImmutableMultivaluedMap<String, Object> requestHeaders,
                                                @Nullable final RequestPayload requestPayload) {
         final WebTarget webTarget = client.target(uri);
 
@@ -112,8 +112,8 @@ public class RestConnectorSupport {
         return invocationBuilder.method(httpMethod, requestEntity);
     }
 
-    private void logRawResponse(@Nonnull final URI uri,
-                                @Nonnull final String responseString) {
+    private void logRawResponse(@NotNull final URI uri,
+                                @NotNull final String responseString) {
         final var maxLength = 512;
         final boolean showDots = responseString.length() > maxLength;
         logger.debug("URI {} - Raw Response: {}{}", uri,
@@ -122,7 +122,7 @@ public class RestConnectorSupport {
 
     @Nullable
     private <T> String normalizeResponseBodyString(@Nullable String responseString,
-                                                   @Nonnull TypeReference<T> responseTypeReference) {
+                                                   @NotNull TypeReference<T> responseTypeReference) {
         if (responseTypeReference.getType() == String.class && responseString != null && !responseString.isEmpty()) {
             return '\"' + responseString + '\"';
         } else {

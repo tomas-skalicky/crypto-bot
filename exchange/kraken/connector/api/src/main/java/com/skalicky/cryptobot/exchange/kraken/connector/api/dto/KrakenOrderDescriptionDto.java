@@ -18,7 +18,8 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 
 public class KrakenOrderDescriptionDto {

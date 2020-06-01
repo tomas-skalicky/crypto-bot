@@ -21,15 +21,14 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class KrakenMarketNameToCurrencyPairBoEnumConverter
         implements NonnullConverter<String, CurrencyPairBo> {
 
     @Override
-    @Nonnull
-    public CurrencyPairBo convert(@Nonnull final String krakenMarketName) {
+    @NotNull
+    public CurrencyPairBo convert(@NotNull final String krakenMarketName) {
         if ("XBTEUR".equals(krakenMarketName)) {
             return new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
         } else {

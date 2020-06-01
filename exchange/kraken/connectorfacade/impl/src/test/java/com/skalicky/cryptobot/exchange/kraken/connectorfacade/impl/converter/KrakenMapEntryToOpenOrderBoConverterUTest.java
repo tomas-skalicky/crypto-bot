@@ -30,9 +30,9 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class KrakenMapEntryToOpenOrderBoConverterUTest {
 
-    @Nonnull
+    @NotNull
     private final KrakenMapEntryToOpenOrderBoConverter converter =
             new KrakenMapEntryToOpenOrderBoConverter(
                     new KrakenOrderTypeToOrderTypeBoEnumConverter(),

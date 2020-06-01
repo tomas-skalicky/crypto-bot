@@ -21,14 +21,13 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter implements NonnullConverter<Pair<String, Integer>, OrderStateBoEnum> {
 
     @Override
-    @Nonnull
-    public OrderStateBoEnum convert(@Nonnull final Pair<String, Integer> krakenOrderStatusAndTradeCount) {
+    @NotNull
+    public OrderStateBoEnum convert(@NotNull final Pair<String, Integer> krakenOrderStatusAndTradeCount) {
         final String krakenOrderStatus = krakenOrderStatusAndTradeCount.getLeft();
         final Integer tradeCount = krakenOrderStatusAndTradeCount.getRight();
         switch (krakenOrderStatus) {

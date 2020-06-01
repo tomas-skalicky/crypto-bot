@@ -1,21 +1,21 @@
 package com.skalicky.cryptobot.exchange.slack.connector.impl.dto;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class SlackSendMessageRequest {
-    @Nonnull
+    @NotNull
     private final String text;
 
-    public SlackSendMessageRequest(@Nonnull final String text) {
+    public SlackSendMessageRequest(@NotNull final String text) {
         this.text = text;
     }
 
-    @Nonnull
+    @NotNull
     public String getText() {
         return text;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String toString() {
         return "SlackSendMessageRequest{" +

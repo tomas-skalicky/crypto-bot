@@ -18,11 +18,12 @@
 
 package com.skalicky.cryptobot.exchange.shared.connectorfacade.impl.util;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.ZoneId;
 
 public final class DateTimeUtil {
-    @Nonnull
+    @NotNull
     public static final ZoneId BERLIN_ZONE_ID = ZoneId.of("Europe/Berlin");
 
     private DateTimeUtil() {

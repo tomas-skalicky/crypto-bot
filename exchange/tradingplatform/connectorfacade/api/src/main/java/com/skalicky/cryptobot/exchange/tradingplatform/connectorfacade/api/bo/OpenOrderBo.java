@@ -22,35 +22,35 @@ import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public final class OpenOrderBo {
-    @Nonnull
+    @NotNull
     private final String orderId;
-    @Nonnull
+    @NotNull
     private final OrderTypeBoEnum orderType;
-    @Nonnull
+    @NotNull
     private final PriceOrderTypeBoEnum priceOrderType;
-    @Nonnull
+    @NotNull
     private final CurrencyPairBo currencyPair;
-    @Nonnull
+    @NotNull
     private final BigDecimal desiredVolumeInQuoteCurrency;
     /**
      * Null in case of "market" price order type.
      */
     @Nullable
     private final BigDecimal desiredPrice;
-    @Nonnull
+    @NotNull
     private final LocalDateTime openDateTime;
     @Nullable
     private final LocalDateTime expirationDateTime;
-    @Nonnull
+    @NotNull
     private final OrderStateBoEnum state;
-    @Nonnull
+    @NotNull
     private final BigDecimal alreadyExecutedVolumeInQuoteCurrency;
     /**
      * Null in case there are no trades yet.
@@ -62,22 +62,22 @@ public final class OpenOrderBo {
      */
     @Nullable
     private final BigDecimal actualFeeInQuoteCurrency;
-    @Nonnull
+    @NotNull
     private final ImmutableList<String> tradeIds;
 
-    public OpenOrderBo(@Nonnull final String orderId,
-                       @Nonnull final OrderTypeBoEnum orderType,
-                       @Nonnull final PriceOrderTypeBoEnum priceOrderType,
-                       @Nonnull final CurrencyPairBo currencyPair,
-                       @Nonnull final BigDecimal desiredVolumeInQuoteCurrency,
+    public OpenOrderBo(@NotNull final String orderId,
+                       @NotNull final OrderTypeBoEnum orderType,
+                       @NotNull final PriceOrderTypeBoEnum priceOrderType,
+                       @NotNull final CurrencyPairBo currencyPair,
+                       @NotNull final BigDecimal desiredVolumeInQuoteCurrency,
                        @Nullable final BigDecimal desiredPrice,
-                       @Nonnull final LocalDateTime openDateTime,
+                       @NotNull final LocalDateTime openDateTime,
                        @Nullable final LocalDateTime expirationDateTime,
-                       @Nonnull final OrderStateBoEnum state,
-                       @Nonnull final BigDecimal alreadyExecutedVolumeInQuoteCurrency,
+                       @NotNull final OrderStateBoEnum state,
+                       @NotNull final BigDecimal alreadyExecutedVolumeInQuoteCurrency,
                        @Nullable final BigDecimal averageActualPrice,
                        @Nullable final BigDecimal actualFeeInQuoteCurrency,
-                       @Nonnull final ImmutableList<String> tradeIds) {
+                       @NotNull final ImmutableList<String> tradeIds) {
         this.orderId = orderId;
         this.orderType = orderType;
         this.priceOrderType = priceOrderType;
@@ -93,27 +93,27 @@ public final class OpenOrderBo {
         this.tradeIds = tradeIds;
     }
 
-    @Nonnull
+    @NotNull
     public String getOrderId() {
         return orderId;
     }
 
-    @Nonnull
+    @NotNull
     public OrderTypeBoEnum getOrderType() {
         return orderType;
     }
 
-    @Nonnull
+    @NotNull
     public PriceOrderTypeBoEnum getPriceOrderType() {
         return priceOrderType;
     }
 
-    @Nonnull
+    @NotNull
     public CurrencyPairBo getCurrencyPair() {
         return currencyPair;
     }
 
-    @Nonnull
+    @NotNull
     public BigDecimal getDesiredVolumeInQuoteCurrency() {
         return desiredVolumeInQuoteCurrency;
     }
@@ -123,7 +123,7 @@ public final class OpenOrderBo {
         return desiredPrice;
     }
 
-    @Nonnull
+    @NotNull
     public LocalDateTime getOpenDateTime() {
         return openDateTime;
     }
@@ -133,12 +133,12 @@ public final class OpenOrderBo {
         return expirationDateTime;
     }
 
-    @Nonnull
+    @NotNull
     public OrderStateBoEnum getState() {
         return state;
     }
 
-    @Nonnull
+    @NotNull
     public BigDecimal getAlreadyExecutedVolumeInQuoteCurrency() {
         return alreadyExecutedVolumeInQuoteCurrency;
     }
@@ -153,7 +153,7 @@ public final class OpenOrderBo {
         return actualFeeInQuoteCurrency;
     }
 
-    @Nonnull
+    @NotNull
     public ImmutableList<String> getTradeIds() {
         return tradeIds;
     }

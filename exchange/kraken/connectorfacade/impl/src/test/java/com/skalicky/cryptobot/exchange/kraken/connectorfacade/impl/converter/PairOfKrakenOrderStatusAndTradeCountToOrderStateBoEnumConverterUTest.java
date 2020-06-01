@@ -20,15 +20,14 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.OrderStateBoEnum;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import javax.annotation.Nonnull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverterUTest {
-    @Nonnull
+    @NotNull
     private final PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter converter =
             new PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverter();
 

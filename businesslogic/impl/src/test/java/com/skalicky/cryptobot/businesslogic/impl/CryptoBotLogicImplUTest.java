@@ -35,11 +35,11 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.PriceOrderTypeBoEnum;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -50,19 +50,19 @@ import static org.mockito.Mockito.when;
 
 public class CryptoBotLogicImplUTest {
 
-    @Nonnull
+    @NotNull
     private final static String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
-    @Nonnull
+    @NotNull
     private final static String BITTREX_TRADING_PLATFORM_NAME = "bittrex";
-    @Nonnull
+    @NotNull
     private final TradingPlatformPublicApiFacade publicApiFacade = createKrakenPublicApiFacadeMock();
-    @Nonnull
+    @NotNull
     private final TradingPlatformPrivateApiFacade privateApiFacade = createKrakenPrivateApiFacadeMock();
-    @Nonnull
+    @NotNull
     private final SlackFacade slackFacade = mock(SlackFacade.class);
-    @Nonnull
+    @NotNull
     private final FixableLocalDateTimeProvider fixableLocalDateTimeProvider = new FixableLocalDateTimeProviderImpl();
-    @Nonnull
+    @NotNull
     private final CryptoBotLogicImpl cryptoBotLogicImpl = new CryptoBotLogicImpl(ImmutableList.of(publicApiFacade),
             ImmutableList.of(privateApiFacade), slackFacade, fixableLocalDateTimeProvider);
 

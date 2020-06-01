@@ -19,29 +19,29 @@
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo;
 
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.enums.CurrencyBoEnum;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public final class CurrencyPairBo {
 
-    @Nonnull
+    @NotNull
     private final CurrencyBoEnum quoteCurrency;
-    @Nonnull
+    @NotNull
     private final CurrencyBoEnum baseCurrency;
 
-    public CurrencyPairBo(@Nonnull final CurrencyBoEnum quoteCurrency,
-                          @Nonnull final CurrencyBoEnum baseCurrency) {
+    public CurrencyPairBo(@NotNull final CurrencyBoEnum quoteCurrency,
+                          @NotNull final CurrencyBoEnum baseCurrency) {
         this.quoteCurrency = quoteCurrency;
         this.baseCurrency = baseCurrency;
     }
 
-    @Nonnull
+    @NotNull
     public CurrencyBoEnum getQuoteCurrency() {
         return quoteCurrency;
     }
 
-    @Nonnull
+    @NotNull
     public CurrencyBoEnum getBaseCurrency() {
         return baseCurrency;
     }

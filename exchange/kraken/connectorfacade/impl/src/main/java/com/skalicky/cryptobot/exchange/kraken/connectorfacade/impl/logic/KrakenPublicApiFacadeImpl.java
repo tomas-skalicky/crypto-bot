@@ -27,29 +27,29 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.Cu
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class KrakenPublicApiFacadeImpl implements KrakenPublicApiFacade {
-    @Nonnull
+    @NotNull
     private final KrakenPublicApiConnector krakenPublicApiConnector;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter;
-    @Nonnull
+    @NotNull
     private final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter;
 
-    public KrakenPublicApiFacadeImpl(@Nonnull final KrakenPublicApiConnector krakenPublicApiConnector,
-                                     @Nonnull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter,
-                                     @Nonnull final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter) {
+    public KrakenPublicApiFacadeImpl(@NotNull final KrakenPublicApiConnector krakenPublicApiConnector,
+                                     @NotNull final NonnullConverter<CurrencyPairBo, String> currencyPairBoEnumToKrakenMarketNameConverter,
+                                     @NotNull final NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> krakenMapEntryToTickerBoConverter) {
         this.krakenPublicApiConnector = krakenPublicApiConnector;
         this.currencyPairBoEnumToKrakenMarketNameConverter = currencyPairBoEnumToKrakenMarketNameConverter;
         this.krakenMapEntryToTickerBoConverter = krakenMapEntryToTickerBoConverter;
     }
 
     @Override
-    @Nonnull
-    public TickerBo getTicker(@Nonnull final CurrencyPairBo currencyPair) {
+    @NotNull
+    public TickerBo getTicker(@NotNull final CurrencyPairBo currencyPair) {
         final String marketName = currencyPairBoEnumToKrakenMarketNameConverter.convert(currencyPair);
         final var marketNames = ImmutableList.of(marketName);
         final KrakenResponseDto<Map<String, Map<String, Object>>> response =

@@ -17,8 +17,8 @@
  */
 
 dependencies {
+    implementation libs.annotations
     implementation libs.guava
-    implementation libs.jsr305
 
     testImplementation lib_groups.junit_jupiter
 }

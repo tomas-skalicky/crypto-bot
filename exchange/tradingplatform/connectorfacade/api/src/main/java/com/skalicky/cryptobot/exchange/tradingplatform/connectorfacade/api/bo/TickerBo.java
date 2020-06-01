@@ -18,41 +18,42 @@
 
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 
 public final class TickerBo {
-    @Nonnull
+    @NotNull
     private final String tickerName;
-    @Nonnull
+    @NotNull
     private final BigDecimal askPrice;
-    @Nonnull
+    @NotNull
     private final BigDecimal bidPrice;
 
-    public TickerBo(@Nonnull final String tickerName,
-                    @Nonnull final BigDecimal askPrice,
-                    @Nonnull final BigDecimal bidPrice) {
+    public TickerBo(@NotNull final String tickerName,
+                    @NotNull final BigDecimal askPrice,
+                    @NotNull final BigDecimal bidPrice) {
         this.tickerName = tickerName;
         this.askPrice = askPrice;
         this.bidPrice = bidPrice;
     }
 
-    @Nonnull
+    @NotNull
     public String getTickerName() {
         return tickerName;
     }
 
-    @Nonnull
+    @NotNull
     public BigDecimal getAskPrice() {
         return askPrice;
     }
 
-    @Nonnull
+    @NotNull
     public BigDecimal getBidPrice() {
         return bidPrice;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String toString() {
         return "TickerBo{" +

@@ -18,9 +18,9 @@
 
 package com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface SlackFacade {
 
-    void sendMessage(@Nonnull String text);
+    void sendMessage(@NotNull String text);
 }

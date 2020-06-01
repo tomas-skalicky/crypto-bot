@@ -29,11 +29,11 @@ import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOpenOrderR
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenOrderDescriptionDto;
 import com.skalicky.cryptobot.exchange.kraken.connector.api.dto.KrakenResponseDto;
 import edu.self.kraken.api.KrakenApi;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -44,9 +44,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class KrakenPrivateApiConnectorImplUTest {
-    @Nonnull
+    @NotNull
     private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
-    @Nonnull
+    @NotNull
     private final KrakenPrivateApiConnectorImpl krakenPrivateApiConnectorImpl = new KrakenPrivateApiConnectorImpl(
             krakenApi, new ObjectMapper());
 

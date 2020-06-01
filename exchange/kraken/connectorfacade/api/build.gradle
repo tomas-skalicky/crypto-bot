@@ -19,5 +19,5 @@
 dependencies {
     api project(':exchange:tradingplatform:connectorfacade:api')
 
-    implementation libs.jsr305
+    implementation libs.annotations
 }

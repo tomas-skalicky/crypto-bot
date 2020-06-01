@@ -23,29 +23,29 @@ import com.skalicky.cryptobot.exchange.shared.connector.impl.logic.RestConnector
 import com.skalicky.cryptobot.exchange.slack.connector.api.logic.SlackConnector;
 import com.skalicky.cryptobot.exchange.slack.connector.impl.dto.SlackSendMessageRequest;
 import org.glassfish.jersey.internal.util.collection.ImmutableMultivaluedMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class SlackConnectorImpl implements SlackConnector {
-    @Nonnull
+    @NotNull
     private static final Logger logger = LoggerFactory.getLogger(SlackConnectorImpl.class);
-    @Nonnull
+    @NotNull
     private static final TypeReference<String> stringTypeReference = new TypeReference<>() {
     };
 
-    @Nonnull
+    @NotNull
     private final RestConnectorSupport restConnectorSupport;
     @Nullable
     private final String webhookUriString;
     @Nullable
     private URI webhookUri;
 
-    public SlackConnectorImpl(@Nonnull final RestConnectorSupport restConnectorSupport,
+    public SlackConnectorImpl(@NotNull final RestConnectorSupport restConnectorSupport,
                               @Nullable final String webhookUriString) {
         this.restConnectorSupport = restConnectorSupport;
         this.webhookUriString = webhookUriString;
@@ -69,7 +69,7 @@ public class SlackConnectorImpl implements SlackConnector {
     }
 
     @Override
-    public void sendMessage(@Nonnull final String text) {
+    public void sendMessage(@NotNull final String text) {
         final URI uri = determineWebhookUri();
         if (uri != null) {
             restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),

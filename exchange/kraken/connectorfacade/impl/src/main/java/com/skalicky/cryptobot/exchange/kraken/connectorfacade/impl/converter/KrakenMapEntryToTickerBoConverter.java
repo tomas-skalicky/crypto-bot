@@ -20,8 +20,8 @@ package com.skalicky.cryptobot.exchange.kraken.connectorfacade.impl.converter;
 
 import com.skalicky.cryptobot.exchange.shared.connectorfacade.api.converter.NonnullConverter;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.TickerBo;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +45,8 @@ import java.util.Map;
 public class KrakenMapEntryToTickerBoConverter implements NonnullConverter<Map.Entry<String, Map<String, Object>>, TickerBo> {
 
     @Override
-    @Nonnull
-    public TickerBo convert(@Nonnull final Map.Entry<String, Map<String, Object>> inputEntry) {
+    @NotNull
+    public TickerBo convert(@NotNull final Map.Entry<String, Map<String, Object>> inputEntry) {
         @SuppressWarnings("unchecked") final var askArray = (List<String>) inputEntry.getValue().get("a");
         @SuppressWarnings("unchecked") final var bidArray = (List<String>) inputEntry.getValue().get("b");
         return new TickerBo(

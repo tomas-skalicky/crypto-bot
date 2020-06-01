@@ -18,8 +18,9 @@
 
 package com.skalicky.cryptobot.exchange.kraken.connector.api.dto;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 
 public final class KrakenOrderDescriptionDtoBuilder {
@@ -43,60 +44,60 @@ public final class KrakenOrderDescriptionDtoBuilder {
     private KrakenOrderDescriptionDtoBuilder() {
     }
 
-    @Nonnull
+    @NotNull
     public static KrakenOrderDescriptionDtoBuilder aKrakenOrderDescriptionDto() {
         return new KrakenOrderDescriptionDtoBuilder();
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withPair(@Nonnull final String pair) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withPair(@NotNull final String pair) {
         this.pair = pair;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withType(@Nonnull final String type) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withType(@NotNull final String type) {
         this.type = type;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withOrdertype(@Nonnull final String ordertype) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withOrdertype(@NotNull final String ordertype) {
         this.ordertype = ordertype;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withPrice(@Nonnull final BigDecimal price) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withPrice(@NotNull final BigDecimal price) {
         this.price = price;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withPrice2(@Nonnull final BigDecimal price2) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withPrice2(@NotNull final BigDecimal price2) {
         this.price2 = price2;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withLeverage(@Nonnull final String leverage) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withLeverage(@NotNull final String leverage) {
         this.leverage = leverage;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withOrder(@Nonnull final String order) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withOrder(@NotNull final String order) {
         this.order = order;
         return this;
     }
 
-    @Nonnull
-    public KrakenOrderDescriptionDtoBuilder withClose(@Nonnull final String close) {
+    @NotNull
+    public KrakenOrderDescriptionDtoBuilder withClose(@NotNull final String close) {
         this.close = close;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public KrakenOrderDescriptionDto build() {
         final var krakenOrderDescriptionDto = new KrakenOrderDescriptionDto();
         krakenOrderDescriptionDto.setPair(pair);

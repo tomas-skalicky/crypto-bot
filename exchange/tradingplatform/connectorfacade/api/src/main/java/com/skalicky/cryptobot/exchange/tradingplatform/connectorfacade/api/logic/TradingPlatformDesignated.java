@@ -18,11 +18,11 @@
 
 package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface TradingPlatformDesignated {
 
-    @Nonnull
+    @NotNull
     String getTradingPlatform();
 }

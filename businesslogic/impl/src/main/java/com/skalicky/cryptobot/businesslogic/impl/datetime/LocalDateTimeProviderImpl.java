@@ -18,13 +18,14 @@
 
 package com.skalicky.cryptobot.businesslogic.impl.datetime;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
 
 public class LocalDateTimeProviderImpl implements LocalDateTimeProvider {
 
     @Override
-    @Nonnull
+    @NotNull
     public LocalDateTime now() {
         return LocalDateTime.now();
     }
