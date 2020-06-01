@@ -25,6 +25,4 @@ dependencies {
     implementation libs.jackson_core
     implementation libs.jersey_common
     implementation project(':exchange:shared:connector:impl')
-
-    runtimeOnly libs.jackson_databind
 }

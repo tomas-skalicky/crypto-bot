@@ -53,11 +53,7 @@ public class CryptoBotLogicImplUTest {
     @NotNull
     private final static String KRAKEN_TRADING_PLATFORM_NAME = "kraken";
     @NotNull
-<<<<<<< HEAD
-    private final static String POLONIEX_TRADING_PLATFORM_NAME = "poloniex";
-=======
     private final static String BITTREX_TRADING_PLATFORM_NAME = "bittrex";
->>>>>>> origin/master
     @NotNull
     private final TradingPlatformPublicApiFacade publicApiFacade = createKrakenPublicApiFacadeMock();
     @NotNull
