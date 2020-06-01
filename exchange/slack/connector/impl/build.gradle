@@ -21,4 +21,6 @@ dependencies {
 
     implementation libs.annotations
     implementation project(':exchange:shared:connector:impl')
+
+    runtimeOnly libs.jackson_databind
 }
