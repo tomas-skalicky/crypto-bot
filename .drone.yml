@@ -1,0 +1,8 @@
+kind: pipeline
+name: default
+
+steps:
+- name: test
+  image: adoptopenjdk/openjdk15
+  commands:
+  - ./gradlew build --scan --stacktrace
