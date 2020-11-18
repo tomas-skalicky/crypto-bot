@@ -1,9 +1,11 @@
 ---
 kind: pipeline
+type: docker
 name: default
 
 steps:
 - name: build
   image: adoptopenjdk/openjdk15
   commands:
+  - gradle --version
   - ./gradlew build --scan --stacktrace
