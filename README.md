@@ -148,3 +148,4 @@ the rule 3)
 
 ## TODOs:
 1) use JDK 9, 10, 11 enhancements except JPMS
+2) upgrade to latest JDK
