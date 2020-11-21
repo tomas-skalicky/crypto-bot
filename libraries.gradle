@@ -27,7 +27,7 @@ ext {
             gradle_versions_plugin: '0.28.0',
             guava                 : '28.2-jre',
             httpclient            : '4.5.8',
-            jackson               : '2.11.0',
+            jackson               : '2.11.3',
             jcommander            : '1.78',
             jersey                : '2.31',
             jsr305                : '3.0.2',
