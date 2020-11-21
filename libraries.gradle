@@ -24,7 +24,7 @@ ext {
             assertj_core          : '3.18.1',
             commons_collections4  : '4.4',
             commons_lang3         : '3.6',
-            gradle_versions_plugin: '0.28.0',
+            gradle_versions_plugin: '0.36.0',
             guava                 : '28.2-jre',
             httpclient            : '4.5.8',
             jackson               : '2.11.3',
