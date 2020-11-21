@@ -27,5 +27,5 @@ dependencies {
     testImplementation lib_groups.junit_jupiter
     testImplementation libs.assertj_core
     testImplementation libs.jackson_databind
-    testImplementation libs.mockwire
+    testImplementation libs.wiremock
 }
