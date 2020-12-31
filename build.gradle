@@ -16,18 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-buildscript {
-    apply from: "libraries.gradle"
-
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath plug_ins.gradle_versions_plugin
-    }
-}
-
 // Plugins along with versions are configured here, not in buildscript to avoid mixture of classpaths of plugins.
 //
 // The block plugins {} is located here, not in settings.gradle, in order to avoid a failure
@@ -48,6 +36,10 @@ plugins {
 
 group = 'com.skalicky'
 version = '0.0.1-SNAPSHOT'
+
+if (gradle.startParameter.taskNames.contains('dependencyUpdates')) {
+    apply plugin: 'com.github.ben-manes.versions'
+}
 
 allprojects {
 

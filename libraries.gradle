@@ -23,9 +23,6 @@ ext {
             archunit_junit5       : '0.14.1',
             commons_collections4  : '4.4',
             commons_logging       : '1.2',
-
-            gradle_versions_plugin: '0.36.0',
-
             guava                 : '30.1-jre',
             jcommander            : '1.78',
             spring_boot           : '2.4.1',
@@ -115,10 +112,5 @@ ext {
 
             // Not managed by any imported BOMs.
             wiremock                 : 'com.github.tomakehurst:wiremock',
-    ]
-
-    // Not called "plugins" due to name collision.
-    plug_ins = [
-            gradle_versions_plugin: "com.github.ben-manes:gradle-versions-plugin:${versions.gradle_versions_plugin}",
     ]
 }
