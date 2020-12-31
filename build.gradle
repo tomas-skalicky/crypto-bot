@@ -16,9 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-group = 'com.skalicky'
-version = '0.0.1-SNAPSHOT'
-
 buildscript {
     apply from: "libraries.gradle"
 
@@ -31,7 +28,26 @@ buildscript {
     }
 }
 
-apply plugin: "com.github.ben-manes.versions"
+// Plugins along with versions are configured here, not in buildscript to avoid mixture of classpaths of plugins.
+//
+// The block plugins {} is located here, not in settings.gradle, in order to avoid a failure
+// "Plugin with id 'io.spring.dependency-management' not found." otherwise caused by
+// applying the plugin 'io.spring.dependency-management' in dependencyManagement.gradle.
+//
+// Be noted plugins aren't automatically applied.
+plugins {
+    // See https://plugins.gradle.org/plugin/com.github.ben-manes.versions
+    id 'com.github.ben-manes.versions' version '0.36.0' apply false
+
+    // See https://plugins.gradle.org/plugin/io.spring.dependency-management
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE' apply false
+
+    // See https://plugins.gradle.org/plugin/org.springframework.boot
+    id 'org.springframework.boot' version '2.4.1' apply false
+}
+
+group = 'com.skalicky'
+version = '0.0.1-SNAPSHOT'
 
 allprojects {
 
@@ -47,15 +63,6 @@ allprojects {
                 // fail eagerly on version conflict (includes transitive dependencies)
                 // e.g. multiple different versions of the same dependency (group and name are equal)
                 failOnVersionConflict()
-
-                // force certain versions of dependencies (including transitive)
-                //  *append new forced modules:
-                force libs.commons_lang3
-                force libs.guava
-                force libs.jackson_annotations
-                force libs.jackson_core
-                force libs.jackson_databind
-                force libs.slf4j_api
 
                 componentSelection {
                     all { final ComponentSelection selection ->
@@ -75,6 +82,7 @@ allprojects {
 
 subprojects {
 
+    apply from: "${rootDir}/dependencyManagement.gradle"
     apply plugin: 'java'
     apply plugin: 'java-library'
 

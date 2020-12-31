@@ -18,16 +18,14 @@
 
 dependencies {
     api project(':exchange:kraken:connectorfacade:api')
-
     implementation libs.annotations
     implementation libs.commons_collections4
     implementation libs.commons_lang3
     implementation libs.guava
     implementation project(':exchange:kraken:connector:api')
     implementation project(':exchange:shared:connectorfacade:impl')
-
-    testImplementation lib_groups.junit_jupiter
     testImplementation libs.assertj_core
+    testImplementation libs.junit_jupiter_engine
     testImplementation libs.mockito_core
     testImplementation project(':exchange:kraken:connector:api').sourceSets.test.output
 }

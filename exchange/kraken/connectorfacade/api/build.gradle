@@ -18,6 +18,5 @@
 
 dependencies {
     api project(':exchange:tradingplatform:connectorfacade:api')
-
     implementation libs.annotations
 }

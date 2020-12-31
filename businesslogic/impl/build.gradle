@@ -18,15 +18,13 @@
 
 dependencies {
     api project(':businesslogic:api')
-
-    implementation lib_groups.slf4j_with_log4j
     implementation libs.annotations
     implementation libs.guava
+    implementation libs.log4j_slf4j_impl
     implementation project(':exchange:slack:connectorfacade:api')
     implementation project(':exchange:tradingplatform:connectorfacade:api')
-
-    testImplementation lib_groups.junit_jupiter
     testImplementation libs.assertj_core
+    testImplementation libs.junit_jupiter_engine
     testImplementation libs.mockito_core
     testImplementation project(':exchange:tradingplatform:connectorfacade:api').sourceSets.test.output
 }

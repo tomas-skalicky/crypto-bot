@@ -17,15 +17,15 @@
  */
 
 dependencies {
-    implementation lib_groups.slf4j_with_log4j
     implementation libs.activation
     implementation libs.annotations
+    implementation libs.commons_logging
     implementation libs.jersey_client
     implementation libs.jersey_hk2
     implementation libs.jersey_media_json_jackson
-
-    testImplementation lib_groups.junit_jupiter
+    implementation libs.log4j_slf4j_impl
     testImplementation libs.assertj_core
     testImplementation libs.jackson_databind
+    testImplementation libs.junit_jupiter_engine
     testImplementation libs.wiremock
 }

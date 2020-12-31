@@ -1,0 +1,40 @@
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "${rootDir}/libraries.gradle"
+
+dependencyManagement {
+    imports {
+        // See the Spring BOM of version 2.4.1 on
+        // https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/2.4.1/spring-boot-dependencies-2.4.1.pom
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.spring_boot}"
+    }
+
+    dependencies {
+        // Not managed by any imported BOMs.
+        dependency "javax.activation:activation:${versions.activation}"
+
+        // Not managed by any imported BOMs.
+        dependency "org.jetbrains:annotations:${versions.annotations}"
+
+        // Not managed by any imported BOMs.
+        dependency "com.tngtech.archunit:archunit-junit5-api:${versions.archunit_junit5}"
+
+        // Not managed by any imported BOMs.
+        dependency "com.tngtech.archunit:archunit-junit5-engine:${versions.archunit_junit5}"
+
+        // Not managed by any imported BOMs.
+        dependency "org.apache.commons:commons-collections4:${versions.commons_collections4}"
+
+        // Not managed by any imported BOMs.
+        dependency "commons-logging:commons-logging:${versions.commons_logging}"
+
+        // Not managed by any imported BOMs.
+        dependency "com.google.guava:guava:${versions.guava}"
+
+        // Not managed by any imported BOMs.
+        dependency "com.beust:jcommander:${versions.jcommander}"
+
+        // Not managed by any imported BOMs.
+        dependency "com.github.tomakehurst:wiremock:${versions.wiremock}"
+    }
+}

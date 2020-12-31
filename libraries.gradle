@@ -21,60 +21,100 @@ ext {
             activation            : '1.1.1',
             annotations           : '20.1.0',
             archunit_junit5       : '0.14.1',
-            assertj_core          : '3.18.1',
             commons_collections4  : '4.4',
-            commons_lang3         : '3.6',
+            commons_logging       : '1.2',
+
             gradle_versions_plugin: '0.36.0',
-            guava                 : '28.2-jre',
-            httpclient            : '4.5.8',
-            jackson               : '2.11.3',
+
+            guava                 : '30.1-jre',
             jcommander            : '1.78',
-            jersey                : '2.32',
-            jsr305                : '3.0.2',
-            junit_jupiter         : '5.7.0',
-            log4j_slf4j_impl      : '2.14.0',
-            mockito_core          : '3.6.0',
-            slf4j_api             : '1.7.30',
+            spring_boot           : '2.4.1',
             wiremock              : '2.27.2',
     ]
 
     // Not called "libraries" due to name collision.
     libs = [
-            activation               : "javax.activation:activation:${versions.activation}",
-            annotations              : "org.jetbrains:annotations:${versions.annotations}",
-            archunit_junit5_api      : "com.tngtech.archunit:archunit-junit5-api:${versions.archunit_junit5}",
-            archunit_junit5_engine   : "com.tngtech.archunit:archunit-junit5-engine:${versions.archunit_junit5}",
-            assertj_core             : "org.assertj:assertj-core:${versions.assertj_core}",
-            commons_collections4     : "org.apache.commons:commons-collections4:${versions.commons_collections4}",
-            commons_lang3            : "org.apache.commons:commons-lang3:${versions.commons_lang3}",
-            guava                    : "com.google.guava:guava:${versions.guava}",
-            httpclient               : "org.apache.httpcomponents:httpclient:${versions.httpclient}",
-            jackson_annotations      : "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
-            jackson_core             : "com.fasterxml.jackson.core:jackson-core:${versions.jackson}",
-            jackson_databind         : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
-            jackson_jsr310           : "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
-            jcommander               : "com.beust:jcommander:${versions.jcommander}",
-            jersey_client            : "org.glassfish.jersey.core:jersey-client:${versions.jersey}",
-            jersey_common            : "org.glassfish.jersey.core:jersey-common:${versions.jersey}",
-            jersey_hk2               : "org.glassfish.jersey.inject:jersey-hk2:${versions.jersey}",
-            jersey_media_json_jackson: "org.glassfish.jersey.media:jersey-media-json-jackson:${versions.jersey}",
-            junit_jupiter_api        : "org.junit.jupiter:junit-jupiter-api:${versions.junit_jupiter}",
-            junit_jupiter_engine     : "org.junit.jupiter:junit-jupiter-engine:${versions.junit_jupiter}",
-            log4j_slf4j_impl         : "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j_slf4j_impl}",
-            mockito_core             : "org.mockito:mockito-core:${versions.mockito_core}",
-            slf4j_api                : "org.slf4j:slf4j-api:${versions.slf4j_api}",
-            wiremock                 : "com.github.tomakehurst:wiremock:${versions.wiremock}",
-    ]
+            // Not managed by any imported BOMs.
+            activation               : 'javax.activation:activation',
 
-    lib_groups = [
-            junit_jupiter   : [
-                    libs.junit_jupiter_api,
-                    libs.junit_jupiter_engine,
-            ],
-            slf4j_with_log4j: [
-                    libs.log4j_slf4j_impl,
-                    libs.slf4j_api,
-            ],
+            // Not managed by any imported BOMs.
+            annotations              : 'org.jetbrains:annotations',
+
+            // Not managed by any imported BOMs.
+            archunit_junit5_api      : 'com.tngtech.archunit:archunit-junit5-api',
+
+            // Not managed by any imported BOMs.
+            archunit_junit5_engine   : 'com.tngtech.archunit:archunit-junit5-engine',
+
+            // Managed by Spring BOM.
+            assertj_core             : 'org.assertj:assertj-core',
+
+            // Not managed by any imported BOMs.
+            commons_collections4     : 'org.apache.commons:commons-collections4',
+
+            // Managed by Spring BOM.
+            commons_lang3            : 'org.apache.commons:commons-lang3',
+
+            // Not managed by any imported BOMs.
+            commons_logging          : 'commons-logging:commons-logging',
+
+            // Not managed by any imported BOMs.
+            guava                    : 'com.google.guava:guava',
+
+            // Not managed by any imported BOMs.
+            httpclient               : 'org.apache.httpcomponents:httpclient',
+
+            // Managed by Jackson BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/com/fasterxml/jackson/jackson-bom/2.12.0/jackson-bom-2.12.0.pom
+            jackson_core             : 'com.fasterxml.jackson.core:jackson-core',
+
+            // Managed by Jackson BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/com/fasterxml/jackson/jackson-bom/2.12.0/jackson-bom-2.12.0.pom
+            jackson_databind         : 'com.fasterxml.jackson.core:jackson-databind',
+
+            // Managed by Jackson BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/com/fasterxml/jackson/jackson-bom/2.12.0/jackson-bom-2.12.0.pom
+            jackson_jsr310           : 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310',
+
+            // Not managed by any imported BOMs.
+            jcommander               : 'com.beust:jcommander',
+
+            // Managed by Jersey BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/glassfish/jersey/jersey-bom/3.0.0/jersey-bom-3.0.0.pom
+            jersey_client            : 'org.glassfish.jersey.core:jersey-client',
+
+            // Managed by Jersey BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/glassfish/jersey/jersey-bom/3.0.0/jersey-bom-3.0.0.pom
+            jersey_common            : 'org.glassfish.jersey.core:jersey-common',
+
+            // Managed by Jersey BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/glassfish/jersey/jersey-bom/3.0.0/jersey-bom-3.0.0.pom
+            jersey_hk2               : 'org.glassfish.jersey.inject:jersey-hk2',
+
+            // Managed by Jersey BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/glassfish/jersey/jersey-bom/3.0.0/jersey-bom-3.0.0.pom
+            jersey_media_json_jackson: 'org.glassfish.jersey.media:jersey-media-json-jackson',
+
+            // Managed by JUnit BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/junit/junit-bom/5.7.0/junit-bom-5.7.0.pom
+            junit_jupiter_api        : 'org.junit.jupiter:junit-jupiter-api',
+
+            // Managed by JUnit BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/junit/junit-bom/5.7.0/junit-bom-5.7.0.pom
+            junit_jupiter_engine     : 'org.junit.jupiter:junit-jupiter-engine',
+
+            // Managed by Log4J BOM which version is managed by Spring BOM.
+            // See https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-bom/2.14.0/log4j-bom-2.14.0.pom
+            log4j_slf4j_impl         : 'org.apache.logging.log4j:log4j-slf4j-impl',
+
+            // Managed by Spring BOM.
+            mockito_core             : 'org.mockito:mockito-core',
+
+            // Managed by Spring BOM.
+            slf4j_api                : 'org.slf4j:slf4j-api',
+
+            // Not managed by any imported BOMs.
+            wiremock                 : 'com.github.tomakehurst:wiremock',
     ]
 
     // Not called "plugins" due to name collision.

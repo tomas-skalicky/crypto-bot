@@ -18,14 +18,12 @@
 
 dependencies {
     api project(':exchange:kraken:connector:api')
-
-    implementation lib_groups.slf4j_with_log4j
     implementation libs.annotations
     implementation libs.guava
     implementation libs.jackson_databind
     implementation libs.jackson_jsr310
-
-    testImplementation lib_groups.junit_jupiter
+    implementation libs.log4j_slf4j_impl
     testImplementation libs.assertj_core
+    testImplementation libs.junit_jupiter_engine
     testImplementation libs.mockito_core
 }
