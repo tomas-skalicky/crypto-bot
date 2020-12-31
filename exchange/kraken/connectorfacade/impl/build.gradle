@@ -16,6 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+plugins {
+    id 'java-test-fixtures'
+}
+
 dependencies {
     api project(':exchange:kraken:connectorfacade:api')
     implementation libs.annotations
@@ -27,7 +31,5 @@ dependencies {
     testImplementation libs.assertj_core
     testImplementation libs.junit_jupiter_engine
     testImplementation libs.mockito_core
-    testImplementation project(':exchange:kraken:connector:api').sourceSets.test.output
+    testImplementation(testFixtures(project(':exchange:kraken:connector:api')))
 }
-
-compileTestJava.dependsOn tasks.getByPath(':exchange:kraken:connector:api:compileTestJava')

@@ -16,6 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+plugins {
+    id 'java-test-fixtures'
+}
+
 dependencies {
     api project(':businesslogic:api')
     implementation libs.annotations
@@ -26,7 +30,5 @@ dependencies {
     testImplementation libs.assertj_core
     testImplementation libs.junit_jupiter_engine
     testImplementation libs.mockito_core
-    testImplementation project(':exchange:tradingplatform:connectorfacade:api').sourceSets.test.output
+    testImplementation(testFixtures(project(':exchange:tradingplatform:connectorfacade:api')))
 }
-
-compileTestJava.dependsOn tasks.getByPath(':exchange:tradingplatform:connectorfacade:api:compileTestJava')

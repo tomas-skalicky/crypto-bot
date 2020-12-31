@@ -16,10 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+plugins {
+    id 'java-test-fixtures'
+}
+
 dependencies {
     api project(':exchange:shared:connectorfacade:api')
     implementation libs.annotations
     implementation libs.guava
+    testFixturesApi libs.annotations
+    testFixturesApi libs.guava
     testImplementation libs.assertj_core
     testImplementation libs.junit_jupiter_engine
 }
