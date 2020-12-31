@@ -88,8 +88,16 @@ subprojects {
     test {
         useJUnitPlatform()
     }
+
+    jar {
+        archiveBaseName.set(determineArchiveBaseName(project))
+    }
 }
 
 tasks.named('wrapper') {
     distributionType = Wrapper.DistributionType.ALL
+}
+
+def determineArchiveBaseName(final Project project) {
+    return "${rootProject.name}${project.path}".replaceAll(':', '-')
 }

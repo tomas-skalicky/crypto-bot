@@ -38,5 +38,5 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.skalicky.cryptobot.application.CryptoBotApplication'
+    mainClass.set('com.skalicky.cryptobot.application.CryptoBotApplication')
 }
