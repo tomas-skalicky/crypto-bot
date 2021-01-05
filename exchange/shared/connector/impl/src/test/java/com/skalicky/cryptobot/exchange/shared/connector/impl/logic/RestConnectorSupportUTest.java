@@ -38,8 +38,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.BDDAssertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class RestConnectorSupportUTest {
 
@@ -63,6 +63,7 @@ public class RestConnectorSupportUTest {
 
     @Test
     public void test_getAcceptingJson_when_successHttpStatus_and_responsePayloadIsJsonDeserializable_then_responseIsDeserializedSuccessfully() throws Exception {
+        // Given
         final var testResponse = new TestResponse("valid");
         final String serializedResponse = objectMapper.writeValueAsString(testResponse);
         final var endpoint = "/context-path/servlet-mapping/endpoint";
@@ -76,17 +77,20 @@ public class RestConnectorSupportUTest {
         final var responseTypeReference = new TypeReference<TestResponse>() {
         };
 
+        // When
         final TestResponse actualResponse = restConnectorSupport.getAcceptingJson(uri,
                 ImmutableMultivaluedMap.empty(), responseTypeReference);
 
+        // Then
         wireMockServer.verify(
                 getRequestedFor(urlEqualTo(endpoint)));
 
-        assertThat(actualResponse.getResult()).isEqualTo(testResponse.getResult());
+        then(actualResponse.getResult()).isEqualTo(testResponse.getResult());
     }
 
     @Test
     public void test_postJsonAcceptingJson_when_successHttpStatus_and_responsePayloadIsJsonDeserializable_then_responseIsDeserializedSuccessfully() throws Exception {
+        // Given
         final var testRequest = new TestRequest("Tomas Skalicky");
         final String serializedRequest = objectMapper.writeValueAsString(testRequest);
         final var testResponse = new TestResponse("valid");
@@ -104,19 +108,22 @@ public class RestConnectorSupportUTest {
         final var responseTypeReference = new TypeReference<TestResponse>() {
         };
 
+        // When
         final TestResponse actualResponse = restConnectorSupport.postJsonAcceptingJson(uri,
                 ImmutableMultivaluedMap.empty(), testRequest, responseTypeReference);
 
+        // Then
         wireMockServer.verify(
                 postRequestedFor(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
                         .withRequestBody(equalToJson(serializedRequest)));
 
-        assertThat(actualResponse.getResult()).isEqualTo(testResponse.getResult());
+        then(actualResponse.getResult()).isEqualTo(testResponse.getResult());
     }
 
     @Test
     public void test_postJsonAcceptingJson_when_nonSuccessHttpStatus_then_exception() throws Exception {
+        // Given
         final var testRequest = new TestRequest("Tomas Skalicky");
         final String serializedRequest = objectMapper.writeValueAsString(testRequest);
         final String serializedResponse = objectMapper.writeValueAsString(new TestResponse("redirection"));
@@ -133,19 +140,24 @@ public class RestConnectorSupportUTest {
         final var responseTypeReference = new TypeReference<TestResponse>() {
         };
 
-        assertThatThrownBy(() -> restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),
-                testRequest, responseTypeReference))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageStartingWith("Unexpected response status code [300]");
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),
+                testRequest, responseTypeReference));
 
+        // Then
         wireMockServer.verify(
                 postRequestedFor(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
                         .withRequestBody(equalToJson(serializedRequest)));
+
+        then(caughtThrowable)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageStartingWith("Unexpected response status code [300]");
     }
 
     @Test
     public void test_postJsonAcceptingJson_when_responsePayloadIsString_then_responsePayloadIsNormalized() throws Exception {
+        // Given
         final var testRequest = new TestRequest("Tomas Skalicky");
         final String serializedRequest = objectMapper.writeValueAsString(testRequest);
         final String response = "test response";
@@ -162,19 +174,22 @@ public class RestConnectorSupportUTest {
         final var responseTypeReference = new TypeReference<String>() {
         };
 
+        // When
         final String actualResponse = restConnectorSupport.postJsonAcceptingJson(uri,
                 ImmutableMultivaluedMap.empty(), testRequest, responseTypeReference);
 
+        // Then
         wireMockServer.verify(
                 postRequestedFor(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
                         .withRequestBody(equalToJson(serializedRequest)));
 
-        assertThat(actualResponse).isEqualTo(response);
+        then(actualResponse).isEqualTo(response);
     }
 
     @Test
     public void test_postJsonAcceptingJson_when_responsePayloadIsNotJsonDeserializable_then_exception() throws Exception {
+        // Given
         final var testRequest = new TestRequest("Tomas Skalicky");
         final String serializedRequest = objectMapper.writeValueAsString(testRequest);
         final String serializedResponse = "{ \"nonExistingField\": \"Foo\" }";
@@ -191,16 +206,20 @@ public class RestConnectorSupportUTest {
         final var responseTypeReference = new TypeReference<TestResponse>() {
         };
 
-        assertThatThrownBy(() -> restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),
-                testRequest, responseTypeReference))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageEndingWith("Snapshot of data: responsePayloadString = { \"nonExistingField\": \"Foo\" }," +
-                        " normalizedResponseBodyString = { \"nonExistingField\": \"Foo\" }");
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> restConnectorSupport.postJsonAcceptingJson(uri, ImmutableMultivaluedMap.empty(),
+                testRequest, responseTypeReference));
 
+        // Then
         wireMockServer.verify(
                 postRequestedFor(urlEqualTo(endpoint))
                         .withHeader("Content-Type", equalTo("application/json"))
                         .withRequestBody(equalToJson(serializedRequest)));
+
+        then(caughtThrowable)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageEndingWith("Snapshot of data: responsePayloadString = { \"nonExistingField\": \"Foo\" }," +
+                        " normalizedResponseBodyString = { \"nonExistingField\": \"Foo\" }");
     }
 
     private static final class TestRequest {

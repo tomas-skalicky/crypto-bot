@@ -38,15 +38,17 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.BDDAssertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
 
 public class CryptoBotLogicImplUTest {
 
@@ -68,29 +70,36 @@ public class CryptoBotLogicImplUTest {
 
     @AfterEach
     public void assertAndCleanMocks() {
-        Mockito.verifyNoMoreInteractions(publicApiFacade, privateApiFacade, slackFacade);
-        Mockito.reset(publicApiFacade, privateApiFacade, slackFacade);
+        verifyNoMoreInteractions(publicApiFacade, privateApiFacade, slackFacade);
+        reset(publicApiFacade, privateApiFacade, slackFacade);
     }
 
     @Test
     public void test_reportOpenOrders_when_unsupportedTradingPlatform_then_exception() {
-        assertThatThrownBy(() -> cryptoBotLogicImpl.reportOpenOrders(
-                BITTREX_TRADING_PLATFORM_NAME))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"bittrex\"");
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> cryptoBotLogicImpl.reportOpenOrders(
+                BITTREX_TRADING_PLATFORM_NAME));
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
+
+        then(caughtThrowable)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
     }
 
     @Test
     public void test_reportOpenOrders_when_noOrder_then_appropriateMessageIsToBeSentViaSlack() {
+        // Given
         final var includeTrades = true;
-        when(privateApiFacade.getOpenOrders(includeTrades))
-                .thenReturn(ImmutableList.of());
+        given(privateApiFacade.getOpenOrders(includeTrades))
+                .willReturn(ImmutableList.of());
 
+        // When
         cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getOpenOrders(includeTrades);
@@ -99,6 +108,7 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportOpenOrders_when_twoOrders_then_twoInSlackMessage() {
+        // Given
         final var includeTrades = true;
         final OpenOrderBo openOrder1 = OpenOrderBoBuilder.aOpenOrderBo()
                 .withOrderType(OrderTypeBoEnum.SELL)
@@ -125,11 +135,13 @@ public class CryptoBotLogicImplUTest {
                 .withStatus(OrderStateBoEnum.PARTIALLY_EXECUTED)
                 .withOpenDateTime(LocalDateTime.of(2020, 3, 6, 18, 15))
                 .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
-        when(privateApiFacade.getOpenOrders(includeTrades))
-                .thenReturn(ImmutableList.of(openOrder1, openOrder2));
+        given(privateApiFacade.getOpenOrders(includeTrades))
+                .willReturn(ImmutableList.of(openOrder1, openOrder2));
 
+        // When
         cryptoBotLogicImpl.reportOpenOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getOpenOrders(includeTrades);
@@ -142,25 +154,32 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_unsupportedTradingPlatform_then_exception() {
-        assertThatThrownBy(() -> cryptoBotLogicImpl.reportClosedOrders(
-                BITTREX_TRADING_PLATFORM_NAME))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"bittrex\"");
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> cryptoBotLogicImpl.reportClosedOrders(
+                BITTREX_TRADING_PLATFORM_NAME));
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
+
+        then(caughtThrowable)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
     }
 
     @Test
     public void test_reportClosedOrders_when_noOrder_then_appropriateMessageIsToBeSentViaSlack() {
+        // Given
         final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
         final var includeTrades = true;
-        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
-                .thenReturn(ImmutableList.of());
+        given(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
+                .willReturn(ImmutableList.of());
 
+        // When
         cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
@@ -169,6 +188,7 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_twoOrders_then_twoInSlackMessage() {
+        // Given
         final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
         final var includeTrades = true;
@@ -198,12 +218,14 @@ public class CryptoBotLogicImplUTest {
                 .withOpenDateTime(LocalDateTime.of(2020, 3, 6, 18, 15))
                 .withCloseDateTime(LocalDateTime.of(2020, 3, 7, 8, 5))
                 .withTradeIds(ImmutableList.of("tradeId2", "tradeId3")).build();
-        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
-                .thenReturn(ImmutableList.of(closedOrder1, closedOrder2));
+        given(privateApiFacade.getClosedOrders(includeTrades, fromDateTime))
+                .willReturn(ImmutableList.of(closedOrder1, closedOrder2));
         final var slackUrl = "http://slack_url";
 
+        // When
         cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
@@ -216,16 +238,19 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_reportClosedOrders_when_orderHasNoTrades_then_orderIsSkipped() {
+        // Given
         final var fromDateTime = LocalDateTime.of(2020, 3, 8, 10, 30);
         fixableLocalDateTimeProvider.fix(fromDateTime.plusDays(3));
         final var includeTrades = true;
         final ClosedOrderBo closedOrder = ClosedOrderBoBuilder.aClosedOrderBo()
                 .withTradeIds(ImmutableList.of()).build();
-        when(privateApiFacade.getClosedOrders(includeTrades, fromDateTime)).thenReturn(ImmutableList.of(closedOrder));
+        given(privateApiFacade.getClosedOrders(includeTrades, fromDateTime)).willReturn(ImmutableList.of(closedOrder));
         final var slackUrl = "http://slack_url";
 
+        // When
         cryptoBotLogicImpl.reportClosedOrders(KRAKEN_TRADING_PLATFORM_NAME);
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getClosedOrders(includeTrades, fromDateTime);
@@ -234,24 +259,31 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
-        assertThatThrownBy(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 BITTREX_TRADING_PLATFORM_NAME, BigDecimal.TEN, "BTC", "XMR",
-                new BigDecimal("0.01")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No private API facade for the trading platform \"bittrex\"");
+                new BigDecimal("0.01")));
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
+
+        then(caughtThrowable)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No private API facade for the trading platform \"bittrex\"");
     }
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_then_noPurchase_and_appropriateMessageIsToBeSentViaSlack() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
+        // Given
+        given(privateApiFacade.getAccountBalance()).willReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
 
+        // When
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "LTC",
                 new BigDecimal("0.01"));
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
@@ -261,15 +293,18 @@ public class CryptoBotLogicImplUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_enoughBaseCurrency_and_slackUrl_then_noPurchase_and_slackMessageSent() {
-        when(privateApiFacade.getAccountBalance()).thenReturn(ImmutableMap.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
+        // Given
+        given(privateApiFacade.getAccountBalance()).willReturn(ImmutableMap.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
         final var ticker = new TickerBo("XXBTZEUR", BigDecimal.TEN, new BigDecimal(9));
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
-        when(publicApiFacade.getTicker(currencyPair)).thenReturn(ticker);
+        given(publicApiFacade.getTicker(currencyPair)).willReturn(ticker);
 
+        // When
         cryptoBotLogicImpl.placeBuyOrderIfEnoughAvailable(
                 KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), "EUR",
                 "BTC", new BigDecimal("0.001"));
 
+        // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(publicApiFacade).getTicker(currencyPair);
         verify(privateApiFacade).getTradingPlatform();
@@ -287,13 +322,13 @@ public class CryptoBotLogicImplUTest {
 
     private TradingPlatformPublicApiFacade createKrakenPublicApiFacadeMock() {
         final var facade = mock(TradingPlatformPublicApiFacade.class);
-        when(facade.getTradingPlatform()).thenReturn(KRAKEN_TRADING_PLATFORM_NAME);
+        given(facade.getTradingPlatform()).willReturn(KRAKEN_TRADING_PLATFORM_NAME);
         return facade;
     }
 
     private TradingPlatformPrivateApiFacade createKrakenPrivateApiFacadeMock() {
         final var facade = mock(TradingPlatformPrivateApiFacade.class);
-        when(facade.getTradingPlatform()).thenReturn(KRAKEN_TRADING_PLATFORM_NAME);
+        given(facade.getTradingPlatform()).willReturn(KRAKEN_TRADING_PLATFORM_NAME);
         return facade;
     }
 }

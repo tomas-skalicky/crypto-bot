@@ -23,8 +23,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.BDDAssertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverterUTest {
     @NotNull
@@ -33,32 +33,56 @@ public class PairOfKrakenOrderStatusAndTradeCountToOrderStateBoEnumConverterUTes
 
     @Test
     public void test_convert_when_open_and_noTrades_then_stateNew() {
-        assertThat(converter.convert(Pair.of("open", 0))).isEqualTo(OrderStateBoEnum.NEW);
+        // When
+        final OrderStateBoEnum actual = converter.convert(Pair.of("open", 0));
+
+        // Then
+        then(actual).isEqualTo(OrderStateBoEnum.NEW);
     }
 
     @Test
     public void test_convert_when_open_and_tradesExist_then_statePartiallyExecuted() {
-        assertThat(converter.convert(Pair.of("open", 3))).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED);
+        // When
+        final OrderStateBoEnum actual = converter.convert(Pair.of("open", 3));
+
+        // Then
+        then(actual).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED);
     }
 
     @Test
     public void test_convert_when_closed_then_stateFullyExecuted() {
-        assertThat(converter.convert(Pair.of("closed", 1))).isEqualTo(OrderStateBoEnum.FULLY_EXECUTED);
+        // When
+        final OrderStateBoEnum actual = converter.convert(Pair.of("closed", 1));
+
+        // Then
+        then(actual).isEqualTo(OrderStateBoEnum.FULLY_EXECUTED);
     }
 
     @Test
     public void test_convert_when_canceled_and_noTrades_then_stateFullyCanceled() {
-        assertThat(converter.convert(Pair.of("canceled", 0))).isEqualTo(OrderStateBoEnum.FULLY_CANCELED);
+        // When
+        final OrderStateBoEnum actual = converter.convert(Pair.of("canceled", 0));
+
+        // Then
+        then(actual).isEqualTo(OrderStateBoEnum.FULLY_CANCELED);
     }
 
     @Test
     public void test_convert_when_canceled_and_tradesExist_then_statePartiallyExecutedThenCanceled() {
-        assertThat(converter.convert(Pair.of("canceled", 1))).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_CANCELED);
+        // When
+        final OrderStateBoEnum actual = converter.convert(Pair.of("canceled", 1));
+
+        // Then
+        then(actual).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED_THEN_CANCELED);
     }
 
     @Test
     public void test_convert_when_unknownKrakenStatus_then_exception() {
-        assertThatThrownBy(() -> converter.convert(Pair.of("partially_executed", 2))) //
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> converter.convert(Pair.of("partially_executed", 2)));
+
+        // Then
+        then(caughtThrowable) //
                 .isInstanceOf(IllegalArgumentException.class) //
                 .hasMessage("Unsupported Kraken order status [partially_executed]");
     }

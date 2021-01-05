@@ -49,18 +49,19 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.BDDAssertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
 
 public class KrakenPrivateApiFacadeImplUTest {
     @NotNull
@@ -90,60 +91,72 @@ public class KrakenPrivateApiFacadeImplUTest {
 
     @AfterEach
     public void assertAndCleanMocks() {
-        Mockito.verifyNoMoreInteractions(krakenPrivateApiConnector);
-        Mockito.reset(krakenPrivateApiConnector);
+        verifyNoMoreInteractions(krakenPrivateApiConnector);
+        reset(krakenPrivateApiConnector);
     }
 
     @Test
     public void test_getOpenOrders_when_krakenResponseWithError_then_exception() {
 
+        // Given
         final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setError(List.of("Error 12343"));
         final var includeTrades = true;
-        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.openOrders(includeTrades)).willReturn(krakenResponseDto);
 
-        assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades))
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades));
+
+        // Then
+        verify(krakenPrivateApiConnector).openOrders(includeTrades);
+
+        then(caughtThrowable)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[Error 12343]");
-
-        verify(krakenPrivateApiConnector).openOrders(includeTrades);
     }
 
     @Test
     public void test_getOpenOrders_when_krakenResponseWithNullResult_then_emptyListIsReturned() {
 
+        // Given
         final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setResult(null);
         final var includeTrades = true;
-        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.openOrders(includeTrades)).willReturn(krakenResponseDto);
 
+        // When
         final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
 
+        // Then
         verify(krakenPrivateApiConnector).openOrders(includeTrades);
 
-        assertThat(openOrders).isEmpty();
+        then(openOrders).isEmpty();
     }
 
     @Test
     public void test_getOpenOrders_when_krakenResponseWithEmptyOpen_then_emptyListIsReturned() {
 
+        // Given
         final var result = new KrakenOpenOrderResultDto();
         result.setOpen(null);
         final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setResult(result);
         final var includeTrades = true;
-        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.openOrders(includeTrades)).willReturn(krakenResponseDto);
 
+        // When
         final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
 
+        // Then
         verify(krakenPrivateApiConnector).openOrders(includeTrades);
 
-        assertThat(openOrders).isEmpty();
+        then(openOrders).isEmpty();
     }
 
     @Test
     public void test_getOpenOrders_when_krakenResponseWithOneOpenOrder_then_oneOrderReturned() {
 
+        // Given
         final KrakenOpenOrderDto order = KrakenOpenOrderDtoBuilder.aKrakenOpenOrderDto().build();
         final var result = new KrakenOpenOrderResultDto();
         final var orderId = "orderId1";
@@ -151,54 +164,65 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var krakenResponseDto = new KrakenResponseDto<KrakenOpenOrderResultDto>();
         krakenResponseDto.setResult(result);
         final var includeTrades = true;
-        when(krakenPrivateApiConnector.openOrders(includeTrades)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.openOrders(includeTrades)).willReturn(krakenResponseDto);
 
+        // When
         final ImmutableList<OpenOrderBo> openOrders = krakenPrivateApiFacadeImpl.getOpenOrders(includeTrades);
 
+        // Then
         verify(krakenPrivateApiConnector).openOrders(includeTrades);
 
-        assertThat(openOrders).hasSize(1);
-        assertThat(openOrders.get(0).getOrderId()).isEqualTo(orderId);
+        then(openOrders).hasSize(1);
+        then(openOrders.get(0).getOrderId()).isEqualTo(orderId);
     }
 
     @Test
     public void test_getClosedOrders_when_krakenResponseWithError_then_exception() {
 
+        // Given
         final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
         krakenResponseDto.setError(List.of("Error 123"));
         final var includeTrades = true;
         final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
         final var fromInEpochSeconds = 1583831100L;
-        when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).willReturn(krakenResponseDto);
 
-        assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades, from))
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades, from));
+
+        // Then
+        verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
+
+        then(caughtThrowable)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[Error 123]");
-
-        verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
     }
 
     @Test
     public void test_getClosedOrders_when_krakenResponseWithNullResult_then_emptyListIsReturned() {
 
+        // Given
         final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
         krakenResponseDto.setResult(null);
         final var includeTrades = true;
         final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
         final var fromInEpochSeconds = 1583831100L;
-        when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).willReturn(krakenResponseDto);
 
+        // When
         final ImmutableList<ClosedOrderBo> closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
                 from);
 
+        // Then
         verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
 
-        assertThat(closedOrders).isEmpty();
+        then(closedOrders).isEmpty();
     }
 
     @Test
     public void test_getClosedOrders_when_krakenResponseWithEmptyClosed_then_emptyListIsReturned() {
 
+        // Given
         final var result = new KrakenClosedOrderResultDto();
         result.setClosed(null);
         final var krakenResponseDto = new KrakenResponseDto<KrakenClosedOrderResultDto>();
@@ -206,19 +230,22 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var includeTrades = true;
         final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
         final var fromInEpochSeconds = 1583831100L;
-        when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).willReturn(krakenResponseDto);
 
+        // When
         final ImmutableList<ClosedOrderBo> closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
                 from);
 
+        // Then
         verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
 
-        assertThat(closedOrders).isEmpty();
+        then(closedOrders).isEmpty();
     }
 
     @Test
     public void test_getClosedOrders_when_krakenResponseWithOneClosedOrder_then_oneOrderReturned() {
 
+        // Given
         final KrakenClosedOrderDto order = KrakenClosedOrderDtoBuilder.aKrakenClosedOrderDto().build();
         final var result = new KrakenClosedOrderResultDto();
         final var orderId = "orderId1";
@@ -228,38 +255,44 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var includeTrades = true;
         final var from = LocalDateTime.of(2020, 3, 10, 10, 5);
         final var fromInEpochSeconds = 1583831100L;
-        when(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.closedOrders(includeTrades, fromInEpochSeconds)).willReturn(krakenResponseDto);
 
+        // When
         final ImmutableList<ClosedOrderBo> closedOrders = krakenPrivateApiFacadeImpl.getClosedOrders(includeTrades,
                 from);
 
+        // Then
         verify(krakenPrivateApiConnector).closedOrders(includeTrades, fromInEpochSeconds);
 
-        assertThat(closedOrders).hasSize(1);
-        assertThat(closedOrders.get(0).getOrderId()).isEqualTo(orderId);
+        then(closedOrders).hasSize(1);
+        then(closedOrders.get(0).getOrderId()).isEqualTo(orderId);
     }
 
     @Test
     public void test_getAccountBalance_when_rawKrakenDataProvided_then_askPriceReturned_and_bidPriceReturned() {
 
+        // Given
         final var balancesByCurrencies = Map.of("BCH", BigDecimal.ZERO,
                 "ZEUR", new BigDecimal("34"), "XXRP", new BigDecimal("32"));
         final var krakenResponseDto = new KrakenResponseDto<Map<String, BigDecimal>>();
         krakenResponseDto.setResult(balancesByCurrencies);
-        when(krakenPrivateApiConnector.balance()).thenReturn(krakenResponseDto);
+        given(krakenPrivateApiConnector.balance()).willReturn(krakenResponseDto);
 
+        // When
         final Map<CurrencyBoEnum, BigDecimal> response = krakenPrivateApiFacadeImpl.getAccountBalance();
 
+        // Then
         verify(krakenPrivateApiConnector).balance();
 
-        assertThat(response.get(CurrencyBoEnum.EUR)).isEqualTo(new BigDecimal(34));
-        assertThat(response.containsKey(CurrencyBoEnum.BTC)).isFalse();
-        assertThat(response.containsKey(CurrencyBoEnum.OTHERS)).isFalse();
+        then(response.get(CurrencyBoEnum.EUR)).isEqualTo(new BigDecimal(34));
+        then(response.containsKey(CurrencyBoEnum.BTC)).isFalse();
+        then(response.containsKey(CurrencyBoEnum.OTHERS)).isFalse();
     }
 
     @Test
     public void test_placeOrder_when_krakenResponseWithoutErrors_then_noException() {
 
+        // Given
         final var krakenMarketName = "XBTEUR";
         final var krakenOrderType = "buy";
         final var krakenPriceOrderType = "market";
@@ -267,16 +300,18 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var volumeInQuoteCurrency = new BigDecimal("0.01");
         final ImmutableList<String> orderFlags = ImmutableList.of();
         final var orderExpirationInSecondsFromNow = 0L;
-        when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
+        given(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
-                orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
+                orderExpirationInSecondsFromNow)).willReturn(new KrakenResponseDto<>());
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
+        // When
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 price, false,
                 orderExpirationInSecondsFromNow);
 
+        // Then
         verify(krakenPrivateApiConnector).addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow);
@@ -285,6 +320,7 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_preferFeeInQuoteCurrencyIsTrue_then_fciqInOrderFlags() {
 
+        // Given
         final var krakenMarketName = "XBTEUR";
         final var krakenOrderType = "buy";
         final var krakenPriceOrderType = "market";
@@ -292,16 +328,18 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var volumeInQuoteCurrency = new BigDecimal("0.01");
         final var orderFlags = ImmutableList.of("fciq");
         final var orderExpirationInSecondsFromNow = 0L;
-        when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
+        given(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
-                orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
+                orderExpirationInSecondsFromNow)).willReturn(new KrakenResponseDto<>());
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
+        // When
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 price, true,
                 orderExpirationInSecondsFromNow);
 
+        // Then
         verify(krakenPrivateApiConnector).addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow);
@@ -310,6 +348,7 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_priceHasMoreThanOneDecimalPlace_then_priceRoundedToOneDecimalPlace() {
 
+        // Given
         final var krakenMarketName = "XBTEUR";
         final var krakenOrderType = "buy";
         final var krakenPriceOrderType = "market";
@@ -317,16 +356,18 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var volumeInQuoteCurrency = new BigDecimal("0.01");
         final ImmutableList<String> orderFlags = ImmutableList.of();
         final var orderExpirationInSecondsFromNow = 0L;
-        when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
+        given(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, orderFlags,
-                orderExpirationInSecondsFromNow)).thenReturn(new KrakenResponseDto<>());
+                orderExpirationInSecondsFromNow)).willReturn(new KrakenResponseDto<>());
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
+        // When
         krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 new BigDecimal("7000.351"), false,
                 orderExpirationInSecondsFromNow);
 
+        // Then
         verify(krakenPrivateApiConnector).addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, krakenPrice, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow);
@@ -335,6 +376,7 @@ public class KrakenPrivateApiFacadeImplUTest {
     @Test
     public void test_placeOrder_when_krakenResponseWithError_then_exception() {
 
+        // Given
         final var krakenMarketName = "XBTEUR";
         final var krakenOrderType = "buy";
         final var krakenPriceOrderType = "market";
@@ -344,21 +386,25 @@ public class KrakenPrivateApiFacadeImplUTest {
         final var orderExpirationInSecondsFromNow = 0L;
         final var krakenResponseDto = new KrakenResponseDto<KrakenAddOrderResultDto>();
         krakenResponseDto.setError(List.of("Kraken error"));
-        when(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
+        given(krakenPrivateApiConnector.addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
-                orderExpirationInSecondsFromNow)).thenReturn(krakenResponseDto);
+                orderExpirationInSecondsFromNow)).willReturn(krakenResponseDto);
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
-        assertThatThrownBy(() -> krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> krakenPrivateApiFacadeImpl.placeOrder(OrderTypeBoEnum.BUY,
                 PriceOrderTypeBoEnum.MARKET, currencyPair, volumeInQuoteCurrency,
                 price, false,
-                orderExpirationInSecondsFromNow))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[Kraken error]");
+                orderExpirationInSecondsFromNow));
 
+        // Then
         verify(krakenPrivateApiConnector).addOrder(krakenMarketName, krakenOrderType,
                 krakenPriceOrderType, price, volumeInQuoteCurrency, orderFlags,
                 orderExpirationInSecondsFromNow);
+
+        then(caughtThrowable)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("[Kraken error]");
     }
 
 }

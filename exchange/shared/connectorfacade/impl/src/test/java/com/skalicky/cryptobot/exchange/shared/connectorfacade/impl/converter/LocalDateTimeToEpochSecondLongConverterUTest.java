@@ -22,27 +22,33 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class LocalDateTimeToEpochSecondLongConverterUTest {
 
     @Test
     public void test_convert_when_timeZoneIsNonZero_then_timeZoneIsConsidered() {
+        // Given
         final LocalDateTime dateTime = LocalDateTime.of(
                 2020, 3, 8, 10, 30, 1);
 
+        // When
         final Long epochSeconds = new LocalDateTimeToEpochSecondLongConverter().convert(dateTime);
 
-        assertThat(epochSeconds).isEqualTo(1583659801);
+        // Then
+        then(epochSeconds).isEqualTo(1583659801);
     }
 
     @Test
     public void test_convert_when_nanoSecondsAreNonZero_then_nanoSecondsIsIgnored() {
+        // Given
         final LocalDateTime dateTime = LocalDateTime.of(
                 2020, 3, 8, 10, 30, 1, 999_999_999);
 
+        // When
         final Long epochSeconds = new LocalDateTimeToEpochSecondLongConverter().convert(dateTime);
 
-        assertThat(epochSeconds).isEqualTo(1583659801);
+        // Then
+        then(epochSeconds).isEqualTo(1583659801);
     }
 }

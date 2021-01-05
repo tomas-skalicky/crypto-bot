@@ -20,24 +20,36 @@ package com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.e
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.BDDAssertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class CurrencyBoEnumUTest {
 
     @Test
     public void test_getByLabel_when_existingNonNullCurrencyLabel_then_enumValue() {
-        assertThat(CurrencyBoEnum.getByLabel("EUR")).isEqualTo(CurrencyBoEnum.EUR);
+        // When
+        final CurrencyBoEnum actual = CurrencyBoEnum.getByLabel("EUR");
+
+        // Then
+        then(actual).isEqualTo(CurrencyBoEnum.EUR);
     }
 
     @Test
     public void test_getByLabel_when_null_then_others() {
-        assertThat(CurrencyBoEnum.getByLabel(null)).isEqualTo(CurrencyBoEnum.OTHERS);
+        // When
+        final CurrencyBoEnum actual = CurrencyBoEnum.getByLabel(null);
+
+        // Then
+        then(actual).isEqualTo(CurrencyBoEnum.OTHERS);
     }
 
     @Test
     public void test_getByLabel_when_nonExistingCurrencyLabel_then_exception() {
-        assertThatThrownBy(() -> CurrencyBoEnum.getByLabel("LTC"))
+        // When
+        final Throwable caughtThrowable = catchThrowable(() -> CurrencyBoEnum.getByLabel("LTC"));
+
+        // Then
+        then(caughtThrowable)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unsupported label [LTC]");
     }

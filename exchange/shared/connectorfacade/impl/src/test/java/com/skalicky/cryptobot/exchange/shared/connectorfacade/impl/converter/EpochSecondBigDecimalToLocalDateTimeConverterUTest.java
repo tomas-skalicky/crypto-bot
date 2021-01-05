@@ -23,31 +23,37 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class EpochSecondBigDecimalToLocalDateTimeConverterUTest {
 
     @Test
     public void test_serialize_when_germanTimeZone_then_resultLocalDateTimeWithGermanTimeZone() {
+        // Given
         final var epochSecondsWithoutNanos = BigDecimal.valueOf(1583659801);
 
+        // When
         final LocalDateTime actualDateTime =
                 new EpochSecondBigDecimalToLocalDateTimeConverter().convert(epochSecondsWithoutNanos);
 
+        // Then
         final var expectedDateTime = LocalDateTime.of(
                 2020, 3, 8, 10, 30, 1);
-        assertThat(actualDateTime).isEqualTo(expectedDateTime);
+        then(actualDateTime).isEqualTo(expectedDateTime);
     }
 
     @Test
     public void test_serialize_when_nanoSecondsInEpochAreNonZero_then_nanoSecondsInResultAsWell() {
+        // Given
         final var epochSecondsWithNanos = new BigDecimal("1583659801.999999999");
 
+        // When
         final LocalDateTime actualDateTime =
                 new EpochSecondBigDecimalToLocalDateTimeConverter().convert(epochSecondsWithNanos);
 
+        // Then
         final var expectedDateTime = LocalDateTime.of(
                 2020, 3, 8, 10, 30, 1, 999_999_999);
-        assertThat(actualDateTime).isEqualTo(expectedDateTime);
+        then(actualDateTime).isEqualTo(expectedDateTime);
     }
 }

@@ -38,7 +38,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class KrakenMapEntryToOpenOrderBoConverterUTest {
 
@@ -54,6 +54,7 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
 
     @Test
     public void test_convert_when_allDataProvidedAndValid_then_successfulConversion() {
+        // Given
         final var desiredPrice = new BigDecimal("5762.3");
         final KrakenOrderDescriptionDto descriptionDto = KrakenOrderDescriptionDtoBuilder
                 .aKrakenOrderDescriptionDto()
@@ -80,24 +81,27 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
                 .build();
         final var orderId = "orderId123";
 
+        // When
         final OpenOrderBo orderBo = converter.convert(Pair.of(orderId, orderDto));
 
-        assertThat(orderBo.getOrderId()).isEqualTo(orderId);
-        assertThat(orderBo.getOrderType()).isEqualTo(OrderTypeBoEnum.BUY);
-        assertThat(orderBo.getPriceOrderType()).isEqualTo(PriceOrderTypeBoEnum.LIMIT);
-        assertThat(orderBo.getCurrencyPair()).isEqualTo(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR));
-        assertThat(orderBo.getDesiredVolumeInQuoteCurrency()).isEqualTo(desiredVolumeInQuoteCurrency);
-        assertThat(orderBo.getDesiredPrice()).isEqualTo(desiredPrice);
-        assertThat(orderBo.getOpenDateTime()).isEqualTo(LocalDateTime.of(2020, 3, 10, 10, 5));
-        assertThat(orderBo.getState()).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED);
-        assertThat(orderBo.getAlreadyExecutedVolumeInQuoteCurrency()).isEqualTo(alreadyExecutedVolumeInQuoteCurrency);
-        assertThat(orderBo.getAverageActualPrice()).isEqualTo(averageActualPrice);
-        assertThat(orderBo.getActualFeeInQuoteCurrency()).isEqualTo(actualFeeInQuoteCurrency);
-        assertThat(orderBo.getTradeIds()).containsExactly(tradeId1, tradeId2);
+        // Then
+        then(orderBo.getOrderId()).isEqualTo(orderId);
+        then(orderBo.getOrderType()).isEqualTo(OrderTypeBoEnum.BUY);
+        then(orderBo.getPriceOrderType()).isEqualTo(PriceOrderTypeBoEnum.LIMIT);
+        then(orderBo.getCurrencyPair()).isEqualTo(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR));
+        then(orderBo.getDesiredVolumeInQuoteCurrency()).isEqualTo(desiredVolumeInQuoteCurrency);
+        then(orderBo.getDesiredPrice()).isEqualTo(desiredPrice);
+        then(orderBo.getOpenDateTime()).isEqualTo(LocalDateTime.of(2020, 3, 10, 10, 5));
+        then(orderBo.getState()).isEqualTo(OrderStateBoEnum.PARTIALLY_EXECUTED);
+        then(orderBo.getAlreadyExecutedVolumeInQuoteCurrency()).isEqualTo(alreadyExecutedVolumeInQuoteCurrency);
+        then(orderBo.getAverageActualPrice()).isEqualTo(averageActualPrice);
+        then(orderBo.getActualFeeInQuoteCurrency()).isEqualTo(actualFeeInQuoteCurrency);
+        then(orderBo.getTradeIds()).containsExactly(tradeId1, tradeId2);
     }
 
     @Test
     public void test_convert_when_noTradesYet_then_averageActualPriceNotSet_and_actualFeeInQuoteCurrencyNotSet() {
+        // Given
         final var desiredPrice = new BigDecimal("5762.3");
         final KrakenOrderDescriptionDto descriptionDto = KrakenOrderDescriptionDtoBuilder
                 .aKrakenOrderDescriptionDto()
@@ -120,19 +124,21 @@ public class KrakenMapEntryToOpenOrderBoConverterUTest {
                 .build();
         final var orderId = "orderId123";
 
+        // When
         final OpenOrderBo orderBo = converter.convert(Pair.of(orderId, orderDto));
 
-        assertThat(orderBo.getOrderId()).isEqualTo(orderId);
-        assertThat(orderBo.getOrderType()).isEqualTo(OrderTypeBoEnum.BUY);
-        assertThat(orderBo.getPriceOrderType()).isEqualTo(PriceOrderTypeBoEnum.LIMIT);
-        assertThat(orderBo.getCurrencyPair()).isEqualTo(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR));
-        assertThat(orderBo.getDesiredVolumeInQuoteCurrency()).isEqualTo(desiredVolumeInQuoteCurrency);
-        assertThat(orderBo.getDesiredPrice()).isEqualTo(desiredPrice);
-        assertThat(orderBo.getOpenDateTime()).isEqualTo(LocalDateTime.of(2020, 3, 10, 10, 5));
-        assertThat(orderBo.getState()).isEqualTo(OrderStateBoEnum.NEW);
-        assertThat(orderBo.getAlreadyExecutedVolumeInQuoteCurrency()).isEqualTo(alreadyExecutedVolumeInQuoteCurrency);
-        assertThat(orderBo.getAverageActualPrice()).isNull();
-        assertThat(orderBo.getActualFeeInQuoteCurrency()).isNull();
-        assertThat(orderBo.getTradeIds()).isEmpty();
+        // Then
+        then(orderBo.getOrderId()).isEqualTo(orderId);
+        then(orderBo.getOrderType()).isEqualTo(OrderTypeBoEnum.BUY);
+        then(orderBo.getPriceOrderType()).isEqualTo(PriceOrderTypeBoEnum.LIMIT);
+        then(orderBo.getCurrencyPair()).isEqualTo(new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR));
+        then(orderBo.getDesiredVolumeInQuoteCurrency()).isEqualTo(desiredVolumeInQuoteCurrency);
+        then(orderBo.getDesiredPrice()).isEqualTo(desiredPrice);
+        then(orderBo.getOpenDateTime()).isEqualTo(LocalDateTime.of(2020, 3, 10, 10, 5));
+        then(orderBo.getState()).isEqualTo(OrderStateBoEnum.NEW);
+        then(orderBo.getAlreadyExecutedVolumeInQuoteCurrency()).isEqualTo(alreadyExecutedVolumeInQuoteCurrency);
+        then(orderBo.getAverageActualPrice()).isNull();
+        then(orderBo.getActualFeeInQuoteCurrency()).isNull();
+        then(orderBo.getTradeIds()).isEmpty();
     }
 }

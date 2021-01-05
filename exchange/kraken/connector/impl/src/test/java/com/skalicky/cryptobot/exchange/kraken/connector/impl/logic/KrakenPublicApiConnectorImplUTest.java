@@ -25,31 +25,34 @@ import edu.self.kraken.api.KrakenApi;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
 
 public class KrakenPublicApiConnectorImplUTest {
     @NotNull
-    private final KrakenApi krakenApi = Mockito.mock(KrakenApi.class);
+    private final KrakenApi krakenApi = mock(KrakenApi.class);
     @NotNull
     private final KrakenPublicApiConnectorImpl krakenPublicApiConnectorImpl = new KrakenPublicApiConnectorImpl(krakenApi, new ObjectMapper());
 
     @AfterEach
     public void assertAndCleanMocks() {
-        Mockito.verifyNoMoreInteractions(krakenApi);
-        Mockito.reset(krakenApi);
+        verifyNoMoreInteractions(krakenApi);
+        reset(krakenApi);
     }
 
     @Test
     public void test_ticker_when_responsePayloadIsValid_then_askPriceReturned_and_bidPriceReturned() throws Exception {
 
+        // Given
         // @formatter:off
         final var expectedResponse = "{" +
                 "    \"error\": []," +
@@ -69,21 +72,23 @@ public class KrakenPublicApiConnectorImplUTest {
                 "}";
         // @formatter:on
         final var marketName = Collections.singletonMap("pair", "XBTEUR");
-        when(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).thenReturn(expectedResponse);
+        given(krakenApi.queryPublic(KrakenApi.Method.TICKER, marketName)).willReturn(expectedResponse);
 
+        // When
         final KrakenResponseDto<Map<String, Map<String, Object>>> response =
                 krakenPublicApiConnectorImpl.ticker(ImmutableList.of("XBTEUR"));
 
+        // Then
         verify(krakenApi).queryPublic(KrakenApi.Method.TICKER, marketName);
 
-        assertThat(response.getError()).isEmpty();
-        assertThat(response.getResult()).hasSize(1);
+        then(response.getError()).isEmpty();
+        then(response.getResult()).hasSize(1);
         // Asserts to avoid warnings caused by presence of @Nullable.
-        assertThat(response.getResult()).isNotNull();
+        then(response.getResult()).isNotNull();
         final var tickerName = "XXBTZEUR";
         @SuppressWarnings("unchecked") final var actualAskData = (List<String>) response.getResult().get(tickerName).get("a");
-        assertThat(actualAskData.get(0)).isEqualTo("8903.30000");
+        then(actualAskData.get(0)).isEqualTo("8903.30000");
         @SuppressWarnings("unchecked") final var actualBidData = (List<String>) response.getResult().get(tickerName).get("b");
-        assertThat(actualBidData.get(0)).isEqualTo("8902.40000");
+        then(actualBidData.get(0)).isEqualTo("8902.40000");
     }
 }

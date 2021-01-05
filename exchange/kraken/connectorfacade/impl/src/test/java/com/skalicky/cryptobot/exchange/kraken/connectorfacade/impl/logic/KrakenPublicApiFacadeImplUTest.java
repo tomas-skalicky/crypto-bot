@@ -29,16 +29,17 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.en
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
 
 public class KrakenPublicApiFacadeImplUTest {
     @NotNull
@@ -51,13 +52,14 @@ public class KrakenPublicApiFacadeImplUTest {
 
     @AfterEach
     public void assertAndCleanMocks() {
-        Mockito.verifyNoMoreInteractions(krakenPublicApiConnector);
-        Mockito.reset(krakenPublicApiConnector);
+        verifyNoMoreInteractions(krakenPublicApiConnector);
+        reset(krakenPublicApiConnector);
     }
 
     @Test
     public void test_getTicker_when_rawKrakenDataProvided_then_askPriceReturned_and_bidPriceReturned() {
 
+        // Given
         final Map<String, Object> pairData = Map.of("a", List.of("8903.300000"), "b", List.of("8902.400000"));
         final var tickerName = "XXBTZEUR";
         final var result = Map.of(tickerName, pairData);
@@ -65,15 +67,17 @@ public class KrakenPublicApiFacadeImplUTest {
         expectedResponse.setResult(result);
         final var marketName = "XBTEUR";
         final var marketNames = ImmutableList.of(marketName);
-        when(krakenPublicApiConnector.ticker(marketNames)).thenReturn(expectedResponse);
+        given(krakenPublicApiConnector.ticker(marketNames)).willReturn(expectedResponse);
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
 
+        // When
         final TickerBo response = krakenPublicApiFacadeImpl.getTicker(currencyPair);
 
+        // Then
         verify(krakenPublicApiConnector).ticker(marketNames);
 
-        assertThat(response.getTickerName()).isEqualTo(tickerName);
-        assertThat(response.getAskPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8903.3").stripTrailingZeros());
-        assertThat(response.getBidPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8902.4").stripTrailingZeros());
+        then(response.getTickerName()).isEqualTo(tickerName);
+        then(response.getAskPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8903.3").stripTrailingZeros());
+        then(response.getBidPrice().stripTrailingZeros()).isEqualTo(new BigDecimal("8902.4").stripTrailingZeros());
     }
 }
