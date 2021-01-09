@@ -3,7 +3,7 @@ type: docker
 name: default
 
 steps:
-- name: build
+- name: build-push
   image: adoptopenjdk/openjdk15
   commands:
   - ./gradlew build --scan --stacktrace
