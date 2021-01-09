@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: default3
+name: default
 
 steps:
 - name: build
