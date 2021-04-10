@@ -25,7 +25,8 @@ The bot is triggered periodically by an external tool. For instance by crontab:
 * quoteCurrency ... Currency to buy
 * volumeInBaseCurrencyToInvestPerRun ... How much of the base currency
 will be intended to be invested into the market currency per run of this bot
-* tradingPlatformName ... Name of trading platform. Currently supported: kraken
+* tradingPlatformName ... Name of trading platform. Currently supported 
+  platforms: kraken
 * tradingPlatformApiKey ... Key for private part of trading platform API
 * tradingPlatformApiSecret ... Secret for private part of trading platform API
 * offsetRatioOfLimitPriceToBidPriceInDecimal ... Offset ratio of limit price
@@ -55,14 +56,14 @@ placed in the preceding steps as well as older orders (assuming that the orders
 were not closed right away).
 
 1. Reports **orders closed** in the last 72 hours on the given trading
-platform to the user so that the user has a overview how the last placed
+platform to the user so that the user has an overview how the last placed
 orders were executed.
 
 # Features
 
 ## Supported trading platforms
 
-[Kraken](https://www.kraken.com/). Id of the trading platform is passed to
+[Kraken](https://www.kraken.com/). ID of the trading platform is passed to
 the bot as an argument. See input parameters.
 
 ## Supported reporting tools
@@ -105,7 +106,12 @@ responses from) trading platforms.
 
 ## Technologies
 
-The program is written without any dependency injection solution.
+The program is written **without any dependency injection** solution to keep
+the source code understandable for the broader audience.
+
+The code is buildable with and runnable on the currently latest JDK 
+available on Travis CI. See
+https://docs.travis-ci.com/user/languages/java/#using-java-10-and-later
 
 ## Coding conventions
 
@@ -146,6 +152,6 @@ the rule 3)
 * `Collections.unmodifiableMap(Map.of("trades", String.valueOf(trades),
 "start", String.valueOf(from)));` (violates the rule 3)
 
-## TODOs:
-1) use JDK 9, 10, 11 enhancements except JPMS
-2) upgrade to latest JDK
+## Never-ending TODOs:
+1. Upgrade to the latest JDK available on Travis CI. See https://docs.travis-ci.com/user/languages/java/#using-java-10-and-later
+1. Upgrade to the latest versions of used libraries
