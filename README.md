@@ -195,4 +195,10 @@ Do **NOT** use `var` in any other context, like in the following ones:
 
 1. Upgrade to the latest JDK available on Travis CI.
    See https://docs.travis-ci.com/user/languages/java/#using-java-10-and-later
-1. Upgrade to the latest versions of used libraries
+1. Upgrade to the latest versions of used libraries and gradle
+
+## TODOs:
+
+1. Upgrade gradle. Extend the Never-ending TODOs above
+1. Upgrade all libraries. Extend the Never-ending TODOs above
+1. Change gradle dependency management
