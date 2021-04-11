@@ -91,13 +91,13 @@ public class CryptoBotApplication {
                 ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
 
         try {
+            cryptoBotLogic.reportClosedOrders(tradingPlatformName);
+            cryptoBotLogic.reportOpenOrders(tradingPlatformName);
             cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName,
                     arguments.getVolumeInBaseCurrencyToInvestPerRun(),
                     arguments.getBaseCurrency(),
                     arguments.getQuoteCurrency(),
                     arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal());
-            cryptoBotLogic.reportClosedOrders(tradingPlatformName);
-            cryptoBotLogic.reportOpenOrders(tradingPlatformName);
 
         } catch (Exception ex) {
             ex.printStackTrace();
