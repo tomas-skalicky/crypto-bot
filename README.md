@@ -43,11 +43,16 @@ Modify /etc/anacrontab to configure Anacron for the bot.
 
 ```shell script
 # period-in-days delay-in-minutes job-identifier command
-3 5 crypto-bot cd <project_home> && ./gradlew clean build run --args='--baseCurrency EUR --quoteCurrency BTC --volumeInBaseCurrencyToInvestPerRun 50 --tradingPlatformName kraken --tradingPlatformApiKey "<your_trading_platform_api_key>" --tradingPlatformApiSecret "<your_trading_platform_api_secret>" --slackWebhookUrl "<your_slack_webhook_url_to_be_notified>"' -Dorg.gradle.java.home=<java_11_or_later_home>
+3 5 crypto-bot cd <project_home> && ./gradlew clean build run --args='--baseCurrency EUR --quoteCurrency BTC --volumeInBaseCurrencyToInvestPerRun 50 --tradingPlatformName kraken --tradingPlatformApiKey "<your_trading_platform_api_key>" --tradingPlatformApiSecret "<your_trading_platform_api_secret>" --slackWebhookUrl "<your_slack_webhook_url_to_be_notified>"' -Dorg.gradle.java.home=<java_11_or_later_home> 2>&1 | /usr/bin/logger -i
 ```
 
 The configuration above executes the bot every 3 days. The delay of 5 minutes is
 configured to prevent Anacron from executing the bot immediately at boot time.
+
+The redirect of the stdout and stderr to /usr/bin/logger makes sure the
+application logs will not get lost, but land in the syslog. For more details how
+I configured user specific Anacron,
+see https://github.com/tomas-skalicky/scripts/commit/d09997dae44c0dc776d32e69db511e47a4f3deb2
 
 ## Input parameters
 
