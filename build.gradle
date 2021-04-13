@@ -25,10 +25,10 @@
 // Be noted plugins aren't automatically applied.
 plugins {
     // See https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-    id 'com.github.ben-manes.versions' version '0.36.0' apply false
+    id 'com.github.ben-manes.versions' version '0.38.0' apply false
 
     // See https://plugins.gradle.org/plugin/io.spring.dependency-management
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE' apply false
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
 
     // See https://plugins.gradle.org/plugin/org.springframework.boot
     id 'org.springframework.boot' version '2.4.4' apply false
