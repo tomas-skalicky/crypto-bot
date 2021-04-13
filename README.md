@@ -204,6 +204,7 @@ Do **NOT** use `var` in any other context, like in the following ones:
 
 1. Change gradle dependency management. Ignore those dependencies managed by
    BOMs.
-1. Integrate https://github.com/gradle-dependency-analyze/gradle-dependency
-   -analyze in the build process
+1.
+Integrate https://github.com/gradle-dependency-analyze/gradle-dependency-analyze
+in the build process
 1. Add coverage badge on github
