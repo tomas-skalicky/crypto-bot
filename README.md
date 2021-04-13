@@ -195,10 +195,15 @@ Do **NOT** use `var` in any other context, like in the following ones:
 
 1. Upgrade to the latest JDK available on Travis CI.
    See https://docs.travis-ci.com/user/languages/java/#using-java-10-and-later
-1. Upgrade to the latest versions of used libraries and gradle
+1. Upgrade to the latest Gradle version available.
+   See https://gradle.org/releases/
+1. Upgrade to the latest versions of used libraries.
+   Use `gw dependencyUpdates -Drevision=release` to see potential updates.
 
 ## TODOs:
 
-1. Upgrade gradle. Extend the Never-ending TODOs above
-1. Upgrade all libraries. Extend the Never-ending TODOs above
-1. Change gradle dependency management
+1. Change gradle dependency management. Ignore those dependencies managed by
+   BOMs.
+1. Integrate https://github.com/gradle-dependency-analyze/gradle-dependency
+   -analyze in the build process
+1. Add coverage badge on github
