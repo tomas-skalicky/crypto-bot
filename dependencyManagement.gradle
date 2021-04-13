@@ -4,8 +4,8 @@ apply from: "${rootDir}/libraries.gradle"
 
 dependencyManagement {
     imports {
-        // See the Spring BOM of version 2.4.1 on
-        // https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/2.4.1/spring-boot-dependencies-2.4.1.pom
+        // See the Spring BOM of version 2.4.4 on
+        // https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/2.4.4/spring-boot-dependencies-2.4.4.pom
         mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.spring_boot}"
     }
 
