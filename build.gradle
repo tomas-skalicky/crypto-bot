@@ -95,6 +95,7 @@ subprojects {
 }
 
 tasks.named('wrapper') {
+    gradleVersion versions.gradle
     distributionType = Wrapper.DistributionType.ALL
 }
 
