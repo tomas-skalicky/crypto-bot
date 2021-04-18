@@ -99,7 +99,12 @@ subprojects {
     }
 
     forbiddenApisTest {
+        // A Configuration like "testCompileClasspath" is instantiated and configured during the configuration phase,
+        // hence the code requiring a Configuration being configured needs to run at the very end of the configuration
+        // phase. To put a code there, use "afterEvaluate".
         project.afterEvaluate {
+            //  The forbidden APIs must be on the classpath of the gradle sub-project, hence the set of forbidden APIs
+            //  need to be split by libraries and applied only when a particular library is on the classpath.
             if (isLibraryOnClasspath(configurations.testCompileClasspath, groupNames.org_mockito, artifactNames.mockito_core)) {
                 signaturesFiles += files("$rootDir/configuration/forbidden_apis/mockito_signatures.txt")
             }
