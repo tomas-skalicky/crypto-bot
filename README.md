@@ -56,22 +56,22 @@ see https://github.com/tomas-skalicky/scripts/commit/d09997dae44c0dc776d32e69db5
 
 ## Input parameters
 
-* baseCurrency ... Currency to sell, to buy quoted currency
-* quoteCurrency ... Currency to buy
-* volumeInBaseCurrencyToInvestPerRun ... How much of the base currency will be
+* `baseCurrency` ... Currency to sell, to buy quoted currency
+* `quoteCurrency` ... Currency to buy
+* `volumeInBaseCurrencyToInvestPerRun` ... How much of the base currency will be
   intended to be invested into the market currency per run of this bot
-* tradingPlatformName ... Name of trading platform. Currently supported
+* `tradingPlatformName` ... Name of trading platform. Currently supported
   platforms: kraken
-* tradingPlatformApiKey ... Key for private part of trading platform API
-* tradingPlatformApiSecret ... Secret for private part of trading platform API
-* offsetRatioOfLimitPriceToBidPriceInDecimal ... Offset ratio of limit price to
+* `tradingPlatformApiKey` ... Key for private part of trading platform API
+* `tradingPlatformApiSecret` ... Secret for private part of trading platform API
+* `offsetRatioOfLimitPriceToBidPriceInDecimal` ... Offset ratio of limit price to
   the bid price. In Decimal. Sample value: 0.01 (= limit price 1% below the bid
   price)
-* minOffsetFromOpenDateTimeOfLastBuyOrderInHours ... Minimal offset from the
+* `minOffsetFromOpenDateTimeOfLastBuyOrderInHours` ... Minimal offset from the
   open date-time of last BUY order. The offset is an integer number of hours.
   Default value is 24. It means the bot can be executed often and the offset
   parameter enforces the frequency of order placing.
-* slackWebhookUrl ... Slack Webhook to notify the user about placing of orders,
+* `slackWebhookUrl` ... Slack Webhook to notify the user about placing of orders,
   open and closed orders, etc.
 
 # How the bot works
@@ -208,7 +208,7 @@ Do **NOT** use `var` in any other context, like in the following ones:
 
 1. Change gradle dependency management. Ignore those dependencies managed by
    BOMs.
-1.
-Integrate https://github.com/gradle-dependency-analyze/gradle-dependency-analyze
-in the build process
+1. Integrate
+   https://github.com/gradle-dependency-analyze/gradle-dependency-analyze
+   in the build process
 1. Add coverage badge on github
