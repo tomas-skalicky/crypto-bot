@@ -1,0 +1,2 @@
+@defaultMessage Use BDD alternatives; use org.mockito.BDDMockito instead of org.mockito.Mockito methods.
+org.mockito.Mockito#when(java.lang.Object)

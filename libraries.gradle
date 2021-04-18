@@ -118,4 +118,12 @@ ext {
             // Not managed by any imported BOMs.
             wiremock                 : 'com.github.tomakehurst:wiremock',
     ]
+
+    groupNames = [
+            org_mockito: 'org.mockito',
+    ]
+
+    artifactNames = [
+            mockito_core: 'mockito-core',
+    ]
 }

@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 /*
  * A program to automatically trade cryptocurrencies.
  * Copyright (C) 2020 Tomas Skalicky
@@ -26,6 +28,9 @@
 plugins {
     // See https://plugins.gradle.org/plugin/com.github.ben-manes.versions
     id 'com.github.ben-manes.versions' version '0.38.0' apply false
+
+    // See https://github.com/policeman-tools/forbidden-apis
+    id 'de.thetaphi.forbiddenapis' version '3.1' apply false
 
     // See https://plugins.gradle.org/plugin/io.spring.dependency-management
     id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
@@ -74,8 +79,9 @@ allprojects {
 
 subprojects {
 
-    apply from: "${rootDir}/dependencyManagement.gradle"
+    apply from: "$rootDir/dependencyManagement.gradle"
     // See https://docs.gradle.org/current/userguide/jacoco_plugin.html
+    apply plugin: 'de.thetaphi.forbiddenapis'
     apply plugin: 'jacoco'
     apply plugin: 'java'
     apply plugin: 'java-library'
@@ -85,6 +91,19 @@ subprojects {
 
     repositories {
         mavenCentral()
+    }
+
+    forbiddenApis {
+        signaturesFiles = files("$rootDir/configuration/forbidden_apis/signatures.txt")
+        ignoreFailures = false
+    }
+
+    forbiddenApisTest {
+        project.afterEvaluate {
+            if (isLibraryOnClasspath(configurations.testCompileClasspath, groupNames.org_mockito, artifactNames.mockito_core)) {
+                signaturesFiles += files("$rootDir/configuration/forbidden_apis/mockito_signatures.txt")
+            }
+        }
     }
 
     test {
@@ -114,6 +133,51 @@ tasks.named('wrapper') {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-def determineArchiveBaseName(final Project project) {
+final String determineArchiveBaseName(final Project project) {
     return "${rootProject.name}${project.path}".replaceAll(':', '-')
+}
+
+final static boolean isLibraryOnClasspath(final Configuration classpath, final String groupName, final String artifactName) {
+    return !classpath
+            .filter { final File file -> isSubPath(file.toPath(), Paths.get(groupName, artifactName)) }
+            .isEmpty()
+}
+
+final static boolean isSubPath(final java.nio.file.Path path1, final java.nio.file.Path path2) {
+    final int path1NameCount = path1.getNameCount()
+    final int path2NameCount = path2.getNameCount()
+    if (path1NameCount == 0 || path2NameCount == 0) {
+        return true
+    } else {
+        final java.nio.file.Path longerPath
+        final int longerPathNameCount
+        final java.nio.file.Path shorterPath
+        final int shorterPathNameCount
+        if (path1NameCount >= path2NameCount) {
+            longerPath = path1
+            longerPathNameCount = path1NameCount
+            shorterPath = path2
+            shorterPathNameCount = path2NameCount
+        } else {
+            longerPath = path2
+            longerPathNameCount = path2NameCount
+            shorterPath = path1
+            shorterPathNameCount = path1NameCount
+        }
+
+        int shorterPathCurrentNameIndex = 0
+
+        for (int longerPathNameIndex = 0; longerPathNameIndex < longerPathNameCount; ++longerPathNameIndex) {
+
+            if (longerPath.getName(longerPathNameIndex) == shorterPath.getName(shorterPathCurrentNameIndex)) {
+                ++shorterPathCurrentNameIndex
+                if (shorterPathCurrentNameIndex == shorterPathNameCount) {
+                    return true
+                }
+            } else {
+                shorterPathCurrentNameIndex = 0
+            }
+        }
+        return false
+    }
 }
