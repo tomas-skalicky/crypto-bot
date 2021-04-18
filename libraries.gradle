@@ -31,6 +31,16 @@ ext {
             wiremock            : '2.27.2',
     ]
 
+    groupNames = [
+            org_assertj: 'org.assertj',
+            org_mockito: 'org.mockito',
+    ]
+
+    artifactNames = [
+            assertj_core: 'assertj-core',
+            mockito_core: 'mockito-core',
+    ]
+
     // Not called "libraries" due to name collision.
     libs = [
             // Not managed by any imported BOMs.
@@ -47,7 +57,7 @@ ext {
             archunit_junit5_engine   : 'com.tngtech.archunit:archunit-junit5-engine',
 
             // Managed by Spring BOM.
-            assertj_core             : 'org.assertj:assertj-core',
+            assertj_core             : "${groupNames.org_assertj}:${artifactNames.assertj_core}",
 
             // Not managed by any imported BOMs.
             commons_collections4     : 'org.apache.commons:commons-collections4',
@@ -110,20 +120,12 @@ ext {
             log4j_slf4j_impl         : 'org.apache.logging.log4j:log4j-slf4j-impl',
 
             // Managed by Spring BOM.
-            mockito_core             : 'org.mockito:mockito-core',
+            mockito_core             : "${groupNames.org_mockito}:${artifactNames.mockito_core}",
 
             // Managed by Spring BOM.
             slf4j_api                : 'org.slf4j:slf4j-api',
 
             // Not managed by any imported BOMs.
             wiremock                 : 'com.github.tomakehurst:wiremock',
-    ]
-
-    groupNames = [
-            org_mockito: 'org.mockito',
-    ]
-
-    artifactNames = [
-            mockito_core: 'mockito-core',
     ]
 }

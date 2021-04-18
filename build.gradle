@@ -103,6 +103,9 @@ subprojects {
             if (isLibraryOnClasspath(configurations.testCompileClasspath, groupNames.org_mockito, artifactNames.mockito_core)) {
                 signaturesFiles += files("$rootDir/configuration/forbidden_apis/mockito_signatures.txt")
             }
+            if (isLibraryOnClasspath(configurations.testCompileClasspath, groupNames.org_assertj, artifactNames.assertj_core)) {
+                signaturesFiles += files("$rootDir/configuration/forbidden_apis/assertj_signatures.txt")
+            }
         }
     }
 
