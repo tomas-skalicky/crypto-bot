@@ -67,6 +67,10 @@ see https://github.com/tomas-skalicky/scripts/commit/d09997dae44c0dc776d32e69db5
 * offsetRatioOfLimitPriceToBidPriceInDecimal ... Offset ratio of limit price to
   the bid price. In Decimal. Sample value: 0.01 (= limit price 1% below the bid
   price)
+* minOffsetFromOpenDateTimeOfLastBuyOrderInHours ... Minimal offset from the
+  open date-time of last BUY order. The offset is an integer number of hours.
+  Default value is 24. It means the bot can be executed often and the offset
+  parameter enforces the frequency of order placing.
 * slackWebhookUrl ... Slack Webhook to notify the user about placing of orders,
   open and closed orders, etc.
 

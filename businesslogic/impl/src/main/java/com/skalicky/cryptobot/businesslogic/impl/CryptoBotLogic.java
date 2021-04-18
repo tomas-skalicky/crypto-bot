@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.skalicky.cryptobot.businesslogic.impl.constants.CryptoBotBusinessLogicConstants;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
@@ -39,15 +40,11 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CryptoBotLogic {
 
-    @NotNull
-    private static final DateTimeFormatter ORDER_NOTIFICATION_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
-            "dd.MM. HH:mm");
     @NotNull
     private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogic.class);
     @NotNull
@@ -114,7 +111,7 @@ public class CryptoBotLogic {
                             @NotNull final String tradingPlatformName) {
 
         final var messageBuilder = new StringBuilder("Closed orders since ")
-                .append(from.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER)).append(" on ")
+                .append(from.format(CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER)).append(" on ")
                 .append(tradingPlatformName).append(": ");
         if (closedOrdersWithTrades.isEmpty()) {
             messageBuilder.append("none");
@@ -209,7 +206,8 @@ public class CryptoBotLogic {
                 : "fee " + actualFeeInQuoteCurrency + " " + quoteCurrency.getLabel() + " ";
         final LocalDateTime expirationDateTime = order.getExpirationDateTime();
         final String expirationDateTimeString = expirationDateTime == null ? ""
-                : "expires on " + expirationDateTime.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " ";
+                : "expires on " + expirationDateTime.format(
+                CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER) + " ";
         return order.getOrderType().getLabel() + " "
                 + order.getDesiredVolumeInQuoteCurrency() + " "
                 + quoteCurrency.getLabel() + "-" + currencyPair.getBaseCurrency().getLabel() + " exec. "
@@ -219,7 +217,7 @@ public class CryptoBotLogic {
                 + averageActualPriceString
                 + actualFeeInQuoteCurrencyString + "@ "
                 + orderState.getLabel() + " @ open "
-                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " "
+                + order.getOpenDateTime().format(CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER) + " "
                 + expirationDateTimeString + "@ "
                 + order.getTradeIds().size() + " " + tradesString;
     }
@@ -240,8 +238,10 @@ public class CryptoBotLogic {
                 + order.getAverageActualPrice() + " fee "
                 + order.getActualFeeInQuoteCurrency() + " " + quoteCurrency.getLabel() + " @ "
                 + order.getStatus().getLabel() + " @ open "
-                + order.getOpenDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " close "
-                + order.getCloseDateTime().format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER) + " @ "
+                + order.getOpenDateTime().format(
+                CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER) + " close "
+                + order.getCloseDateTime().format(
+                CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER) + " @ "
                 + order.getTradeIds().size() + " " + tradesString;
     }
 }

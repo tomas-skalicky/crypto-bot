@@ -94,7 +94,7 @@ public class CryptoBotArguments {
      * Initialized to avoid nullability.
      */
     @Parameter(names = {"--minOffsetFromOpenDateTimeOfLastBuyOrderInHours"},
-            description = "Minimal offset from the open datetime of last BUY order. The offset is a number of hours. Default value is 24 hours.")
+            description = "Minimal offset from the open date-time of last BUY order. The offset is an integer of hours. Default value is 24.")
     private int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 24;
 
     @Nullable

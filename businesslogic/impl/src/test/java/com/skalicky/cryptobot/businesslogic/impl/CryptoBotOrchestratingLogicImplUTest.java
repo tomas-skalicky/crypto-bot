@@ -28,15 +28,12 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.Op
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.BDDAssertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.reset;
@@ -66,8 +63,9 @@ public class CryptoBotOrchestratingLogicImplUTest {
         fixableLocalDateTimeProvider.fix();
 
         final String tradingPlatformName = "bittrex";
-        given(cryptoBotLogic.retrieveClosedOrdersWithTrades(any(LocalDateTime.class),
-                eq(tradingPlatformName))).willThrow(IllegalArgumentException.class);
+        final LocalDateTime expectedFrom = fixableLocalDateTimeProvider.now().minusDays(3);
+        given(cryptoBotLogic.retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName)).willThrow(
+                IllegalArgumentException.class);
         final BigDecimal volumeInBaseCurrencyToInvestPerRun = new BigDecimal("155");
         final String baseCurrencyLabel = "USDT";
         final String quoteCurrencyLabel = "MNR";
@@ -80,29 +78,32 @@ public class CryptoBotOrchestratingLogicImplUTest {
                 offsetRatioOfLimitPriceToBidPriceInDecimal, minOffsetFromOpenDateTimeOfLastBuyOrderInHours));
 
         // Then
-        final ArgumentCaptor<LocalDateTime> fromInRetrieve = ArgumentCaptor.forClass(LocalDateTime.class);
-        verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(fromInRetrieve.capture(), eq(tradingPlatformName));
+        verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
 
         then(caughtThrowable).isInstanceOf(IllegalArgumentException.class);
-        then(fromInRetrieve.getValue()).isEqualTo(fixableLocalDateTimeProvider.now().minusDays(3));
     }
 
     @Test
-    public void test_orchestrateExecution_when_validInputData_then_noException() {
+    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeOfClosedOrdersNotSatisfied_then_orderNotPlaced() {
         // Given
-        fixableLocalDateTimeProvider.fix();
+        final LocalDateTime now = fixableLocalDateTimeProvider.fix();
+        final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 25;
 
         final String tradingPlatformName = "bittrex";
         final ImmutableList<ClosedOrderBo> closedOrdersWithTrades = ImmutableList.of(
-                ClosedOrderBoBuilder.aClosedOrderBo().withOrderId("dummy_closed_order_id").build());
-        given(cryptoBotLogic.retrieveClosedOrdersWithTrades(any(LocalDateTime.class),
-                eq(tradingPlatformName))).willReturn(closedOrdersWithTrades);
+                ClosedOrderBoBuilder.aClosedOrderBo() //
+                        .withOpenDateTime(
+                                now.minusHours(minOffsetFromOpenDateTimeOfLastBuyOrderInHours).plusNanos(1)).build(),
+                ClosedOrderBoBuilder.aClosedOrderBo() //
+                        .withOpenDateTime(now.minusHours(minOffsetFromOpenDateTimeOfLastBuyOrderInHours)).build());
+        final LocalDateTime expectedFrom = fixableLocalDateTimeProvider.now().minusDays(3);
+        given(cryptoBotLogic.retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName)).willReturn(
+                closedOrdersWithTrades);
 
-        willDoNothing().given(cryptoBotLogic).reportClosedOrders(eq(closedOrdersWithTrades), any(LocalDateTime.class),
-                eq(tradingPlatformName));
+        willDoNothing().given(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom,
+                tradingPlatformName);
 
-        final ImmutableList<OpenOrderBo> openOrders = ImmutableList.of(
-                OpenOrderBoBuilder.aOpenOrderBo().withOrderId("dummy_open_order_id").build());
+        final ImmutableList<OpenOrderBo> openOrders = ImmutableList.of();
         given(cryptoBotLogic.retrieveOpenOrders(tradingPlatformName)).willReturn(openOrders);
 
         willDoNothing().given(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
@@ -111,7 +112,6 @@ public class CryptoBotOrchestratingLogicImplUTest {
         final String baseCurrencyLabel = "USDT";
         final String quoteCurrencyLabel = "MNR";
         final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
-        final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 36;
 
         // When
         cryptoBotOrchestratingLogicImpl.orchestrateExecution(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
@@ -119,18 +119,95 @@ public class CryptoBotOrchestratingLogicImplUTest {
                 minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
 
         // Then
-        final ArgumentCaptor<LocalDateTime> fromInRetrieve = ArgumentCaptor.forClass(LocalDateTime.class);
-        verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(fromInRetrieve.capture(), eq(tradingPlatformName));
-        final ArgumentCaptor<LocalDateTime> fromInReport = ArgumentCaptor.forClass(LocalDateTime.class);
-        verify(cryptoBotLogic).reportClosedOrders(eq(closedOrdersWithTrades), fromInReport.capture(),
-                eq(tradingPlatformName));
+        verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
+        verify(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom, tradingPlatformName);
+        verify(cryptoBotLogic).retrieveOpenOrders(tradingPlatformName);
+        verify(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
+    }
+
+    @Test
+    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeOfOpenOrdersNotSatisfied_then_orderNotPlaced() {
+        // Given
+        final LocalDateTime now = fixableLocalDateTimeProvider.fix();
+        final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 25;
+
+        final String tradingPlatformName = "bittrex";
+        final ImmutableList<ClosedOrderBo> closedOrdersWithTrades = ImmutableList.of();
+        final LocalDateTime expectedFrom = fixableLocalDateTimeProvider.now().minusDays(3);
+        given(cryptoBotLogic.retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName)).willReturn(
+                closedOrdersWithTrades);
+
+        willDoNothing().given(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom,
+                tradingPlatformName);
+
+        final ImmutableList<OpenOrderBo> openOrders = ImmutableList.of(
+                OpenOrderBoBuilder.aOpenOrderBo() //
+                        .withOpenDateTime(now.minusHours(minOffsetFromOpenDateTimeOfLastBuyOrderInHours)).build(),
+                OpenOrderBoBuilder.aOpenOrderBo() //
+                        .withOpenDateTime(
+                                now.minusHours(minOffsetFromOpenDateTimeOfLastBuyOrderInHours).plusNanos(1)).build());
+        given(cryptoBotLogic.retrieveOpenOrders(tradingPlatformName)).willReturn(openOrders);
+
+        willDoNothing().given(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
+
+        final BigDecimal volumeInBaseCurrencyToInvestPerRun = new BigDecimal("155");
+        final String baseCurrencyLabel = "USDT";
+        final String quoteCurrencyLabel = "MNR";
+        final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
+
+        // When
+        cryptoBotOrchestratingLogicImpl.orchestrateExecution(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
+                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal,
+                minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
+
+        // Then
+        verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
+        verify(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom, tradingPlatformName);
+        verify(cryptoBotLogic).retrieveOpenOrders(tradingPlatformName);
+        verify(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
+    }
+
+    @Test
+    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeSatisfied_then_orderPlaced() {
+        // Given
+        final LocalDateTime now = fixableLocalDateTimeProvider.fix();
+        final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 36;
+
+        final String tradingPlatformName = "bittrex";
+        final ImmutableList<ClosedOrderBo> closedOrdersWithTrades = ImmutableList.of(
+                ClosedOrderBoBuilder.aClosedOrderBo() //
+                        .withOpenDateTime(
+                                now.minusHours(minOffsetFromOpenDateTimeOfLastBuyOrderInHours).minusHours(2)).build());
+        final LocalDateTime expectedFrom = fixableLocalDateTimeProvider.now().minusDays(3);
+        given(cryptoBotLogic.retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName)).willReturn(
+                closedOrdersWithTrades);
+
+        willDoNothing().given(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom,
+                tradingPlatformName);
+
+        final ImmutableList<OpenOrderBo> openOrders = ImmutableList.of(
+                OpenOrderBoBuilder.aOpenOrderBo() //
+                        .withOpenDateTime(now.minusHours(minOffsetFromOpenDateTimeOfLastBuyOrderInHours)).build());
+        given(cryptoBotLogic.retrieveOpenOrders(tradingPlatformName)).willReturn(openOrders);
+
+        willDoNothing().given(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
+
+        final BigDecimal volumeInBaseCurrencyToInvestPerRun = new BigDecimal("155");
+        final String baseCurrencyLabel = "USDT";
+        final String quoteCurrencyLabel = "MNR";
+        final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
+
+        // When
+        cryptoBotOrchestratingLogicImpl.orchestrateExecution(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
+                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal,
+                minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
+
+        // Then
+        verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
+        verify(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom, tradingPlatformName);
         verify(cryptoBotLogic).retrieveOpenOrders(tradingPlatformName);
         verify(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
         verify(cryptoBotLogic).placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
                 baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
-
-        final LocalDateTime expectedFrom = fixableLocalDateTimeProvider.now().minusDays(3);
-        then(fromInRetrieve.getValue()).isEqualTo(expectedFrom);
-        then(fromInReport.getValue()).isEqualTo(expectedFrom);
     }
 }

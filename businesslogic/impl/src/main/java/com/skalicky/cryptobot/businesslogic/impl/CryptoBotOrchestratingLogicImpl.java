@@ -20,15 +20,24 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotOrchestratingLogic;
+import com.skalicky.cryptobot.businesslogic.impl.constants.CryptoBotBusinessLogicConstants;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProvider;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.OpenOrderBo;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class CryptoBotOrchestratingLogicImpl implements CryptoBotOrchestratingLogic {
+
+    @NotNull
+    private static final Logger logger = LoggerFactory.getLogger(CryptoBotOrchestratingLogicImpl.class);
 
     @NotNull
     private final CryptoBotLogic cryptoBotLogic;
@@ -57,7 +66,34 @@ public class CryptoBotOrchestratingLogicImpl implements CryptoBotOrchestratingLo
         final ImmutableList<OpenOrderBo> openOrders = cryptoBotLogic.retrieveOpenOrders(tradingPlatformName);
         cryptoBotLogic.reportOpenOrders(openOrders, tradingPlatformName);
 
-        cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
-                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
+        final LocalDateTime orderLatestOpenDateTime = extractOrderLatestOpenDateTime(closedOrdersWithTrades,
+                openOrders);
+        final boolean minOffsetSatisfied = orderLatestOpenDateTime.plusHours(
+                minOffsetFromOpenDateTimeOfLastBuyOrderInHours).compareTo(localDateTimeProvider.now()) <= 0;
+        if (minOffsetSatisfied) {
+            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
+                    baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
+        } else {
+            logger.info("Min required offset [{} hours] from open date-time of last BUY order [{}] is not satisfied.",
+                    minOffsetFromOpenDateTimeOfLastBuyOrderInHours,
+                    orderLatestOpenDateTime.format(CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER));
+        }
+    }
+
+    @NotNull
+    private LocalDateTime extractOrderLatestOpenDateTime(final ImmutableList<ClosedOrderBo> closedOrdersWithTrades,
+                                                         final ImmutableList<OpenOrderBo> openOrders) {
+        final Optional<LocalDateTime> closedOrderLatestOpenDateTime = closedOrdersWithTrades.stream() //
+                .map(ClosedOrderBo::getOpenDateTime) //
+                .max(Comparator.naturalOrder());
+        final Optional<LocalDateTime> openOrderLatestOpenDateTime = openOrders.stream() //
+                .map(OpenOrderBo::getOpenDateTime) //
+                .max(Comparator.naturalOrder());
+        return Stream.of(closedOrderLatestOpenDateTime,
+                openOrderLatestOpenDateTime) //
+                .filter(Optional::isPresent) //
+                .flatMap(dateTime -> Stream.of(dateTime.get())) //
+                .max(Comparator.naturalOrder()) //
+                .orElse(LocalDateTime.MIN);
     }
 }
