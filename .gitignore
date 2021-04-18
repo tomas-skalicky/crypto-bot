@@ -33,5 +33,5 @@ out/
 
 ### My ###
 logs/
-production-gradle-command-used-in-anacron.bash
+production-command.bash
 production-input-arguments.txt
