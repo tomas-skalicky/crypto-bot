@@ -76,7 +76,8 @@ public class CryptoBotOrchestratingLogicImpl implements CryptoBotOrchestratingLo
             cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
                     baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
         } else {
-            logger.info("Min required offset [{} hours] from open date-time of last BUY order [{}] is not satisfied.",
+            logger.info(
+                    "A minimal required offset [{} hours] from open date-time of the last BUY order [{}] is not satisfied.",
                     minOffsetFromOpenDateTimeOfLastBuyOrderInHours,
                     orderLatestOpenDateTime.format(CryptoBotBusinessLogicConstants.NOTIFICATION_DATE_TIME_FORMATTER));
         }
