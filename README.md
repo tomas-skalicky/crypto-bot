@@ -26,7 +26,7 @@ crontab (stored in /var/spool/cron/crontabs/<your username>).
 
 ```shell script
 # minute hour day-of-month month day-of-week command
-15 20 * * 3,6 cd <project_home> && ./gradlew clean build run --args='--baseCurrency EUR --quoteCurrency BTC --volumeInBaseCurrencyToInvestPerRun 50 --tradingPlatformName kraken --tradingPlatformApiKey "<your_trading_platform_api_key>" --tradingPlatformApiSecret "<your_trading_platform_api_secret>" --slackWebhookUrl "<your_slack_webhook_url_to_be_notified>"' -Dorg.gradle.java.home=<java_11_or_later_home>
+* */1 * * * cd <project_home> && git pull && ./gradlew clean build run --args='--baseCurrency EUR --quoteCurrency BTC --volumeInBaseCurrencyToInvestPerRun 50 --tradingPlatformName kraken --tradingPlatformApiKey "<your_trading_platform_api_key>" --tradingPlatformApiSecret "<your_trading_platform_api_secret>" --minOffsetFromOpenDateTimeOfLastBuyOrderInHours 48 --slackWebhookUrl "<your_slack_webhook_url_to_be_notified>"' -Dorg.gradle.java.home=<java_11_or_later_home>
 ```
 
 The configuration above executes the bot on every Wednesday and Saturday at 08:
@@ -43,7 +43,7 @@ Modify /etc/anacrontab to configure Anacron for the bot.
 
 ```shell script
 # period-in-days delay-in-minutes job-identifier command
-3 5 crypto-bot cd <project_home> && ./gradlew clean build run --args='--baseCurrency EUR --quoteCurrency BTC --volumeInBaseCurrencyToInvestPerRun 50 --tradingPlatformName kraken --tradingPlatformApiKey "<your_trading_platform_api_key>" --tradingPlatformApiSecret "<your_trading_platform_api_secret>" --slackWebhookUrl "<your_slack_webhook_url_to_be_notified>"' -Dorg.gradle.java.home=<java_11_or_later_home> 2>&1 | /usr/bin/logger -i
+@daily 5 crypto-bot cd <project_home> && git pull && ./gradlew clean build run --args='--baseCurrency EUR --quoteCurrency BTC --volumeInBaseCurrencyToInvestPerRun 50 --tradingPlatformName kraken --tradingPlatformApiKey "<your_trading_platform_api_key>" --tradingPlatformApiSecret "<your_trading_platform_api_secret>" --minOffsetFromOpenDateTimeOfLastBuyOrderInHours 48 --slackWebhookUrl "<your_slack_webhook_url_to_be_notified>"' -Dorg.gradle.java.home=<java_11_or_later_home> 2>&1 | /usr/bin/logger -i
 ```
 
 The configuration above executes the bot every 3 days. The delay of 5 minutes is
