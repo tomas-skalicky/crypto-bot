@@ -84,7 +84,7 @@ public class CryptoBotOrchestratingLogicImplUTest {
     }
 
     @Test
-    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeOfClosedOrdersNotSatisfied_then_orderNotPlaced() {
+    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeOfClosedOrdersNotSatisfied_then_noReportingAndNoOrderPlaced() {
         // Given
         final LocalDateTime now = fixableLocalDateTimeProvider.fix();
         final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 25;
@@ -120,13 +120,11 @@ public class CryptoBotOrchestratingLogicImplUTest {
 
         // Then
         verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
-        verify(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom, tradingPlatformName);
         verify(cryptoBotLogic).retrieveOpenOrders(tradingPlatformName);
-        verify(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
     }
 
     @Test
-    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeOfOpenOrdersNotSatisfied_then_orderNotPlaced() {
+    public void test_orchestrateExecution_when_minOffsetFromOpenDateTimeOfOpenOrdersNotSatisfied_then_noReportingAndNoOrderPlaced() {
         // Given
         final LocalDateTime now = fixableLocalDateTimeProvider.fix();
         final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 25;
@@ -162,9 +160,7 @@ public class CryptoBotOrchestratingLogicImplUTest {
 
         // Then
         verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
-        verify(cryptoBotLogic).reportClosedOrders(closedOrdersWithTrades, expectedFrom, tradingPlatformName);
         verify(cryptoBotLogic).retrieveOpenOrders(tradingPlatformName);
-        verify(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
     }
 
     @Test

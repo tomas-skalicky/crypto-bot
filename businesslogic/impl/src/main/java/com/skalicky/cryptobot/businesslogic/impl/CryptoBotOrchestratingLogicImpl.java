@@ -61,16 +61,18 @@ public class CryptoBotOrchestratingLogicImpl implements CryptoBotOrchestratingLo
         final LocalDateTime from = localDateTimeProvider.now().minusDays(3);
         final ImmutableList<ClosedOrderBo> closedOrdersWithTrades = cryptoBotLogic.retrieveClosedOrdersWithTrades(from,
                 tradingPlatformName);
-        cryptoBotLogic.reportClosedOrders(closedOrdersWithTrades, from, tradingPlatformName);
 
         final ImmutableList<OpenOrderBo> openOrders = cryptoBotLogic.retrieveOpenOrders(tradingPlatformName);
-        cryptoBotLogic.reportOpenOrders(openOrders, tradingPlatformName);
 
         final LocalDateTime orderLatestOpenDateTime = extractOrderLatestOpenDateTime(closedOrdersWithTrades,
                 openOrders);
         final boolean minOffsetSatisfied = orderLatestOpenDateTime.plusHours(
                 minOffsetFromOpenDateTimeOfLastBuyOrderInHours).compareTo(localDateTimeProvider.now()) <= 0;
         if (minOffsetSatisfied) {
+            // The offset is applied to the reporting as well to reduce disturbance.
+            cryptoBotLogic.reportClosedOrders(closedOrdersWithTrades, from, tradingPlatformName);
+            cryptoBotLogic.reportOpenOrders(openOrders, tradingPlatformName);
+
             cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
                     baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
         } else {
