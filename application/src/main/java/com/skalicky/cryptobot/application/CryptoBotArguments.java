@@ -90,6 +90,13 @@ public class CryptoBotArguments {
             required = true)
     private BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = BigDecimal.ZERO;
 
+    /**
+     * Initialized to avoid nullability.
+     */
+    @Parameter(names = {"--minOffsetFromOpenDateTimeOfLastBuyOrderInHours"},
+            description = "Minimal offset from the open datetime of last BUY order. The offset is a number of hours. Default value is 24 hours.")
+    private int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 24;
+
     @Nullable
     @Parameter(names = {"--slackWebhookUrl"},
             description = "Slack Webhook to notify the user about placing of orders, open and closed orders, etc.")
@@ -100,9 +107,17 @@ public class CryptoBotArguments {
         return baseCurrency;
     }
 
+    public void setBaseCurrency(@NotNull final String baseCurrency) {
+        this.baseCurrency = baseCurrency;
+    }
+
     @NotNull
     public String getQuoteCurrency() {
         return quoteCurrency;
+    }
+
+    public void setQuoteCurrency(@NotNull final String quoteCurrency) {
+        this.quoteCurrency = quoteCurrency;
     }
 
     @NotNull
@@ -110,9 +125,17 @@ public class CryptoBotArguments {
         return volumeInBaseCurrencyToInvestPerRun;
     }
 
+    public void setVolumeInBaseCurrencyToInvestPerRun(@NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun) {
+        this.volumeInBaseCurrencyToInvestPerRun = volumeInBaseCurrencyToInvestPerRun;
+    }
+
     @NotNull
     public String getTradingPlatformName() {
         return tradingPlatformName;
+    }
+
+    public void setTradingPlatformName(@NotNull final String tradingPlatformName) {
+        this.tradingPlatformName = tradingPlatformName;
     }
 
     @NotNull
@@ -120,9 +143,17 @@ public class CryptoBotArguments {
         return tradingPlatformKey;
     }
 
+    public void setTradingPlatformKey(@NotNull final String tradingPlatformKey) {
+        this.tradingPlatformKey = tradingPlatformKey;
+    }
+
     @NotNull
     public String getTradingPlatformSecret() {
         return tradingPlatformSecret;
+    }
+
+    public void setTradingPlatformSecret(@NotNull final String tradingPlatformSecret) {
+        this.tradingPlatformSecret = tradingPlatformSecret;
     }
 
     @NotNull
@@ -130,8 +161,24 @@ public class CryptoBotArguments {
         return offsetRatioOfLimitPriceToBidPriceInDecimal;
     }
 
+    public void setOffsetRatioOfLimitPriceToBidPriceInDecimal(@NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal) {
+        this.offsetRatioOfLimitPriceToBidPriceInDecimal = offsetRatioOfLimitPriceToBidPriceInDecimal;
+    }
+
+    public int getMinOffsetFromOpenDateTimeOfLastBuyOrderInHours() {
+        return minOffsetFromOpenDateTimeOfLastBuyOrderInHours;
+    }
+
+    public void setMinOffsetFromOpenDateTimeOfLastBuyOrderInHours(final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours) {
+        this.minOffsetFromOpenDateTimeOfLastBuyOrderInHours = minOffsetFromOpenDateTimeOfLastBuyOrderInHours;
+    }
+
     @Nullable
     public String getSlackWebhookUrl() {
         return slackWebhookUrl;
+    }
+
+    public void setSlackWebhookUrl(@Nullable final String slackWebhookUrl) {
+        this.slackWebhookUrl = slackWebhookUrl;
     }
 }

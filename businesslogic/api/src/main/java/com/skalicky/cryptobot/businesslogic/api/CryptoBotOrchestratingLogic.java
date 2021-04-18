@@ -22,15 +22,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
-public interface CryptoBotLogic {
+public interface CryptoBotOrchestratingLogic {
 
-    void reportOpenOrders(@NotNull String tradingPlatformName);
-
-    void reportClosedOrders(@NotNull String tradingPlatformName);
-
-    void placeBuyOrderIfEnoughAvailable(@NotNull String tradingPlatformName,
-                                        @NotNull BigDecimal volumeInBaseCurrencyToInvestPerRun,
-                                        @NotNull String baseCurrencyLabel,
-                                        @NotNull String quoteCurrencyLabel,
-                                        @NotNull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal);
+    void orchestrateExecution(@NotNull String tradingPlatformName,
+                              @NotNull BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                              @NotNull String baseCurrencyLabel,
+                              @NotNull String quoteCurrencyLabel,
+                              @NotNull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
+                              final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
 }

@@ -22,7 +22,8 @@ import com.beust.jcommander.JCommander;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogicImpl;
+import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogic;
+import com.skalicky.cryptobot.businesslogic.impl.CryptoBotOrchestratingLogicImpl;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPrivateApiConnectorImpl;
 import com.skalicky.cryptobot.exchange.kraken.connector.impl.logic.KrakenPublicApiConnectorImpl;
@@ -87,18 +88,16 @@ public class CryptoBotApplication {
         }
         final RestConnectorSupport restConnectorSupport = new RestConnectorSupport(objectMapper);
         final SlackFacade slackFacade = initializeSlackFacade(arguments.getSlackWebhookUrl(), restConnectorSupport);
-        final var cryptoBotLogic = new CryptoBotLogicImpl(ImmutableList.copyOf(publicApiFacades),
-                ImmutableList.copyOf(privateApiFacades), slackFacade, new LocalDateTimeProviderImpl());
+        final var cryptoBotLogic = new CryptoBotLogic(ImmutableList.copyOf(publicApiFacades),
+                ImmutableList.copyOf(privateApiFacades), slackFacade);
+        final var cryptoBotOrchestratingLogic = new CryptoBotOrchestratingLogicImpl(cryptoBotLogic,
+                new LocalDateTimeProviderImpl());
 
         try {
-            cryptoBotLogic.reportClosedOrders(tradingPlatformName);
-            cryptoBotLogic.reportOpenOrders(tradingPlatformName);
-            cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName,
-                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
-                    arguments.getBaseCurrency(),
-                    arguments.getQuoteCurrency(),
-                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal());
-
+            cryptoBotOrchestratingLogic.orchestrateExecution(tradingPlatformName,
+                    arguments.getVolumeInBaseCurrencyToInvestPerRun(), arguments.getBaseCurrency(),
+                    arguments.getQuoteCurrency(), arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
+                    arguments.getMinOffsetFromOpenDateTimeOfLastBuyOrderInHours());
         } catch (Exception ex) {
             ex.printStackTrace();
             if (arguments.getSlackWebhookUrl() != null) {

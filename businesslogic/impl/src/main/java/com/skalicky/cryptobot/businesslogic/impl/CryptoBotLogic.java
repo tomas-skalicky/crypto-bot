@@ -20,8 +20,6 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.skalicky.cryptobot.businesslogic.api.CryptoBotLogic;
-import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProvider;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.CurrencyPairBo;
@@ -42,29 +40,26 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CryptoBotLogicImpl implements CryptoBotLogic {
+public class CryptoBotLogic {
 
     @NotNull
-    private static final DateTimeFormatter ORDER_NOTIFICATION_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM. HH:mm");
+    private static final DateTimeFormatter ORDER_NOTIFICATION_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+            "dd.MM. HH:mm");
     @NotNull
-    private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogicImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CryptoBotLogic.class);
     @NotNull
     private final ImmutableMap<String, TradingPlatformPublicApiFacade> publicApiFacadesByPlatformNames;
     @NotNull
     private final ImmutableMap<String, TradingPlatformPrivateApiFacade> privateApiFacadesByPlatformNames;
     @NotNull
     private final SlackFacade slackFacade;
-    @NotNull
-    private final LocalDateTimeProvider localDateTimeProvider;
 
-    public CryptoBotLogicImpl(@NotNull final ImmutableList<TradingPlatformPublicApiFacade> publicApiFacades,
-                              @NotNull final ImmutableList<TradingPlatformPrivateApiFacade> privateApiFacades,
-                              @NotNull final SlackFacade slackFacade,
-                              @NotNull final LocalDateTimeProvider localDateTimeProvider) {
+    public CryptoBotLogic(@NotNull final ImmutableList<TradingPlatformPublicApiFacade> publicApiFacades,
+                          @NotNull final ImmutableList<TradingPlatformPrivateApiFacade> privateApiFacades,
+                          @NotNull final SlackFacade slackFacade) {
         this.publicApiFacadesByPlatformNames = ImmutableMap.copyOf(publicApiFacades.stream()
                 .collect(Collectors.toUnmodifiableMap(
                         TradingPlatformDesignated::getTradingPlatform, Function.identity())));
@@ -72,18 +67,21 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
                 .collect(Collectors.toUnmodifiableMap(
                         TradingPlatformDesignated::getTradingPlatform, Function.identity())));
         this.slackFacade = slackFacade;
-        this.localDateTimeProvider = localDateTimeProvider;
     }
 
-    @Override
-    public void reportOpenOrders(@NotNull final String tradingPlatformName) {
+    @NotNull
+    ImmutableList<OpenOrderBo> retrieveOpenOrders(@NotNull final String tradingPlatformName) {
         final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
 
-        final ImmutableList<OpenOrderBo> openOrders = facade.getOpenOrders(true);
+        return facade.getOpenOrders(true);
+    }
+
+    void reportOpenOrders(@NotNull final ImmutableList<OpenOrderBo> openOrders,
+                          @NotNull final String tradingPlatformName) {
         final var messageBuilder = new StringBuilder("Open orders on ")
                 .append(tradingPlatformName).append(": ");
         if (openOrders.isEmpty()) {
@@ -97,18 +95,24 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         slackFacade.sendMessage(message);
     }
 
-    @Override
-    public void reportClosedOrders(@NotNull final String tradingPlatformName) {
+    @NotNull
+    ImmutableList<ClosedOrderBo> retrieveClosedOrdersWithTrades(@NotNull final LocalDateTime from,
+                                                                @NotNull final String tradingPlatformName) {
         final TradingPlatformPrivateApiFacade facade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
         if (facade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
 
-        final LocalDateTime from = localDateTimeProvider.now().minusDays(3);
-        final List<ClosedOrderBo> closedOrdersWithTrades = facade.getClosedOrders(true, from).stream() //
+        return facade.getClosedOrders(true, from).stream() //
                 .filter(o -> !o.getTradeIds().isEmpty()) //
-                .collect(Collectors.toList());
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    void reportClosedOrders(@NotNull final ImmutableList<ClosedOrderBo> closedOrdersWithTrades,
+                            @NotNull final LocalDateTime from,
+                            @NotNull final String tradingPlatformName) {
+
         final var messageBuilder = new StringBuilder("Closed orders since ")
                 .append(from.format(ORDER_NOTIFICATION_DATE_TIME_FORMATTER)).append(" on ")
                 .append(tradingPlatformName).append(": ");
@@ -123,13 +127,13 @@ public class CryptoBotLogicImpl implements CryptoBotLogic {
         slackFacade.sendMessage(message);
     }
 
-    @Override
-    public void placeBuyOrderIfEnoughAvailable(@NotNull final String tradingPlatformName,
-                                               @NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
-                                               @NotNull final String baseCurrencyLabel,
-                                               @NotNull final String quoteCurrencyLabel,
-                                               @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal) {
-        final TradingPlatformPrivateApiFacade privateApiFacade = privateApiFacadesByPlatformNames.get(tradingPlatformName);
+    void placeBuyOrderIfEnoughAvailable(@NotNull final String tradingPlatformName,
+                                        @NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                                        @NotNull final String baseCurrencyLabel,
+                                        @NotNull final String quoteCurrencyLabel,
+                                        @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal) {
+        final TradingPlatformPrivateApiFacade privateApiFacade = privateApiFacadesByPlatformNames.get(
+                tradingPlatformName);
         if (privateApiFacade == null) {
             throw new IllegalArgumentException("No private API facade for the trading platform \""
                     + tradingPlatformName + "\"");
