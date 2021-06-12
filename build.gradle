@@ -139,6 +139,7 @@ subprojects {
 tasks.named('wrapper') {
     gradleVersion versions.gradle
     distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '7.0.2'
 }
 
 final String determineArchiveBaseName(final Project project) {
