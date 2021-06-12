@@ -27,7 +27,7 @@ ext {
             guava               : '30.1.1-jre',
             jacoco_tool         : '0.8.6',
             jcommander          : '1.81',
-            spring_boot         : '2.4.4',
+            spring_boot         : '2.5.1',
             wiremock            : '2.27.2',
     ]
 
