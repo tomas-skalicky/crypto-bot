@@ -20,11 +20,11 @@ import java.nio.file.Paths
 
 // Plugins along with versions are configured here, not in buildscript to avoid mixture of classpaths of plugins.
 //
-// The block plugins {} is located here, not in settings.gradle, in order to avoid a failure
+// The block "plugins { ... }" is located here, not in settings.gradle, in order to avoid a failure
 // "Plugin with id 'io.spring.dependency-management' not found." otherwise caused by
 // applying the plugin 'io.spring.dependency-management' in dependencyManagement.gradle.
 //
-// Be noted plugins aren't automatically applied.
+// Be noted plugins are not automatically applied.
 plugins {
     // See https://plugins.gradle.org/plugin/com.github.ben-manes.versions
     id 'com.github.ben-manes.versions' version '0.39.0' apply false
