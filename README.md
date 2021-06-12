@@ -60,19 +60,37 @@ see https://github.com/tomas-skalicky/scripts/commit/d09997dae44c0dc776d32e69db5
 * `quoteCurrency` ... Currency to buy
 * `volumeInBaseCurrencyToInvestPerRun` ... How much of the base currency will be
   intended to be invested into the market currency per run of this bot
+* `volumeMultipliers` ... Volume multipliers based on purchase price. Simple way
+  how to buy more when price is lower and vice versa. String containing
+  semicolon (;) separated pairs. Each pair is in a format <upper_bound_price>:<
+  multiplier_of_volume> and pairs are sorted in ascending order by the upper
+  bound price. The multiplier of volume is always mandatory. The upper bound 
+  price is mandatory for all pairs except the last one. The last upper bound 
+  price must not be provided. It means that the last multiplier is for all 
+  purchase prices greater than the upper bound price of the pair before the 
+  last pair. Usage: the value of input parameter 
+  'volumeInBaseCurrencyToInvestPerRun' is multiplied by a multiplier 
+  associated with least upper bound price being greater the purchase price. 
+  There must be always a multiplier for each purchase price. Example: 
+  '18000:1.4;20000:1.1;100000:1;:0.7'. If purchase price < 18000, the volume 
+  is multiplied by 1.4. We want to by 40% more than by default. If 18000 <= 
+  purchase price < 20000, the volume is multiplied by 1.1. We want to by 10% 
+  more than by default. If 20000 <= purchase price < 100000, the volume 
+  stays unchanged. If 100000 <= purchase price, the volume is reduced by 30%.
+  Default value is ':1'.
 * `tradingPlatformName` ... Name of trading platform. Currently supported
   platforms: kraken
 * `tradingPlatformApiKey` ... Key for private part of trading platform API
 * `tradingPlatformApiSecret` ... Secret for private part of trading platform API
-* `offsetRatioOfLimitPriceToBidPriceInDecimal` ... Offset ratio of limit price to
-  the bid price. In Decimal. Sample value: 0.01 (= limit price 1% below the bid
-  price)
+* `offsetRatioOfLimitPriceToBidPriceInDecimal` ... Offset ratio of limit price
+  to the bid price. In Decimal. Sample value: 0.01 (= limit price 1% below the
+  bid price)
 * `minOffsetFromOpenDateTimeOfLastBuyOrderInHours` ... Minimal offset from the
   open date-time of last BUY order. The offset is an integer number of hours.
   Default value is 24. It means the bot can be executed often and the offset
   parameter enforces the frequency of order placing.
-* `slackWebhookUrl` ... Slack Webhook to notify the user about placing of orders,
-  open and closed orders, etc.
+* `slackWebhookUrl` ... Slack Webhook to notify the user about placing of
+  orders, open and closed orders, etc.
 
 # How the bot works
 

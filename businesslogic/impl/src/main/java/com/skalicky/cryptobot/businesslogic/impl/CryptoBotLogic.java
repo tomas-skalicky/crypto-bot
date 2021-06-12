@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.skalicky.cryptobot.businesslogic.api.model.VolumeMultiplierBo;
 import com.skalicky.cryptobot.businesslogic.impl.constants.CryptoBotBusinessLogicConstants;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
@@ -126,6 +127,7 @@ public class CryptoBotLogic {
 
     void placeBuyOrderIfEnoughAvailable(@NotNull final String tradingPlatformName,
                                         @NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                                        @NotNull final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice,
                                         @NotNull final String baseCurrencyLabel,
                                         @NotNull final String quoteCurrencyLabel,
                                         @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal) {
@@ -140,22 +142,26 @@ public class CryptoBotLogic {
             throw new IllegalArgumentException("No public API facade for the trading platform \""
                     + tradingPlatformName + "\"");
         }
+        final var tickerMessage = "Going to retrieve a ticker for currencies quote " + quoteCurrencyLabel
+                + " and base " + baseCurrencyLabel + " on " + tradingPlatformName + ".";
+        logger.info(tickerMessage);
+        slackFacade.sendMessage(tickerMessage);
 
         final CurrencyBoEnum baseCurrency = CurrencyBoEnum.getByLabel(baseCurrencyLabel);
         final BigDecimal baseCurrencyAmount = privateApiFacade.getAccountBalance().get(baseCurrency);
-        if (baseCurrencyAmount.compareTo(volumeInBaseCurrencyToInvestPerRun) >= 0) {
-            final var tickerMessage = "Going to retrieve a ticker for currencies quote " + quoteCurrencyLabel
-                    + " and base " + baseCurrencyLabel + " on " + tradingPlatformName + ".";
-            logger.info(tickerMessage);
-            slackFacade.sendMessage(tickerMessage);
 
-            final CurrencyBoEnum quoteCurrency = CurrencyBoEnum.getByLabel(quoteCurrencyLabel);
-            final var currencyPair = new CurrencyPairBo(quoteCurrency, baseCurrency);
-            final TickerBo ticker = publicApiFacade.getTicker(currencyPair);
+        final CurrencyBoEnum quoteCurrency = CurrencyBoEnum.getByLabel(quoteCurrencyLabel);
+        final var currencyPair = new CurrencyPairBo(quoteCurrency, baseCurrency);
+        final TickerBo ticker = publicApiFacade.getTicker(currencyPair);
 
-            final BigDecimal price = ticker.getBidPrice().multiply(BigDecimal.ONE.subtract(
-                    offsetRatioOfLimitPriceToBidPriceInDecimal));
-            final BigDecimal volumeInQuoteCurrency = volumeInBaseCurrencyToInvestPerRun.divide(price, 10,
+        final BigDecimal price = ticker.getBidPrice().multiply(BigDecimal.ONE.subtract(
+                offsetRatioOfLimitPriceToBidPriceInDecimal));
+        final BigDecimal volumeMultiplier = selectVolumeMultiplier(volumeMultiplierOrderedAscByPrice, price);
+        final BigDecimal adjustedVolumeInBaseCurrency = volumeInBaseCurrencyToInvestPerRun.multiply(
+                volumeMultiplier);
+
+        if (baseCurrencyAmount.compareTo(adjustedVolumeInBaseCurrency) >= 0) {
+            final BigDecimal adjustedVolumeInQuoteCurrency = adjustedVolumeInBaseCurrency.divide(price, 10,
                     RoundingMode.HALF_UP);
             final var orderType = OrderTypeBoEnum.BUY;
             final var priceOrderType = PriceOrderTypeBoEnum.LIMIT;
@@ -163,18 +169,18 @@ public class CryptoBotLogic {
             final long orderExpirationInSecondsFromNow = 60 * 60 * 36;
 
             final var orderMessage = "Going to place a " + priceOrderType.getLabel() + " order to "
-                    + orderType.getLabel() + " " + volumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
-                    + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel + " on " + tradingPlatformName
+                    + orderType.getLabel() + " " + adjustedVolumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
+                    + adjustedVolumeInBaseCurrency + " " + baseCurrencyLabel + " on " + tradingPlatformName
                     + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel
                     + ". Order expiration is in " + orderExpirationInSecondsFromNow + " seconds from now.";
             logger.info(orderMessage);
 
             privateApiFacade.placeOrder(orderType, priceOrderType, currencyPair,
-                    volumeInQuoteCurrency, price, true, orderExpirationInSecondsFromNow);
+                    adjustedVolumeInQuoteCurrency, price, true, orderExpirationInSecondsFromNow);
 
             final var orderPlacedMessage = priceOrderType.getLabel() + " order to "
-                    + orderType.getLabel() + " " + volumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
-                    + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel
+                    + orderType.getLabel() + " " + adjustedVolumeInQuoteCurrency + " " + quoteCurrencyLabel + " for "
+                    + adjustedVolumeInBaseCurrency + " " + baseCurrencyLabel
                     + " successfully placed on " + tradingPlatformName
                     + ". Limit price of 1 " + quoteCurrencyLabel + " = " + price + " " + baseCurrencyLabel
                     + ". Order expiration is in " + orderExpirationInSecondsFromNow + " seconds from now.";
@@ -184,10 +190,22 @@ public class CryptoBotLogic {
         } else {
             final var message = "Too little base currency [" + baseCurrencyAmount + " "
                     + baseCurrencyLabel + "]. Needed volume to invest per run is "
-                    + volumeInBaseCurrencyToInvestPerRun + " " + baseCurrencyLabel;
+                    + adjustedVolumeInBaseCurrency + " " + baseCurrencyLabel;
             logger.warn(message);
             slackFacade.sendMessage(message);
         }
+    }
+
+    @NotNull
+    private BigDecimal selectVolumeMultiplier(@NotNull final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice,
+                                              @NotNull final BigDecimal price) {
+        for (final VolumeMultiplierBo volumeMultiplier : volumeMultiplierOrderedAscByPrice) {
+            BigDecimal upperBoundPrice = volumeMultiplier.getUpperBoundPriceInBaseCurrency();
+            if (upperBoundPrice == null || upperBoundPrice.compareTo(price) > 0) {
+                return volumeMultiplier.getVolumeMultiplierInDecimal();
+            }
+        }
+        throw new IllegalStateException("There is a volume multiplier missing for the price " + price + ".");
     }
 
     @NotNull

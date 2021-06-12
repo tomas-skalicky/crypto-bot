@@ -18,6 +18,8 @@
 
 package com.skalicky.cryptobot.businesslogic.api;
 
+import com.google.common.collect.ImmutableList;
+import com.skalicky.cryptobot.businesslogic.api.model.VolumeMultiplierBo;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -26,6 +28,7 @@ public interface CryptoBotOrchestratingLogic {
 
     void orchestrateExecution(@NotNull String tradingPlatformName,
                               @NotNull BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                              @NotNull final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice,
                               @NotNull String baseCurrencyLabel,
                               @NotNull String quoteCurrencyLabel,
                               @NotNull BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,

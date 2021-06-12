@@ -22,6 +22,7 @@ import com.beust.jcommander.JCommander;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.skalicky.cryptobot.businesslogic.api.model.VolumeMultiplierBo;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotLogic;
 import com.skalicky.cryptobot.businesslogic.impl.CryptoBotOrchestratingLogicImpl;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProviderImpl;
@@ -53,11 +54,14 @@ import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.Cu
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPrivateApiFacade;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.logic.TradingPlatformPublicApiFacade;
 import edu.self.kraken.api.KrakenApi;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CryptoBotApplication {
 
@@ -93,10 +97,14 @@ public class CryptoBotApplication {
         final var cryptoBotOrchestratingLogic = new CryptoBotOrchestratingLogicImpl(cryptoBotLogic,
                 new LocalDateTimeProviderImpl());
 
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = parseVolumeMultipliersArgument(
+                arguments);
         try {
             cryptoBotOrchestratingLogic.orchestrateExecution(tradingPlatformName,
-                    arguments.getVolumeInBaseCurrencyToInvestPerRun(), arguments.getBaseCurrency(),
-                    arguments.getQuoteCurrency(), arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
+                    arguments.getVolumeInBaseCurrencyToInvestPerRun(),
+                    volumeMultiplierOrderedAscByPrice,
+                    arguments.getBaseCurrency(), arguments.getQuoteCurrency(),
+                    arguments.getOffsetRatioOfLimitPriceToBidPriceInDecimal(),
                     arguments.getMinOffsetFromOpenDateTimeOfLastBuyOrderInHours());
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -109,6 +117,24 @@ public class CryptoBotApplication {
                         + (showDots ? "..." : ""));
             }
         }
+    }
+
+    @NotNull
+    private static ImmutableList<VolumeMultiplierBo> parseVolumeMultipliersArgument(final CryptoBotArguments arguments) {
+        return Arrays.stream(
+                arguments.getVolumeMultipliers().split(";")) //
+                .map(pairString -> pairString.split(":")) //
+                .map(pair -> {
+                    final String upperBoundPriceString = pair[0];
+                    final BigDecimal upperBoundPrice;
+                    if (StringUtils.isEmpty(upperBoundPriceString)) {
+                        upperBoundPrice = null;
+                    } else {
+                        upperBoundPrice = new BigDecimal(upperBoundPriceString);
+                    }
+                    return new VolumeMultiplierBo(upperBoundPrice, new BigDecimal(pair[1]));
+                }) //
+                .collect(ImmutableList.toImmutableList());
     }
 
     @NotNull

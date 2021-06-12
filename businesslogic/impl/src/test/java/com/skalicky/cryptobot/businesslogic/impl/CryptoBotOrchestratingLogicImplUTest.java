@@ -19,6 +19,7 @@
 package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
+import com.skalicky.cryptobot.businesslogic.api.model.VolumeMultiplierBo;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.FixableLocalDateTimeProvider;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.FixableLocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
@@ -72,10 +73,14 @@ public class CryptoBotOrchestratingLogicImplUTest {
         final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
         final int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 36;
 
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
         // When
         final Throwable caughtThrowable = catchThrowable(() -> cryptoBotOrchestratingLogicImpl.orchestrateExecution(
-                tradingPlatformName, volumeInBaseCurrencyToInvestPerRun, baseCurrencyLabel, quoteCurrencyLabel,
-                offsetRatioOfLimitPriceToBidPriceInDecimal, minOffsetFromOpenDateTimeOfLastBuyOrderInHours));
+                tradingPlatformName, volumeInBaseCurrencyToInvestPerRun, volumeMultiplierOrderedAscByPrice,
+                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal,
+                minOffsetFromOpenDateTimeOfLastBuyOrderInHours));
 
         // Then
         verify(cryptoBotLogic).retrieveClosedOrdersWithTrades(expectedFrom, tradingPlatformName);
@@ -113,9 +118,13 @@ public class CryptoBotOrchestratingLogicImplUTest {
         final String quoteCurrencyLabel = "MNR";
         final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
 
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
         // When
         cryptoBotOrchestratingLogicImpl.orchestrateExecution(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
-                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal,
+                volumeMultiplierOrderedAscByPrice, baseCurrencyLabel, quoteCurrencyLabel,
+                offsetRatioOfLimitPriceToBidPriceInDecimal,
                 minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
 
         // Then
@@ -153,9 +162,13 @@ public class CryptoBotOrchestratingLogicImplUTest {
         final String quoteCurrencyLabel = "MNR";
         final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
 
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
         // When
         cryptoBotOrchestratingLogicImpl.orchestrateExecution(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
-                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal,
+                volumeMultiplierOrderedAscByPrice, baseCurrencyLabel, quoteCurrencyLabel,
+                offsetRatioOfLimitPriceToBidPriceInDecimal,
                 minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
 
         // Then
@@ -193,9 +206,13 @@ public class CryptoBotOrchestratingLogicImplUTest {
         final String quoteCurrencyLabel = "MNR";
         final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal = new BigDecimal("0.025");
 
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
         // When
         cryptoBotOrchestratingLogicImpl.orchestrateExecution(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
-                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal,
+                volumeMultiplierOrderedAscByPrice, baseCurrencyLabel, quoteCurrencyLabel,
+                offsetRatioOfLimitPriceToBidPriceInDecimal,
                 minOffsetFromOpenDateTimeOfLastBuyOrderInHours);
 
         // Then
@@ -204,6 +221,7 @@ public class CryptoBotOrchestratingLogicImplUTest {
         verify(cryptoBotLogic).retrieveOpenOrders(tradingPlatformName);
         verify(cryptoBotLogic).reportOpenOrders(openOrders, tradingPlatformName);
         verify(cryptoBotLogic).placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
-                baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
+                volumeMultiplierOrderedAscByPrice, baseCurrencyLabel, quoteCurrencyLabel,
+                offsetRatioOfLimitPriceToBidPriceInDecimal);
     }
 }

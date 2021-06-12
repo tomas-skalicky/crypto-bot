@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.skalicky.cryptobot.businesslogic.api.CryptoBotOrchestratingLogic;
+import com.skalicky.cryptobot.businesslogic.api.model.VolumeMultiplierBo;
 import com.skalicky.cryptobot.businesslogic.impl.constants.CryptoBotBusinessLogicConstants;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.LocalDateTimeProvider;
 import com.skalicky.cryptobot.exchange.tradingplatform.connectorfacade.api.bo.ClosedOrderBo;
@@ -53,6 +54,7 @@ public class CryptoBotOrchestratingLogicImpl implements CryptoBotOrchestratingLo
     @Override
     public void orchestrateExecution(@NotNull final String tradingPlatformName,
                                      @NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun,
+                                     @NotNull final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice,
                                      @NotNull final String baseCurrencyLabel,
                                      @NotNull final String quoteCurrencyLabel,
                                      @NotNull final BigDecimal offsetRatioOfLimitPriceToBidPriceInDecimal,
@@ -74,7 +76,8 @@ public class CryptoBotOrchestratingLogicImpl implements CryptoBotOrchestratingLo
             cryptoBotLogic.reportOpenOrders(openOrders, tradingPlatformName);
 
             cryptoBotLogic.placeBuyOrderIfEnoughAvailable(tradingPlatformName, volumeInBaseCurrencyToInvestPerRun,
-                    baseCurrencyLabel, quoteCurrencyLabel, offsetRatioOfLimitPriceToBidPriceInDecimal);
+                    volumeMultiplierOrderedAscByPrice, baseCurrencyLabel, quoteCurrencyLabel,
+                    offsetRatioOfLimitPriceToBidPriceInDecimal);
         } else {
             logger.info(
                     "A minimal required offset [{} hours] from open date-time of the last BUY order [{}] is not satisfied.",

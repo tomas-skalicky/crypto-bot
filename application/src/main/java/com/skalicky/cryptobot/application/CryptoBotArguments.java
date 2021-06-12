@@ -49,9 +49,31 @@ public class CryptoBotArguments {
      */
     @NotNull
     @Parameter(names = {"--volumeInBaseCurrencyToInvestPerRun"},
-            description = "How much of the base currency will be intended to be invested into the market currency per run of this bot",
+            description = "How much of the base currency will be intended to be invested into the market currency per" +
+                    " run of this bot",
             required = true)
     private BigDecimal volumeInBaseCurrencyToInvestPerRun = BigDecimal.ZERO;
+
+    /**
+     * Initialized to avoid nullability.
+     */
+    @NotNull
+    @Parameter(names = {"--volumeMultipliers"},
+            description = "String containing semicolon (;) separated pairs. Each pair is in a format" +
+                    " <upper_bound_price>:<multiplier_of_volume> and pairs are sorted in ascending order by the upper bound price." +
+                    " The multiplier of volume is always mandatory. The upper bound price is mandatory for all pairs except" +
+                    " the last one. The last upper bound price must not be provided. It means that the last multiplier is for" +
+                    " all purchase prices greater than the upper bound price of the pair before the last pair." +
+                    " Usage: the value of input parameter 'volumeInBaseCurrencyToInvestPerRun' is multiplied by" +
+                    " a multiplier associated with least upper bound price being greater the purchase price." +
+                    " There must be always a multiplier for each purchase price." +
+                    " Example: '18000:1.4;20000:1.1;100000:1;:0.7'." +
+                    " If purchase price < 18000, the volume is multiplied by 1.4. We want to by 40% more than by default." +
+                    " If 18000 <= purchase price < 20000, the volume is multiplied by 1.1. We want to by 10% more than by default." +
+                    " If 20000 <= purchase price < 100000, the volume stays unchanged." +
+                    " If 100000 <= purchase price, the volume is reduced by 30%." +
+                    " Default value is ':1'.")
+    private String volumeMultipliers = ":1";
 
     /**
      * Initialized to avoid nullability.
@@ -94,7 +116,8 @@ public class CryptoBotArguments {
      * Initialized to avoid nullability.
      */
     @Parameter(names = {"--minOffsetFromOpenDateTimeOfLastBuyOrderInHours"},
-            description = "Minimal offset from the open date-time of last BUY order. The offset is an integer of hours. Default value is 24.")
+            description = "Minimal offset from the open date-time of last BUY order. The offset is an integer of hours." +
+                    " Default value is 24.")
     private int minOffsetFromOpenDateTimeOfLastBuyOrderInHours = 24;
 
     @Nullable
@@ -127,6 +150,15 @@ public class CryptoBotArguments {
 
     public void setVolumeInBaseCurrencyToInvestPerRun(@NotNull final BigDecimal volumeInBaseCurrencyToInvestPerRun) {
         this.volumeInBaseCurrencyToInvestPerRun = volumeInBaseCurrencyToInvestPerRun;
+    }
+
+    @NotNull
+    public String getVolumeMultipliers() {
+        return volumeMultipliers;
+    }
+
+    public void setVolumeMultipliers(@NotNull final String volumeMultipliers) {
+        this.volumeMultipliers = volumeMultipliers;
     }
 
     @NotNull

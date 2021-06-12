@@ -20,6 +20,7 @@ package com.skalicky.cryptobot.businesslogic.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.skalicky.cryptobot.businesslogic.api.model.VolumeMultiplierBo;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.FixableLocalDateTimeProvider;
 import com.skalicky.cryptobot.businesslogic.impl.datetime.FixableLocalDateTimeProviderImpl;
 import com.skalicky.cryptobot.exchange.slack.connectorfacade.api.logic.SlackFacade;
@@ -377,10 +378,13 @@ public class CryptoBotLogicUTest {
 
     @Test
     public void test_placeBuyOrderIfEnoughAvailable_when_unsupportedTradingPlatform_then_exception() {
+        // Given
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
         // When
         final Throwable caughtThrowable = catchThrowable(() -> cryptoBotLogic.placeBuyOrderIfEnoughAvailable(
-                "bittrex", BigDecimal.TEN, "BTC", "XMR",
-                new BigDecimal("0.01")));
+                "bittrex", BigDecimal.TEN, volumeMultiplierOrderedAscByPrice, "BTC", "XMR", new BigDecimal("0.01")));
 
         // Then
         verify(publicApiFacade).getTradingPlatform();
@@ -392,21 +396,30 @@ public class CryptoBotLogicUTest {
     }
 
     @Test
-    public void test_placeBuyOrderIfEnoughAvailable_when_tooLittleBaseCurrency_then_noPurchase_and_appropriateMessageIsToBeSentViaSlack() {
+    public void test_placeBuyOrderIfEnoughAvailable_when_volumeMultiplier2_and_tooLittleBaseCurrency_then_noPurchase_and_appropriateMessageIsToBeSentViaSlack() {
         // Given
-        given(privateApiFacade.getAccountBalance()).willReturn(ImmutableMap.of(CurrencyBoEnum.EUR, BigDecimal.ONE));
+        given(privateApiFacade.getAccountBalance()).willReturn(ImmutableMap.of(CurrencyBoEnum.EUR, new BigDecimal(11)));
+        final var ticker = new TickerBo("XXBTZEUR", new BigDecimal(25100), new BigDecimal(25000));
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        given(publicApiFacade.getTicker(currencyPair)).willReturn(ticker);
+
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, new BigDecimal(2)));
 
         // When
         cryptoBotLogic.placeBuyOrderIfEnoughAvailable(
-                KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, "EUR", "LTC",
+                KRAKEN_TRADING_PLATFORM_NAME, BigDecimal.TEN, volumeMultiplierOrderedAscByPrice, "EUR", "BTC",
                 new BigDecimal("0.01"));
 
         // Then
         verify(publicApiFacade).getTradingPlatform();
         verify(privateApiFacade).getTradingPlatform();
         verify(privateApiFacade).getAccountBalance();
+        verify(publicApiFacade).getTicker(currencyPair);
         verify(slackFacade).sendMessage(
-                "Too little base currency [1 EUR]. Needed volume to invest per run is 10 EUR");
+                "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.");
+        verify(slackFacade).sendMessage(
+                "Too little base currency [11 EUR]. Needed volume to invest per run is 20 EUR");
     }
 
     @Test
@@ -417,10 +430,13 @@ public class CryptoBotLogicUTest {
         final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
         given(publicApiFacade.getTicker(currencyPair)).willReturn(ticker);
 
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
         // When
         cryptoBotLogic.placeBuyOrderIfEnoughAvailable(
-                KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), "EUR",
-                "BTC", new BigDecimal("0.001"));
+                KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), volumeMultiplierOrderedAscByPrice, "EUR", "BTC",
+                new BigDecimal("0.001"));
 
         // Then
         verify(publicApiFacade).getTradingPlatform();
@@ -435,6 +451,39 @@ public class CryptoBotLogicUTest {
         verify(slackFacade).sendMessage(
                 "limit order to buy 2.2244466689 BTC for 20 EUR successfully placed on kraken." +
                         " Limit price of 1 BTC = 8.991 EUR." +
+                        " Order expiration is in 129600 seconds from now.");
+    }
+
+    @Test
+    public void test_placeBuyOrderIfEnoughAvailable_when_volumeMultiplierDifferentFrom1_then_volumeToPurchaseDifferentFromInput() {
+        // Given
+        given(privateApiFacade.getAccountBalance()).willReturn(ImmutableMap.of(CurrencyBoEnum.EUR, new BigDecimal(30)));
+        final var ticker = new TickerBo("XXBTZEUR", new BigDecimal(25100), new BigDecimal(25000));
+        final var currencyPair = new CurrencyPairBo(CurrencyBoEnum.BTC, CurrencyBoEnum.EUR);
+        given(publicApiFacade.getTicker(currencyPair)).willReturn(ticker);
+
+        final ImmutableList<VolumeMultiplierBo> volumeMultiplierOrderedAscByPrice = ImmutableList.of(
+                new VolumeMultiplierBo(new BigDecimal("25000.000001"), new BigDecimal("1.5")),
+                new VolumeMultiplierBo(null, BigDecimal.ONE));
+
+        // When
+        cryptoBotLogic.placeBuyOrderIfEnoughAvailable(
+                KRAKEN_TRADING_PLATFORM_NAME, new BigDecimal(20), volumeMultiplierOrderedAscByPrice, "EUR", "BTC",
+                BigDecimal.ZERO);
+
+        // Then
+        verify(publicApiFacade).getTradingPlatform();
+        verify(publicApiFacade).getTicker(currencyPair);
+        verify(privateApiFacade).getTradingPlatform();
+        verify(privateApiFacade).getAccountBalance();
+        verify(privateApiFacade).placeOrder(OrderTypeBoEnum.BUY, PriceOrderTypeBoEnum.LIMIT, currencyPair,
+                new BigDecimal("0.0012000000"), new BigDecimal(25000),
+                true, 129_600);
+        verify(slackFacade).sendMessage(
+                "Going to retrieve a ticker for currencies quote BTC and base EUR on kraken.");
+        verify(slackFacade).sendMessage(
+                "limit order to buy 0.0012000000 BTC for 30.0 EUR successfully placed on kraken." +
+                        " Limit price of 1 BTC = 25000 EUR." +
                         " Order expiration is in 129600 seconds from now.");
     }
 
