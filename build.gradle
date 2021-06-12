@@ -27,7 +27,7 @@ import java.nio.file.Paths
 // Be noted plugins aren't automatically applied.
 plugins {
     // See https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-    id 'com.github.ben-manes.versions' version '0.38.0' apply false
+    id 'com.github.ben-manes.versions' version '0.39.0' apply false
 
     // See https://github.com/policeman-tools/forbidden-apis
     id 'de.thetaphi.forbiddenapis' version '3.1' apply false
